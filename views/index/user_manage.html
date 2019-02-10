@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="renderer" content="webkit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="description" content="Plane UI" />
+    <meta name="keywords" content="Plane UI" />
+    <meta name="apple-mobile-web-app-title" content="Plane UI" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="google" value="notranslate" />
+
+    <!-- for Android 5 -->
+    <meta name="theme-color" content="#008FE2" />
+
+    <!-- Windows 8 metro color -->
+    <meta name="msapplication-TileColor" content="#008FE2" />
+
+    <!-- Windows 8 metro icon -->
+    <meta name="msapplication-TileImage" content="favicon.png" />
+
+    <title>南方基地答题系统</title>
+    <link rel="icon" type="image/png" href="../static/img/CM.png" />
+    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/user_manager.css" />
+    <link rel="stylesheet" href="../static/css/jquery-ui.min.css" />
+</head>
+<body>
+    <a name="top"></a>
+    <div class="pui-layout">
+
+        <!-- header栏 -->
+        <div class="page-header">
+            <div class="pui-layout pui-layout-fixed pui-layout-fixed-1200">
+                <div class="pui-menubar pui-menubar-square pui-menubar-header-style pui-bg-none pui-unbordered">
+                    <div class="pui-menubar-aside">
+                        <h2 class="pui-margin-none pui-text-normal page-title" title="中国移动南方基地">
+                            <img src="../static/img/CM.png" class="icon-CM" />
+                            中国移动南方基地知识题库</h2>
+                    </div>
+                    <div class="pui-menubar-offside">
+                        <ul class="pui-menu pui-menu-inline pui-menu-simple pui-right">
+                            <li>
+                                <a href="#top">管理员</a>
+                            </li>
+                            <li>
+                                <a href="{:url('index/login/change_pwd')}" id="pwchange">密码修改</a>
+                            </li>
+                            <li>
+                                <a href="{:url('index/Login/logout')}">退出</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="container ">
+            <div class="pui-row">
+
+                    <div class="pui-grid-md-2">
+                        <div class="pui-btn-group-vertical pui-btn-gradient pui-btn-shadow ">
+                            <div class="pui-btn-group ">
+                                <a href="{:url('index/usermanage/user_manage')}" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow pui-btn-primary-active"><i class="fa fa-user fa-large"></i> 用户管理</button></a>
+                                <a href="{:url('problems_manage/Problemmanage/problem_manage')}" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-list-alt fa-large"></i> 题目管理</button></a>
+                                <a href="{:url('event/index/showevent')}"><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-file-o fa-large"></i> 事件管理</button></a>
+                                <a href="{:url('item_manage/item/index')}" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-th fa-large"></i> 道具管理</button></a>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div style="margin-top:1em" class="pui-grid-md-9">
+                        <!-- <button class="create_btn pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-user fa-large"></i>创建新用户</button> -->
+                        <table id="user_message" class="pui-table pui-table-bordered pui-table-text-center pui-table-thead-bg pui-table-interlaced-color box-shadow-bottom pui-table-gradient">
+                            <thead>
+                                <tr>
+                                    <th>用户ID</th>
+                                    <th>登录名</th>
+                                    <th>姓名</th>
+                                    <th>手机号</th>
+                                    <th>工号</th>
+                                    <th>性别</th>
+                                    <th>编辑</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="user_message_body">
+                            </tbody>
+                        </table>
+                        <div class="pui-container pui-clear">
+                              <input id="now_page" name="now_page" type="hidden" value=1/>
+                              <input id="total_page" name="total_page" type="hidden" value=1/>
+                              <ul id="page_row" class="pui-pagination pui-pagination-bordered pui-pagination-center">
+                                  <li><a id="pre_page_btn">上一页</a></li>
+                                  <li><span id="page_span"></span></li>
+                                  <li><a id="next_page_btn">下一页</a></li>
+                                  <li class="input" title="输入后按回车或者点击按钮">跳转至第<input type="text" id="turn_page_input" name="turn_page_input" value="1"> 页 <input type="button" id="turn_page_btn" value="跳转"></li>
+                              </ul>
+                        </div>
+                        <button class="create_btn pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-user fa-large"></i>创建新用户</button>
+                        <!-- <button id="create-user" class="pui-btn pui-btn-primary pui-btn-large pui-text-shadow">创建新用户</button> -->
+                        <!-- 新建用户表 -->
+                        <div id="user_form" class="novisibility">
+                            <form>
+                                <div>
+                                    <label>姓名</label>
+                                    <input type="text" id="user_name" name="user_name" maxlength="16" class="" placeholder="姓名" />
+                                </div>
+                                <div>
+                                    <label>登录名</label>
+                                    <input type="text" id="login_name" name="login_name" maxlength="16" class="" placeholder="登录名" />
+                                </div>
+                                <div>
+                                    <label>手机号</label>
+                                    <input type="text" id="user_phone_number" name="user_phone_number" maxlength="16" class="" placeholder="手机号" />
+                                </div>
+                                <div>
+                                    <label>工号</label>
+                                    <input type="text" id="user_job_number" name="user_job_number" maxlength="16" class="" placeholder="工号" />
+                                </div>
+                                <div>
+                                    <label>性别</label>
+                                    <select id="user_gender" name="user_gender">
+                                        <option value="男">男</option>
+                                        <option value="女">女</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button class="pui-btn pui-btn-primary pui-btn-large" id="add_user" name="add_user" onclick="adduser()">确定</button>
+                                    <input type="button" class="pui-btn pui-btn-warning pui-btn-large active" id="btn_qx" value="取消">
+                                </div>
+                            </form>
+                        </div>
+                        <!-- 修改用户栏 -->
+                        <div id="form_change" class="novisibility">
+                            <form>
+                                <div>
+                                    <label>姓名</label>
+                                    <input type="text" id="change_user_name" name="user_name" maxlength="16" class="" placeholder="姓名" />
+                                </div>
+                                <div>
+                                    <label>登录名</label>
+                                    <input type="text" id="change_login_name" name="login_name" maxlength="16" class="" placeholder="登录名" />
+                                </div>
+                                <div>
+                                    <label>手机号</label>
+                                    <input type="text" id="change_user_phone_number" name="user_phone_number" maxlength="16" class="" placeholder="手机号" />
+                                </div>
+                                <div>
+                                    <label>工号</label>
+                                    <input type="text" id="change_user_job_number" name="user_job_number" maxlength="16" class="" placeholder="工号" />
+                                </div>
+                                <div>
+                                    <label>性别</label>
+                                    <select id="change_user_gender" name="user_gender">
+                                        <option value="男">男</option>
+                                        <option value="女">女</option>
+                                    </select>
+                                </div>
+                                <button class="pui-btn pui-btn-primary pui-btn-large" id="change_user" name="change_user" onclick="changeuser()">确定</button>
+                            </form>
+                        </div>
+                    </div>
+
+            </div>
+        </div>
+</body>
+<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../static/js/planeui.js"></script>
+<script>
+    //修改用户
+    function changeuser() {
+        //var change_id = $(this).parent().parent().find('td').eq(0).html();
+        var user_name = $(".pui-dialog #change_user_name").val();
+        var login_name = $(".pui-dialog #change_login_name").val();
+        var user_phone_number = $(".pui-dialog #change_user_phone_number").val();
+        var user_job_number = $(".pui-dialog #change_user_job_number").val();
+        var user_gender = $(".pui-dialog #change_user_gender").val();
+
+        if (user_name == '' || login_name == '' || user_phone_number == '' || user_job_number == '' || user_gender == '') {
+            alert("信息不能留空");
+        } else {
+            var post_data = { change_id: change_id, user_name: user_name, login_name: login_name, user_phone_number: user_phone_number, user_job_number: user_job_number, user_gender: user_gender };
+            $.ajax({
+                url: "http://localhost/AnswerSystem/user_manage/public/index.php/index/usermanage/updateuser",
+                dataType: "json",
+                type: 'POST',
+                data: post_data,
+                async: false,
+                success: function (data) {
+                  json_data = eval('(' + data + ')');
+                  alert(json_data['result']);
+                  if(json_data['result']=="更新成功"){
+                    window.location.reload();
+                  }
+                },
+                error: function (data, status, error) {
+                    alert("跳转失败");
+                    alert(error);
+                }
+            });
+        }
+        return false;
+    }
+</script>
+<script>
+    //增加用户
+    function adduser() {
+        $(this).attr("disabled","true"); //设置变灰按钮，防止表单重复提交
+        var user_name = $(".pui-dialog #user_name").val();
+        var login_name = $(".pui-dialog #login_name").val();
+        var user_phone_number = $(".pui-dialog #user_phone_number").val();
+        var user_job_number = $(".pui-dialog #user_job_number").val();
+        var user_gender = $(".pui-dialog #user_gender").val();
+
+        if (user_name == '' || login_name == '' || user_phone_number == '' || user_job_number == '' || user_gender == '') {
+            alert("信息不能留空");
+        } else {
+            var post_data = { user_name: user_name, login_name: login_name, user_phone_number: user_phone_number, user_job_number: user_job_number, user_gender: user_gender };
+            $.ajax({
+                url: "http://localhost/AnswerSystem/user_manage/public/index.php/index/usermanage/adduser",
+                dataType: "json",
+                type: 'POST',
+                data: post_data,
+                async: false,
+                success: function (data) {
+                    json_data = eval('(' + data + ')');
+                    if(json_data['result']!=undefined && json_data['result']!=null && json_data['result']!=''){
+                      alert(json_data['result']);
+                    }else{
+                      alert("添加成功");
+                    }
+                },
+                error: function (data, status, error) {
+                    alert("跳转失败");
+                    alert(error);
+                }
+            });
+        }
+        return false;
+    }
+
+</script>
+
+</html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var limit=10;
+        var offset=1;
+        var url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+offset+"&limit="+limit;
+        loadInit(url,offset);
+        //删除用户
+        $(".delete_btn").click(function () {
+            var mymessage=confirm("确认删除");  
+            if(mymessage==false){
+                return false;
+            }
+            var delete_id = $(this).parent().parent().find('td').eq(0).html();
+            var post_data = { delete_id: delete_id };
+
+            $.ajax({
+                url: "http://localhost/AnswerSystem/user_manage/public/index.php/index/usermanage/deleteuser",
+                dataType: "json",
+                type: 'POST',
+                data: post_data,
+                async: false,
+                success: function (data) {
+                    json_data = eval('(' + data + ')');
+                    alert(json_data['result']);
+                    window.location.reload();
+                },
+                error: function (data, status, error) {
+                    alert("跳转失败");
+                    alert(error);
+                }
+            });
+        });
+        //修改用户
+        $(".change_btn").click(function () {
+            $(this).attr("disabled","true"); //设置变灰按钮，防止表单重复提交
+            change_id = $(this).parent().parent().find('td').eq(0).html();//获取change_id
+            var login_name = $(this).parent().parent().find('td').eq(1).html();
+            var user_name = $(this).parent().parent().find('td').eq(2).html();
+            var user_phone_number = $(this).parent().parent().find('td').eq(3).html();
+            var user_job_number = $(this).parent().parent().find('td').eq(4).html();
+            var user_gender = $(this).parent().parent().find('td').eq(5).html();
+            $.dialog({
+                from: "#form_change",
+                padding: 10
+            });
+            //显示在dialog上
+            $(".pui-dialog #change_login_name").val(login_name);
+            $(".pui-dialog #change_user_name").val(user_name);
+            $(".pui-dialog #change_user_phone_number").val(user_phone_number);
+            $(".pui-dialog #change_user_job_number").val(user_job_number);
+            $(".pui-dialog #change_user_gender").val(user_gender);
+        });
+        $(".create_btn").click(function again() {
+
+                $.dialog({
+			            from : "#user_form",
+			            padding: 10
+			        });
+
+        });
+        $("#pre_page_btn").click(function (){
+            var offset=parseInt($("#now_page").val());//获取当前页数,默认为1
+            var limit=10;
+            var pre_offset=offset-1>1?offset-1:1;
+            var pre_url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+pre_offset+"&limit="+limit;
+            loadInit(pre_url,pre_offset);
+        });
+        $("#next_page_btn").click(function (){
+            var offset=parseInt($("#now_page").val());//获取当前页数,默认为1
+            var total_page=parseInt($("#total_page").val());
+            var limit=10;
+            var next_offset=offset+1<total_page?offset+1:total_page;
+            var next_url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+next_offset+"&limit="+limit;
+            loadInit(next_url,next_offset);
+        });
+        $("#turn_page_btn").click(function (){
+            var offset=parseInt($("#turn_page_input").val());//获取当前页数,默认为1
+            var total_page=parseInt($("#total_page").val());
+            var limit=10;
+            var new_offset=offset>1?offset:1;
+            var new_offset=offset<total_page?offset:total_page;
+            var next_url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+new_offset+"&limit="+limit;
+            loadInit(next_url,new_offset);
+        });
+    });
+    //初始化页面数据
+    function loadInit(url,new_offset) {
+        var post_data = {};
+        $.ajax({
+            url: url,
+            dataType: "json",
+            type: 'GET',
+            data: post_data,
+            async: false,
+            success: function (data) {
+                json_data = eval('(' + data + ')');
+                //判断是否正确返回！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+                //获取返回总页数和当前页数,并添加到页面上
+                var page_num=json_data['page_num'];
+                $("#now_page").val(new_offset);
+                $("#total_page").val(page_num);
+                $("#page_span").html(new_offset+"/"+page_num);
+                //获取用户数据并显示
+                var show_str="";
+                $.each(json_data['user_data'], function (i, item) {
+
+                    show_str+="<tr><td>" + item.id + "</td><td>"
+                                                         + item.login_name + "</td><td>"
+                                                         + item.name + "</td><td>"
+                                                         + item.phone_number + "</td><td>"
+                                                         + item.job_number + "</td><td>"
+                                                         + item.gender + "</td><td>"
+
+                                                         + "<button class='change_btn pui-btn pui-btn-error pui-btn-small'>" + "修改" + "</button>"
+                                                         +" "
+                                                         + "<button class='delete_btn pui-btn pui-btn-primary pui-btn-small'>" + "删除" + "</button>"
+                                                         + "</td></tr>";
+                });
+                show_str=show_str.replace(/<td>null<\/td>/g,"<td>无</td>");//将字符串中的null替换成无
+                $('#user_message_body').html(show_str);
+            },
+            error: function (data, status, error) {
+                alert("跳转失败");
+                alert(error);
+            }
+        });
+    }
+</script>

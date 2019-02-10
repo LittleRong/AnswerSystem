@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+		<meta name="renderer" content="webkit" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="description" content="Plane UI" />
+    <meta name="keywords" content="Plane UI" />
+		<title>Login</title>
+
+    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/login.css" />
+
+
+    <style>
+            img {
+                border-radius: 8px;
+            }
+            </style>
+    </head>
+
+<body  >
+    <a name="top"></a>
+    <div class="pui-layout pui-flexbox pui-flex-column login-layout ">
+        <div class="pui-layout pui-flex login-main">
+            <div class="pui-layout pui-layout-fixed pui-layout-fixed-1200 login-main-con ">
+                <div class="login-panel ">
+                    <form class="pui-form login-form position">
+                        <div class="pui-form-group">
+                            <div role="username">
+                                <input type="text" id="username" name="username" maxlength="16" class="pui-unbordered" placeholder="用户名" />
+                                <i class="fa fa-user pui-text-purple-us"></i>
+                            </div>
+                        </div>
+                        <div class="pui-form-group">
+                            <div role="password">
+                                <input type="password" id="password" name="password" maxlength="16" class="pui-unbordered" placeholder="密码" />
+                                <i class="fa fa-lock pui-text-purple-us"></i>
+                            </div>
+							<p><strong><font color="red">请勿使用IE浏览器,推荐使用chrome浏览器</font></strong></p>
+                        </div>
+                        <div class="pui-form-group">
+                            <input type="submit" id="login_btn" name="submit" class="pui-btn  mybtn" value="登录" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+  <script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="../static/js/planeui.js"></script>
+</body>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#login_btn").click(function(){
+			  $(this).attr("disabled","true"); //设置变灰按钮，防止表单重复提交
+        var username = $("#username").val();
+        var password = $("#password").val();
+        if(username == ''){
+            alert("用户名不能为空");
+        }else if(password == ''){
+            alert("密码不能为空");
+        }else{
+            var post_data = {username:username,password:password};
+            $.ajax({
+                url:"http://localhost:8080/check",
+                dataType: "json",
+                type: 'POST',
+                data: post_data,
+                async: false,
+                success: function(json_data){
+                    if(json_data['result']=="admin"){
+                        window.location.href="index/user_manage";
+                    }else if(json_data['result']=="user"){
+                        window.location.href="index/user_index";
+                    }else if(json_data['result']=="logged"){
+                        window.location.href="index/user_index";
+                    }else{
+                        alert(json_data['result']);
+                        //登录失败操作......
+                    }
+                },
+                error: function(data, status, error){
+                    alert("跳转失败");
+                    alert(error);
+                }
+            });
+        }
+				$(this).removeAttr("disabled");
+        return false;
+    });
+});
+</script>
+
+</html>

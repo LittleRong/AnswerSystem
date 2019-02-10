@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="renderer" content="webkit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <title>个人信息</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
+</head>
+<body>
+    <div class="pui-layout">
+        <header>
+            <div style="position: relative;">
+                <img src="../static/img/header2.jpg" style="width: 100%;height: auto;min-height: 50px">
+                <div class="form-group pui-btn-gradient pui-btn-shadow" style="position: absolute;bottom: 10px;right: 20px">
+                    <input type="button" class="pui-btn pui-btn-small pui-btn-default " value="{$data.user_message.login_name}">
+                    <a type="button" class="pui-btn pui-btn-small pui-btn-primary " href="" >退出</a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div class="pui-layout" style="width: 96%; margin-top: 30px">
+        <div class="pui-row ">
+            <div class="pui-grid-xs-12 pui-grid-sm-12 pui-grid-md-9 pui-grid-md-push-3 pui-grid-lg-9 pui-grid-lg-push-3 pui-grid-xl-9 pui-grid-xl-push-3 pui-grid-xxl-9 pui-grid-xxl-push-3">
+                <ul class="pui-menu  pui-menu-radius pui-menu-inline pui-menu-bordered " style="margin-bottom: 0px;">
+                    <li style="width: 25%">
+                        <a href="javascript:;" class="active">进行中</a>
+                    </li>
+                    <li style="width: 25%">
+                        <a href="javascript:;">已过期</a>
+                    </li>
+                    <li>
+                        <div class="clear pui-card" style="margin-top: 20px">
+                            <ul class="pui-list pui-list-line">
+                                <li id="event_message_body">
+                                </li>
+                            </ul>
+
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="pui-grid-xs-12  pui-grid-sm-12 pui-grid-md-3 pui-grid-md-pull-9 pui-grid-lg-3 pui-grid-lg-pull-9 pui-grid-xl-3 pui-grid-xl-pull-9 pui-grid-xxl-3 pui-grid-xxl-pull-9">
+                <div class="pui-card pui-card-shadow pui-card-radius">
+                    <div class="pui-card-box"class="user_message">
+                        <h1 style="text-align: center;" id="user_image"></h1>
+                        <h5 style="text-align: center;">姓名:<span id="user_name"></span></h5>
+                        <h5 style="text-align: center;">手机号:<span id="user_phone"></span></h5>
+                        <p style="text-align: right;"><a href="{:url('index/login/change_pwd')}">修改密码</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../static/js/planeui.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var post_data = {};
+    $.ajax({
+        url: "http://localhost:8080/index/user_index_init",
+        dataType: "json",
+        type: "GET",
+        data: post_data,
+        async: false,
+        success: function(data){
+            //判空
+
+            //侧边栏
+            $("#user_name").html(data["user_message"]["Login_name"]);
+            $("#user_phone").html(data["user_message"]["Phone_number"]);
+            if(data["user_message"]["Gender"] == 1){
+                $("#user_image").append('<img src="../static/img/boy.jpg" class="pui-img-circle pui-box-shadow-plus">');
+            }else{
+                $("#user_image").append('<img src="../static/img/girl.jpg" class="pui-img-circle pui-box-shadow-plus">');
+            }
+
+            //事件列表
+            var show_str="";
+            var url = '"/answer/user_problem"';
+            $.each(data['event_message'], function (i, item) {
+                show_str += "<div class='clear pui-card pui-card-shadow pui-card-radius'>"
+                                +"<div class='pui-card-box'>"
+                                    +"<h1>"+item.event_title+"</h1>"
+                                    +"<p class='pui-text-indent'>"+item.event_description+"</p>"
+                                    +"<p>"
+                                        +"<strong>参赛形式:</strong>"+item.participant_num+"人"
+                                        +"<strong>&emsp;答题规则：</strong>总共"+""+"道题量。单选题"+item.single+"道，判断题"+item.judge+"道，多选题"+item.multiple+"道，填空题"+item.fill+"道</br>"
+                                        +"<strong>活动时间：</strong>"+item.start_time+"至"+item.end_time+"</br>"
+                                    +"</p>"
+                                    +"<p>"
+                                        +"<input type='button' onclick='location.href=("+url+")' class='pui-btn pui-btn-default' value='开始答题'/>"
+                                    +"</p>"
+                                    +"<p class='pui-text-right'><br>"
+                                        +"<a href='' class='pui-btn pui-btn-default pui-unbordered'>详细 &gt;&gt;</a>"
+                                    +"</p>"
+                                +"</div>"
+                            +"</div>"
+            });
+            $('#event_message_body').html(show_str);
+
+        },
+        error: function(data, status, error){
+          alert("跳转失败");
+          alert(error);
+        }
+
+    })
+})
+</script>
+
+</html>
