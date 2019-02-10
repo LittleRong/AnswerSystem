@@ -17,14 +17,21 @@ func (this *AnswerController) ShowProblemsPage(){
 }
 
 func (this *AnswerController) GetUserProblems(){
+	var result map[string]interface{}
+	result = make(map[string]interface{})
 	event_id,_ := this.GetInt("event_id")
 	//user_id := this.GetSession("user_id")
 	user_id := 2
 	now := "2019-02-06"
-	problem := union.GetProblemNoAnswer(user_id,event_id,now)
 
-	var result map[string]interface{}
-	result = make(map[string]interface{})
+	//获取用户题目
+	problem,_ := union.GetProblemNoAnswer(user_id,event_id,now)
+
+	//获取答题时间
+	event := event.GetEventByEventId(event_id)
+	answer_time := event.Answer_time
+	result["answer_time"] = answer_time
+
 	result["data"] = problem
 	this.Data["json"] = result
 	this.ServeJSON()

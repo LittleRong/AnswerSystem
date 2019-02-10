@@ -32,7 +32,7 @@
 		   	<div class="pui-grid-xs-12 pui-grid-sm-3 pui-grid-sm-push-9 pui-grid-md-3 pui-grid-md-push-9 pui-grid-lg-3 pui-grid-lg-push-9 pui-grid-xl-3 pui-grid-xl-push-9 pui-grid-xxl-3 pui-grid-xxl-push-9 ">
 		    	<div class="pui-text-center">
 		     		<h4 class="bef" style="color: #008EE5"  id="timer">剩余<span id="left_min"></span>分<span id="left_sec"></span>秒&emsp;<input type="button" class="bef pui-btn pui-btn-primary" id="submit" value="交卷"></h4>
-		     		<input type="hidden" id="time" value="{$time}">
+		     		<input type="hidden" id="time" value="">
 		    		<div style="text-align:center;">
 						
 						<div id="credit_result" style="display: none">
@@ -42,13 +42,6 @@
 						<div class="pui-timeline" >
 				            <div class="pui-timeline-list" id="team_mates"> 
 				                <div class="pui-timeline-divider pui-timeline-divider-line">您所在的队伍</div>
-				                <!-- <div class="pui-timeline-item pui-timeline-badge-date">
-				                     <label class="pui-badge pui-badge-info">2017-12-05</label>
-				                     <div class="pui-timeline-item-context">
-				                         小明 获得了80分
-				                     </div>
-				                 </div>  -->
-
 				            </div>
 						</div>
 					</div>
@@ -125,7 +118,6 @@
 } 
   
 </script>
-
 	<script type="text/javascript">
 		//获取用户的题目
 		$(document).ready(function(){
@@ -138,6 +130,15 @@
 				data: post_data,
 				async: false,
 				success: function(data){
+					//倒计时
+					var answer_time = data['answer_time'];
+					if(answer_time == '-1' || answer_time <= 0){
+						alert("您的答题时间已经用完了哦！");
+						window.location.href="index/user_index";
+					} else {
+						$("#time").val(answer_time)
+					}
+
 					//单选题
 					var show_str="";
 					var panel_id = "single_panel"
@@ -170,7 +171,7 @@
 
 			})
 		})
-	</script>
+</script>
 
 <script type="text/javascript">
 	function MapTOJson(m) {

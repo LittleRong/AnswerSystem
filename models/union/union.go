@@ -19,9 +19,10 @@ type Problem struct {
 	Problem_type int
 }
 
-func GetProblemNoAnswer(user_id int,event_id int,now string) map[string]interface{}{
+func GetProblemNoAnswer(user_id int,event_id int,now string) (map[string]interface{},bool){
 	var problems []Problem
 	var participant_id int
+	buildFlag := false//是否已经生成过题目
 	o := orm.NewOrm()
 
 	//获取用户的participant_id
@@ -43,6 +44,7 @@ func GetProblemNoAnswer(user_id int,event_id int,now string) map[string]interfac
 		"AND participant_haved_answer.answer_date = ? ", participant_id, now).QueryRows(&problems)
 	beego.Info("problems", problems)
 	if problems == nil && err ==nil {
+		buildFlag = false
 		_, err := o.Raw("SELECT * " +
 			"FROM problem, event_problem" +
 			"WHERE problem.problem_id = event_problem.problem_id " +
@@ -53,6 +55,8 @@ func GetProblemNoAnswer(user_id int,event_id int,now string) map[string]interfac
 			//将新题目拆入participant_haved_answer表
 
 		}
+	} else {
+		buildFlag = true
 	}
 
 	var single []map[string]string
@@ -103,5 +107,5 @@ func GetProblemNoAnswer(user_id int,event_id int,now string) map[string]interfac
 	result["single"] = single
 	beego.Info("result", result)
 
-	return result
+	return result,buildFlag
 }
