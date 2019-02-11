@@ -6,6 +6,8 @@ import (
 	"hello/models/event"
 	"hello/models/participant"
 	"hello/models/union"
+	"strconv"
+	"time"
 )
 
 type AnswerController struct{
@@ -22,16 +24,34 @@ func (this *AnswerController) GetUserProblems(){
 	event_id,_ := this.GetInt("event_id")
 	//user_id := this.GetSession("user_id")
 	user_id := 2
-	now := "2019-02-06"
+	now_time:= time.Now()
+	UnixTime:=now_time.Unix()
+	now := time.Unix(UnixTime, 0).Format("2006-01-02" ) //设置时间戳 使用模板格式化为日期字符串
+	paticipant_id  := 1
+
+	beego.Info("========now======",now)
 
 	//获取用户题目
-	problem,_ := union.GetProblemNoAnswer(user_id,event_id,now)
+	problem,buildFlag := union.GetProblemNoAnswer(user_id,event_id,now)
 
 	//获取答题时间
+	var answer_time float64
 	event := event.GetEventByEventId(event_id)
-	answer_time := event.Answer_time
-	result["answer_time"] = answer_time
+	answer_time,_ = strconv.ParseFloat(event.Answer_time,64)
 
+	if (buildFlag) {
+		//获取到生成题目的时间
+		participant_time :=participant.GetAnswerTimeByParticipantId(paticipant_id)
+		//计算出剩余时间
+		left := now_time.Sub(participant_time)
+		if(left.Hours() >= answer_time){//时间已经耗尽,left.Hours()获取小时格式
+			answer_time = 0
+		}else {
+			answer_time = answer_time-left.Hours()
+		}
+
+	}
+	result["answer_time"] = answer_time
 	result["data"] = problem
 	this.Data["json"] = result
 	this.ServeJSON()

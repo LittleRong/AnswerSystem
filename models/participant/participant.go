@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	"time"
 )
 
 // 完成User类型定义
@@ -37,4 +38,40 @@ func GetCorrectAnswerByParticipantId(participant_id int) (map[string]interface{}
 		}
 	}
 	return waited_answer
+}
+
+func GetAnswerTimeByParticipantId(participant_id int) (time.Time) {
+	var waited_answer map[string]interface{}
+	waited_answer = make(map[string]interface{})
+	var p Participant
+	var participant_time time.Time
+	participant_time = time.Time{}
+	o := orm.NewOrm()
+	o.QueryTable("participant").Filter("Participant_id", participant_id).One(&p, "Waited_answer")
+	if p.Waited_answer != "" {
+		err := json.Unmarshal([]byte(p.Waited_answer),&waited_answer)
+		if err != nil {
+			beego.Info("======err======",err)
+		}
+		//获取时间
+		p_time := waited_answer["participant_time"].(string)
+		if(p_time!=""){
+			timeLayout := "2006-01-02 15:04:05"     //转化所需模板，go默认时间
+			loc, _ := time.LoadLocation("Local")    //获取本地时区
+			participant_time, _ = time.ParseInLocation(timeLayout, p_time,loc)
+		}
+	}
+	beego.Info("======participant_time======",participant_time)
+	return participant_time
+}
+
+func GetParticipantById(user_id int, event_id int) *Participant{
+	e := Participant{Refer_event_id:event_id, User_id:user_id}
+	o := orm.NewOrm()
+	err := o.Read(&e,"Participant_id")
+	if err != nil {
+		return nil
+	} else {
+		return &e
+	}
 }

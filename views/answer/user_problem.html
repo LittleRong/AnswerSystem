@@ -134,7 +134,8 @@
 					var answer_time = data['answer_time'];
 					if(answer_time == '-1' || answer_time <= 0){
 						alert("您的答题时间已经用完了哦！");
-						window.location.href="index/user_index";
+						window.location.href="../index/user_index";
+						return false;
 					} else {
 						$("#time").val(answer_time)
 					}
