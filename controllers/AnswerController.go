@@ -5,6 +5,8 @@ import (
 	"github.com/astaxie/beego"
 	"hello/models/event"
 	"hello/models/participant"
+	"hello/models/participant_haved_answer"
+	"hello/models/credit"
 	"hello/models/union"
 	"strconv"
 	"time"
@@ -74,6 +76,7 @@ type userAnswer struct {
 func (this *AnswerController) GetUserAnswers(){
 	//获取该事件评分标准
 	event_id := 1
+	team_id := 1
 	var creditRule event.CreditRule
 	creditRule = event.GetCreditRuleByEventId(event_id)
 	beego.Info("========creditRule======",creditRule)
@@ -93,24 +96,31 @@ func (this *AnswerController) GetUserAnswers(){
 	single_array := f.([]interface{})
 	beego.Info("========f======",f)
 
-	//计算分数
-	var user_score float64
-	single_right_num := 0
+	//计算分数,并将用户答案写入participant_haved_answer表
+	var user_score float64//用户今日答题总分
+	single_right_num := 0//答对的单选题树木
 	all_num := 0 //全部题目数
 	single_correct_answer := correct_answer["single"].(map[string]interface{})
 	for _,value := range single_array{
+		//判断是否回答正确
 		s := value.(map[string]interface {})
 		problem_id := s["problem_id"].(string)
-		answer := s["q_id"]
+		problem_id_int,_ := strconv.Atoi(problem_id)
+		user_answer := s["q_id"].(string)
 		right_answer,ok := single_correct_answer[problem_id].(string)
-		beego.Info("problem_id=",problem_id,"answer=",answer," right_answer=",right_answer)
-		if (ok && answer == right_answer){
+		beego.Info("problem_id=",problem_id,"user_answer=",user_answer," right_answer=",right_answer)
+		true_or_false := false
+		if (ok && user_answer == right_answer){
 			single_right_num++
+			true_or_false = true
 		}
 		all_num++
+
+		//将用户答案写入participant_haved_answer表
+		participant_haved_answer.UpdateUserAnswer(paticipant_id,problem_id_int,user_answer,true_or_false)
 	}
 	user_score = user_score + float64(single_right_num)*creditRule.Single_score
-	beego.Info("========single_score======",user_score)
+	beego.Info("答对单选题：",single_right_num,"  每题：",creditRule.Single_score,"分 单选题总分:",user_score)
 
 
 	//判断是否全对，user_all_right
@@ -118,13 +128,28 @@ func (this *AnswerController) GetUserAnswers(){
 	if(single_right_num == all_num) {
 		user_score += creditRule.Person_score
 		user_all_right = true
+		beego.Info("个人答对额外加分",creditRule.Person_score)
 	}
 
-	beego.Info("========user_score======",user_score)
+	//更新积分
+	//1.更新个人积分
+	user_total_credit := participant.UpdateParticipantCredit(paticipant_id,user_score)
+	//2.更新组积分
+
+	//3.写credit_log表
+	now_time:= time.Now()
+	UnixTime:=now_time.Unix()
+	now := time.Unix(UnixTime, 0).Format("2006-01-02 15:04:05" )
+	reason := "答题得分"
+	log := credit.Credit_log{Refer_event_id:event_id,Refer_participant_id:paticipant_id,
+		Refer_team_id:team_id,Change_time:now,Change_value:user_score,Change_reason:reason}
+	credit.AddCreditLog(log)
+
+	//返回结果
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["user_score"] = user_score //今日总分
-	result["user_credit"] = "1" //累计得分
+	result["user_credit"] = user_total_credit//累计得分
 	result["team_credit"] = "1" //团队累计得分
 	if(user_all_right == true) {
 		result["user_all_right"] = creditRule.Person_score //单人全部答对额外加分，没有全部答对则传空值

@@ -75,3 +75,23 @@ func GetParticipantById(user_id int, event_id int) *Participant{
 		return &e
 	}
 }
+
+func UpdateParticipantCredit(participant_id int,credit float64) float64{
+	new_credit := 0.0
+	//更新
+	participant := Participant{Participant_id:participant_id}
+	o := orm.NewOrm()
+	if o.Read(&participant) == nil {
+		old_credit := participant.Credit
+		new_credit = old_credit + credit
+		participant.Credit = new_credit
+		beego.Info("======UpdateParticipantCredit's old_credit=====",old_credit)
+		beego.Info("======UpdateParticipantCredit's new_credit=====",new_credit)
+		if num, err := o.Update(&participant,"Credit"); err == nil {
+			beego.Info("======num=====",num)
+		} else if err!=nil{
+			beego.Info("======UpdateUserAnswer's err=====",err)
+		}
+	}
+	return new_credit
+}
