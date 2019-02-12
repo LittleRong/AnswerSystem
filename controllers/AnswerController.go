@@ -7,7 +7,9 @@ import (
 	"hello/models/participant"
 	"hello/models/participant_haved_answer"
 	"hello/models/credit"
+	"hello/models/team"
 	"hello/models/union"
+	"hello/models/user"
 	"strconv"
 	"time"
 )
@@ -134,29 +136,68 @@ func (this *AnswerController) GetUserAnswers(){
 	//更新积分
 	//1.更新个人积分
 	user_total_credit := participant.UpdateParticipantCredit(paticipant_id,user_score)
-	//2.更新组积分
-
-	//3.写credit_log表
 	now_time:= time.Now()
 	UnixTime:=now_time.Unix()
 	now := time.Unix(UnixTime, 0).Format("2006-01-02 15:04:05" )
-	reason := "答题得分"
+	reason := ""
+	user_score_log := user_score
+	if (user_all_right) {
+		reason = "当日全部答对额外加分"
+		log := credit.Credit_log{Refer_event_id:event_id,Refer_participant_id:paticipant_id,
+			Refer_team_id:team_id,Change_time:now,Change_value:creditRule.Person_score,Change_type:2,Change_reason:reason}
+		credit.AddCreditLog(log)
+		user_score_log = user_score - creditRule.Person_score
+	}
+	reason = "答题得分"
 	log := credit.Credit_log{Refer_event_id:event_id,Refer_participant_id:paticipant_id,
-		Refer_team_id:team_id,Change_time:now,Change_value:user_score,Change_reason:reason}
+		Refer_team_id:team_id,Change_time:now,Change_value:user_score_log,Change_type:1,Change_reason:reason}
 	credit.AddCreditLog(log)
+
+	//2.更新组积分
+	team_score := user_score
+	//判断是否当日全部答对，若组员全部答对额外加分
+	now_date := time.Unix(UnixTime, 0).Format("2006-01-02" )
+	event := event.GetEventByEventId(event_id)
+	team_allright_flag := credit.WhetherMemberAllRight(team_id,now_date,event.Participant_num)
+	if(team_allright_flag == true ){
+		//写积分表
+		reason = "当日全组全部答对额外加分"
+		log := credit.Credit_log{Refer_event_id:event_id,Refer_participant_id:paticipant_id,
+			Refer_team_id:team_id,Change_time:now,Change_value:creditRule.Team_score,Change_type:3,Change_reason:reason}
+		credit.AddCreditLog(log)
+		team_score += creditRule.Team_score
+	}
+
+	team.UpdateTeamCredit(team_id,team_score)
+
+	//获取队友分数
+	member := participant.GetMemberCreditByTeamId(team_id,event_id)
+	var member_credit []map[string]string
+	for _,v := range member {
+		user_id := v.User_id
+		u := user.GetUserById(user_id)
+		var m map[string]string
+		m = make(map[string]string)
+		m["name"] = u.Name
+		m["credit"] = strconv.FormatFloat(v.Credit,'f',-1,64)
+		member_credit = append(member_credit, m)
+	}
+
 
 	//返回结果
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["user_score"] = user_score //今日总分
 	result["user_credit"] = user_total_credit//累计得分
-	result["team_credit"] = "1" //团队累计得分
+	result["team_credit"] = team_score //团队累计得分
 	if(user_all_right == true) {
 		result["user_all_right"] = creditRule.Person_score //单人全部答对额外加分，没有全部答对则传空值
 	}
+	if(team_allright_flag == true) {
+		result["team_all_right"] = creditRule.Team_score //团队全部答对额外加分，没有全部答对则传空值
+	}
 
-	result["team_all_right"] = "1" //团队全部答对额外加分，没有全部答对则传空值
-	result["team_mates"] = "1" //队友得分[{"name":"A","credit":"1"},{"name":"B","credit":"2"},...]
+	result["team_mates"] = member_credit //队友得分[{"name":"A","credit":"1"},{"name":"B","credit":"2"},...]
 	result["right_answer"] = correct_answer //正确答案,{"single":{"problem_id":"正确答案的q_id","problem_id":"正确答案的q_id",...}}
 	beego.Info("========result======",result)
 

@@ -2,8 +2,8 @@ package participant
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -94,4 +94,12 @@ func UpdateParticipantCredit(participant_id int,credit float64) float64{
 		}
 	}
 	return new_credit
+}
+
+func GetMemberCreditByTeamId(team_id int,event_id int) []Participant {
+	var p []Participant
+	o := orm.NewOrm()
+	o.QueryTable("participant").Filter("team_id", team_id).Filter("Refer_event_id", event_id).All(&p)
+	beego.Info("======GetMemberCreditByTeamId=====",p)
+	return p
 }
