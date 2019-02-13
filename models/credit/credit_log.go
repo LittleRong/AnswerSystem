@@ -17,7 +17,6 @@ type Credit_log struct {
 }
 
 func AddCreditLog(log Credit_log)  {
-	//生成新credit_log_id
 	o := orm.NewOrm()
 	id,err := o.Insert(&log)
 	if err != nil {

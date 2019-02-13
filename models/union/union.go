@@ -6,7 +6,9 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"hello/models/participant"
+	"hello/models/participant_haved_answer"
 	"strconv"
+	"time"
 )
 
 // 完成User类型定义
@@ -24,6 +26,7 @@ func GetProblemNoAnswer(user_id int,event_id int,now string) (map[string]interfa
 	var participant_id int
 	buildFlag := false//是否已经生成过题目
 	o := orm.NewOrm()
+	team_id :=1
 
 	//获取用户的participant_id
 	u := participant.Participant{Refer_event_id:event_id ,User_id:user_id}
@@ -36,7 +39,6 @@ func GetProblemNoAnswer(user_id int,event_id int,now string) (map[string]interfa
 	beego.Info("event_id=", event_id,"participant_id=", participant_id)
 
 	//检查是否已经生成题目，若已经生成，直接查询返回
-	//AND participant_haved_answer.answer_date = ?
 	_, err = o.Raw("SELECT problem.* " +
 		"FROM problem, participant_haved_answer " +
 		"WHERE problem.problem_id = participant_haved_answer.refer_problem_id " +
@@ -45,15 +47,32 @@ func GetProblemNoAnswer(user_id int,event_id int,now string) (map[string]interfa
 	beego.Info("problems", problems)
 	if problems == nil && err ==nil {
 		buildFlag = false
-		_, err := o.Raw("SELECT * " +
-			"FROM problem, event_problem" +
+		single_type := 1
+		single_num := 2
+		_, err := o.Raw("SELECT problem.* " +
+			"FROM problem, event_problem " +
 			"WHERE problem.problem_id = event_problem.problem_id " +
-			"AND event_problem.refer_event_id = ?" +
-			"AND problem.problem_id NOT IN" +
-			"(SELECT refer_problem_id FROM participant_haved_answer WHERE refer_participant_id = ?)",event_id,participant_id).QueryRows(&problems)
+			"AND event_problem.refer_event_id = ? " +
+			"AND problem.problem_type = ? " +
+			"AND problem.problem_id NOT IN " +
+			"(SELECT refer_problem_id FROM participant_haved_answer WHERE refer_participant_id = ?) LIMIT ?",event_id,single_type,participant_id,single_num).QueryRows(&problems)
+		//增加随机！！
 		if err == nil {
 			//将新题目拆入participant_haved_answer表
+			now_date := time.Now()
+			unix_time := now_date.Unix()
+			answer_date := time.Unix(unix_time,0).Format("2006-01-02 15:04:05")
+			for _,v := range problems {
+				n := participant_haved_answer.Participant_haved_answer{Refer_participant_id:participant_id,
+					Refer_problem_id:v.Problem_id,
+					Refer_team_id:team_id,
+					Answer_date:answer_date}
+				participant_haved_answer.AddProblems(n)
+			}
 
+
+		} else {
+			beego.Info("!!!!!!!!!!!err!!!!!!!!!",err)
 		}
 	} else {
 		buildFlag = true
