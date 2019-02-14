@@ -191,8 +191,8 @@
 					show_str +=	"<div id='"+panel_id+"' class='tixing_panel pui-layout'>"
 					$.each(data['data']["judge"], function (i, item) {
 						var oname = "judge_"+item.problem_id;
-						var option_str = "<input type='radio' name='"+oname+"' value='1'>    是<br>" +
-								"<input type='radio' name='"+oname+"' value='0'>    否";
+						var option_str = "<input type='radio' name='"+oname+"' value='true'>    是<br>" +
+								"<input type='radio' name='"+oname+"' value='false'>    否";
 
 						show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='"+item.problem_id+"'>"
 								+"<div class='pui-card-box'>"
@@ -285,7 +285,7 @@
 					if(s_answer){}else{flag++;}//添加题目未做数量
 					var answer_single={};
 	        		answer_single['problem_id']=s;
-	        		answer_single['q_id']=s_answer;
+	        		answer_single['answer']=s_answer;
 					single_items[i]=answer_single;
 				
 				}
@@ -301,14 +301,15 @@
 					//m:多选题id;id_array：多选题答案数组
 					var id_array=new Array();
 					$(m_id).each(function(){
-					    id_array.push($(this).attr('id'));//向数组中添加元素
+						var str_to_int = parseInt($(this).attr('id'));
+					    id_array.push(str_to_int);//向数组中添加元素
 					    //console.log(".......:"+$(this).attr('id'));
 					});
 					// var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
 					if(id_array.toString()==""){flag++};
 					var answer_multi={};
 		        	answer_multi['problem_id']=m;
-		        	answer_multi['q_id']=id_array;
+		        	answer_multi['answer']=id_array;
 		        	//console.log("id_array:"+id_array);
 		        	multi_items[i]=answer_multi;
 				}
@@ -457,12 +458,12 @@
 	                 			for(var prop2 in right_answer.judge){
 	                 				var judge_id="#judge_panel input[name='judge_"+prop2+"']:checked";
 	                 				var judge_content=$(judge_id).val();
-	                 				(judge_content == 1) ? judge_content="是" : judge_content="否";
 	                 				var out_id="#judge_panel #"+prop2+" h5";
 	                 				if(right_answer.judge[prop2]==judge_content){
 										$(out_id).append("<span><i  style='color: #0ca566;' class='fa fa-check fa-2px'></i></span>");
 	                 				}else{
-	                 					$(out_id).append("<span><i style='color:red' class='fa fa-close fa-2px'></i></span><span style='color:red'>正确答案："+right_answer.judge[prop2]+"</span>");
+										judge_content = (right_answer.judge[prop2] == 'true') ? judge_content="是" : judge_content="否";
+	                 					$(out_id).append("<span><i style='color:red' class='fa fa-close fa-2px'></i></span><span style='color:red'>正确答案："+judge_content+"</span>");
 	                 				}
 	                 			}
 	                 		}
