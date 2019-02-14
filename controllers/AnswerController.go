@@ -28,25 +28,22 @@ func (this *AnswerController) GetUserProblems(){
 	event_id,_ := this.GetInt("event_id")
 	//user_id := this.GetSession("user_id")
 	user_id := 2
-	now_time:= time.Now()
-	UnixTime:=now_time.Unix()
-	now := time.Unix(UnixTime, 0).Format("2006-01-02" ) //设置时间戳 使用模板格式化为日期字符串
+	team_id := 1
 	paticipant_id  := 1
 
-	beego.Info("========now======",now)
+	//*****************************1.获取用户题目*************************************************
+	problemNum := event.GetProblemNumByEventId(event_id)
+	problem,buildFlag := union.GetProblemNoAnswer(user_id,event_id,team_id,paticipant_id,problemNum)
 
-	//获取用户题目
-	problem,buildFlag := union.GetProblemNoAnswer(user_id,event_id,now)
-
-	//获取答题时间
+	//*****************************2.获取剩余答题时间*************************************************
 	var answer_time float64
 	event := event.GetEventByEventId(event_id)
 	answer_time,_ = strconv.ParseFloat(event.Answer_time,64)
-
 	if (buildFlag) {
 		//获取到生成题目的时间
 		participant_time :=participant.GetAnswerTimeByParticipantId(paticipant_id)
 		//计算出剩余时间
+		now_time:= time.Now()
 		left := now_time.Sub(participant_time)
 		if(left.Hours() >= answer_time){//时间已经耗尽,left.Hours()获取小时格式
 			answer_time = 0
@@ -55,6 +52,8 @@ func (this *AnswerController) GetUserProblems(){
 		}
 
 	}
+
+	//*****************************3.返回给前端*************************************************
 	result["answer_time"] = answer_time
 	result["data"] = problem
 	this.Data["json"] = result
@@ -76,15 +75,16 @@ type userAnswer struct {
 }
 
 func (this *AnswerController) GetUserAnswers(){
-	//获取该事件评分标准
 	event_id := 1
 	team_id := 1
+	paticipant_id  := 1
+
+	//*****************************1.获取该事件评分标准*************************************************
 	var creditRule event.CreditRule
 	creditRule = event.GetCreditRuleByEventId(event_id)
 	beego.Info("========creditRule======",creditRule)
 
-	//获取正确答案
-	paticipant_id  := 1
+	//*****************************2.获取正确答案*******************************************************
 	var correct_answer map[string]interface{}
 	correct_answer = make(map[string]interface{})
 	correct_answer = participant.GetCorrectAnswerByParticipantId(paticipant_id)

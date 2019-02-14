@@ -103,3 +103,19 @@ func GetMemberCreditByTeamId(team_id int,event_id int) []Participant {
 	beego.Info("======GetMemberCreditByTeamId=====",p)
 	return p
 }
+
+func UpdateParticipantWaitedAnswer(participant_id int,answer string){
+	//待增加对answer格式的校验
+
+	participant := Participant{Participant_id:participant_id}
+	o := orm.NewOrm()
+	if o.Read(&participant) == nil {
+		participant.Waited_answer = answer
+		if num, err := o.Update(&participant,"Waited_answer"); err == nil {
+			beego.Info("======num=====",num)
+		} else if err!=nil{
+			beego.Info("======UpdateParticipantWaitAnswer's err=====",err)
+		}
+	}
+
+}

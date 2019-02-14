@@ -33,6 +33,13 @@ type CreditRule struct{
 	Person_score_up float64 `json:"person_score_up,string"`//个人总积分上限
 }
 
+type ProblemNum struct{
+	Single int `json:"single,string"` //单选题数量
+	Multiple int `json:"multiple,string"` //多选题数量
+	Fill int `json:"fill,string"` //填空题数量
+	Judge int `json:"judge,string"` //判断题数量
+}
+
 func GetEventByEventId(event_id int) (event *Event){
 	e := Event{Event_id:event_id}
 	o := orm.NewOrm()
@@ -58,4 +65,20 @@ func GetCreditRuleByEventId(event_id int) CreditRule{
 	}
 	beego.Info("========creditRule======",creditRule)
 	return creditRule
+}
+
+func GetProblemNumByEventId(event_id int) ProblemNum{
+	beego.Info("========GetProblemNumByEventId======")
+	var params Event
+	var problemNum ProblemNum
+	o := orm.NewOrm()
+	o.QueryTable("event").Filter("Event_id", event_id).One(&params, "event_num")
+	if params.Event_num != ""{
+		err := json.Unmarshal([]byte(params.Event_num), &problemNum)
+		if err != nil {
+			beego.Info("========err======",err)
+		}
+	}
+	beego.Info("========problemNum======",problemNum)
+	return problemNum
 }
