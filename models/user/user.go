@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -72,4 +73,20 @@ func GetUserById(id int) (User) {
 	} else {
 		return u
 	}
+}
+
+func UpdateUserPwd(user_id int,old_pwd string,pwd string) bool {
+	u := User{Id:user_id}
+	o := orm.NewOrm()
+	if o.Read(&u) == nil {
+		u.Pwd = pwd
+		if num, err := o.Update(&u,"Pwd"); err == nil {
+			beego.Info("======UpdateUserPwd's num=====",num)
+			return true
+		} else if err!=nil{
+			beego.Info("======UpdateUserPwd's err=====",err)
+			return false
+		}
+	}
+	return false
 }

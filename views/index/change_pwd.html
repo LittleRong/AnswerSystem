@@ -6,15 +6,14 @@
     <title>答题系统</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- bootstrap -->
-    <link rel="stylesheet" href="{$Think.config.web_res_root}/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{$Think.config.web_res_root}/css/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="{$Think.config.web_res_root}/css/planeui.min.css" />
+    <link rel="stylesheet" href="../static/css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
 </head>
 <body>
 <div  class="pui-layout">
     <header>
         <div style="position: relative;">
-            <img src="{$Think.config.web_res_root}/img/header2.jpg" style="width: 100%;height: auto">
+            <img src="../static/img/header2.jpg" style="width: 100%;height: auto">
         </div>
     </header>
 </div>
@@ -39,10 +38,8 @@
         </div>
     </form>
 </body>
-<!-- jQuery -->
-<script src="{$Think.config.web_res_root}/js/jquery.min.js"></script>
-<script src="{$Think.config.web_res_root}/js/jquery-ui.min.js"></script>
-<script src="{$Think.config.web_res_root}/js/bootstrap.min.js"></script>
+
+<script src="../static/js/jquery-2.1.1.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -60,16 +57,17 @@ $(document).ready(function(){
         }else{
             var post_data = {old_password:old_password,new_password:new_password};
             $.ajax({
-                url:"{:url('index/login/change_pwd_post')}",
+                url:"http://localhost:8080/index/change_pwd",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
                 async: false,
                 success: function(data){
-                    json_data=eval('('+data+')');
-                    alert(json_data['result']);
-                    if(json_data['result']=='修改成功'){
-                        window.location.href="{:url('login/index')}";
+                    alert(data)
+                    if(data['result']=='success'){
+                        window.location.href="/index/user_index";
+                    }else{
+                        alert(data['result'])
                     }
                 },
                 error: function(data, status, error){

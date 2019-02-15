@@ -71,3 +71,31 @@ func (this *LoginController) Check(){
 	this.ServeJSON()
 	return
 }
+
+func (this *LoginController) ChangePwdInit(){
+	this.TplName = "index/change_pwd.html"
+}
+
+func (this *LoginController) ChangePwd(){
+	new_pwd := this.GetString("new_password")
+	old_pwd := this.GetString("old_password")
+	userSession := this.GetSession("user_id")
+	if userSession == nil { //未登陆
+		this.Ctx.Redirect(304,"/index")
+		return
+	}
+	user_id := userSession.(int)
+	flag := user.UpdateUserPwd(user_id,old_pwd,new_pwd)
+	var result map[string]interface{}
+	result = make(map[string]interface{})
+	if(flag){
+		result["result"] = "success"
+	}else{
+		result["result"] = "修改失败，请联系管理员"
+	}
+	beego.Info("========result======",result)
+	this.Data["json"] = result
+	this.ServeJSON()
+	return
+
+}
