@@ -18,18 +18,41 @@ type AnswerController struct{
 	beego.Controller
 }
 
+type userAnswerStruct struct {
+	problem_id string
+	q_id string
+}
+
+type userAnswer struct {
+	single []map[string]string
+	multi []map[string]string
+	judge []map[string]string
+	fill []map[string]string
+}
+
 func (this *AnswerController) ShowProblemsPage(){
 	this.TplName = "answer/user_problem.html"
+	event_id,_ := this.GetInt("event_id")
+	this.SetSession("event_id", event_id)
+
 }
 
 func (this *AnswerController) GetUserProblems(){
-	var result map[string]interface{}
-	result = make(map[string]interface{})
-	event_id,_ := this.GetInt("event_id")
-	//user_id := this.GetSession("user_id")
-	user_id := 2
-	team_id := 1
-	paticipant_id  := 1
+	eventSession := this.GetSession("event_id")
+	if eventSession == nil { //未登陆
+		this.Ctx.Redirect(304,"/index")
+		return
+	}
+	event_id := eventSession.(int)
+	userSession := this.GetSession("user_id")
+	if userSession == nil { //未登陆
+		this.Ctx.Redirect(304,"/index")
+		return
+	}
+	user_id := userSession.(int)
+	p := participant.GetParticipantById(user_id,event_id)
+	paticipant_id  := p.Participant_id
+	team_id := p.Team_id
 
 	//*****************************1.获取用户题目*************************************************
 	problemNum := event.GetProblemNumByEventId(event_id)
@@ -54,30 +77,33 @@ func (this *AnswerController) GetUserProblems(){
 	}
 
 	//*****************************3.返回给前端*************************************************
+	var result map[string]interface{}
+	result = make(map[string]interface{})
 	result["answer_time"] = answer_time
 	result["data"] = problem
+	result["event_id"] = event_id
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
 
 }
 
-type userAnswerStruct struct {
-	problem_id string
-	q_id string
-}
-
-type userAnswer struct {
-	single []map[string]string
-	multi []map[string]string
-	judge []map[string]string
-	fill []map[string]string
-}
-
 func (this *AnswerController) GetUserAnswers(){
-	event_id := 1
-	team_id := 1
-	paticipant_id  := 1
+	eventSession := this.GetSession("event_id")
+	if eventSession == nil { //未登陆
+		this.Ctx.Redirect(304,"/index")
+		return
+	}
+	event_id := eventSession.(int)
+	userSession := this.GetSession("user_id")
+	if userSession == nil { //未登陆
+		this.Ctx.Redirect(304,"/index")
+		return
+	}
+	user_id := userSession.(int)
+	p := participant.GetParticipantById(user_id,event_id)
+	paticipant_id  := p.Participant_id
+	team_id := p.Team_id
 
 	//*****************************1.获取该事件评分标准*************************************************
 	var creditRule event.CreditRule

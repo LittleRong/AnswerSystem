@@ -40,6 +40,11 @@ type ProblemNum struct{
 	Judge int `json:"judge,string"` //判断题数量
 }
 
+type EventTime struct{
+	Start_time string `json:"start_time"` //包括开始时间
+	End_time string `json:"end_time"` //结束时间
+}
+
 func GetEventByEventId(event_id int) (event *Event){
 	e := Event{Event_id:event_id}
 	o := orm.NewOrm()

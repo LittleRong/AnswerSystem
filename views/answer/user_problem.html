@@ -82,7 +82,7 @@
 	$(function(){
 		alert("倒计时开始，请在规定时间内交卷");
 	})
-	function leftTimer(year,month,day,hour,minute,second){ 
+	function leftTimer(year,month,day,hour,minute,second){
 	    // 准备 	
 	if(!$("#time").val()){
 		$("#timer").hide();
@@ -347,6 +347,7 @@
 				user_answer['multi']=	JSON.stringify(multi_items);
 				user_answer['judge']=	JSON.stringify(judge_items);
 				user_answer['fill']=	JSON.stringify(fill_items);
+                user_answer['event_id']= 1;
 				//user_answer['participant']={$participant};
 
 			if(flag!=0){
