@@ -14,5 +14,6 @@ func init() {
 	beego.Router("/answer/user_problem", &controllers.AnswerController{}, `get:ShowProblemsPage`)
 	beego.Router("/answer/get_user_problem", &controllers.AnswerController{}, `get:GetUserProblems`)
 	beego.Router("/answer/get_user_answer", &controllers.AnswerController{}, `post:GetUserAnswers`)
-
+	beego.Router("/answer/event_message_init", &controllers.EventMessageController{}, `get:EventMessageInit`)
+	beego.Router("/answer/get_event_message", &controllers.EventMessageController{}, `get:GetEventMessage`)
 }

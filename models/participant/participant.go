@@ -65,15 +65,12 @@ func GetAnswerTimeByParticipantId(participant_id int) (time.Time) {
 	return participant_time
 }
 
-func GetParticipantById(user_id int, event_id int) *Participant{
-	e := Participant{Refer_event_id:event_id, User_id:user_id}
+func GetParticipantById(user_id int, event_id int) Participant{
+	var p Participant
 	o := orm.NewOrm()
-	err := o.Read(&e,"Participant_id")
-	if err != nil {
-		return nil
-	} else {
-		return &e
-	}
+	o.QueryTable("participant").Filter("user_id", user_id).Filter("Refer_event_id", event_id).One(&p)
+	beego.Info("======GetMemberCreditByTeamId=====",p)
+	return p
 }
 
 func UpdateParticipantCredit(participant_id int,credit float64) float64{

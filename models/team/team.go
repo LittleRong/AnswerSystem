@@ -32,3 +32,10 @@ func UpdateTeamCredit(team_id int, team_credit float64) float64 {
 	return new_credit
 }
 
+func GetTeamById(team_id int, event_id int) Team{
+	var t Team
+	o := orm.NewOrm()
+	o.QueryTable("team").Filter("team_id", team_id).Filter("Refer_event_id", event_id).One(&t)
+	beego.Info("======GetTeamById=====",t)
+	return t
+}

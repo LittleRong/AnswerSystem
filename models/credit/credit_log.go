@@ -26,8 +26,6 @@ func AddCreditLog(log Credit_log)  {
 	}
 }
 
-
-
 func WhetherMemberAllRight(team_id int,date string,team_num int) bool {
 	var log []Credit_log
 	o := orm.NewOrm()
@@ -44,4 +42,11 @@ func WhetherMemberAllRight(team_id int,date string,team_num int) bool {
 		beego.Info("======!!!@@WhetherMemberAllRight's err=====",err)
 	}
 	return false
+}
+
+func GetCreditLogByTeamId(team_id int) []Credit_log {
+	var log []Credit_log
+	o := orm.NewOrm()
+	o.QueryTable("credit_log").Filter("refer_team_id", team_id).All(&log)
+	return log
 }

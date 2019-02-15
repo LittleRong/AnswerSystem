@@ -43,6 +43,7 @@ type ProblemNum struct{
 type EventTime struct{
 	Start_time string `json:"start_time"` //包括开始时间
 	End_time string `json:"end_time"` //结束时间
+	Answer_day string `json:"answer_day"` //答题时间,0,1,2,3,4,5,6
 }
 
 func GetEventByEventId(event_id int) (event *Event){
