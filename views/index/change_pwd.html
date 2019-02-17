@@ -26,11 +26,11 @@
         </div>
         <div class="pui-row pui-form-group pui-form-group-underline-dashed">
             <label>新密码</label>
-            <input type="password" minlength="8" maxlength="20" id="new_password" name="new_password"/>
+            <input type="password" minlength="6" maxlength="20" id="new_password" name="new_password"/>
         </div>
         <div class="pui-row pui-form-group pui-form-group-underline-dashed">
             <label>新密码确认</label>
-            <input type="password" minlength="8" maxlength="20" id="new_password_again" name="new_password_again"/>
+            <input type="password" minlength="6" maxlength="20" id="new_password_again" name="new_password_again"/>
         </div>
         <div class="pui-row pui-form-group pui-form-group-underline-dashed">
             <button id="change_pwd__btn" class="pui-btn pui-btn-small pui-btn-primary ">确认修改</button>
@@ -51,7 +51,7 @@ $(document).ready(function(){
 
         //验证两次新密码输入是否相同
         if(old_password==""||new_password==""||new_password_again==""){
-            alert("两次密码不相同，请重新输入");
+            alert("输入不能为空，请重新输入");
         }else if(new_password!=new_password_again){
             alert("两次密码不相同，请重新输入");
         }else{
@@ -63,11 +63,11 @@ $(document).ready(function(){
                 data: post_data,
                 async: false,
                 success: function(data){
-                    alert(data)
                     if(data['result']=='success'){
+                        alert("密码修改成功")
                         window.location.href="/index/user_index";
-                    }else{
-                        alert(data['result'])
+                    }else if (data['result']=='old password error'){
+                        alert("旧密码输入错误")
                     }
                 },
                 error: function(data, status, error){

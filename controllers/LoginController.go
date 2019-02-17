@@ -88,11 +88,7 @@ func (this *LoginController) ChangePwd(){
 	flag := user.UpdateUserPwd(user_id,old_pwd,new_pwd)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	if(flag){
-		result["result"] = "success"
-	}else{
-		result["result"] = "修改失败，请联系管理员"
-	}
+	result["result"] = flag
 	beego.Info("========result======",result)
 	this.Data["json"] = result
 	this.ServeJSON()
