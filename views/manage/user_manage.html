@@ -47,7 +47,7 @@
                                 <a href="#top">管理员</a>
                             </li>
                             <li>
-                                <a href="{:url('index/login/change_pwd')}" id="pwchange">密码修改</a>
+                                <a href="/index/change_pwd_init" id="pwchange">密码修改</a>
                             </li>
                             <li>
                                 <a href="{:url('index/Login/logout')}">退出</a>
@@ -65,7 +65,7 @@
                     <div class="pui-grid-md-2">
                         <div class="pui-btn-group-vertical pui-btn-gradient pui-btn-shadow ">
                             <div class="pui-btn-group ">
-                                <a href="{:url('index/usermanage/user_manage')}" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow pui-btn-primary-active"><i class="fa fa-user fa-large"></i> 用户管理</button></a>
+                                <a href="/manage/user_manage_init" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow pui-btn-primary-active"><i class="fa fa-user fa-large"></i> 用户管理</button></a>
                                 <a href="{:url('problems_manage/Problemmanage/problem_manage')}" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-list-alt fa-large"></i> 题目管理</button></a>
                                 <a href="{:url('event/index/showevent')}"><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-file-o fa-large"></i> 事件管理</button></a>
                                 <a href="{:url('item_manage/item/index')}" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-th fa-large"></i> 道具管理</button></a>
@@ -165,7 +165,7 @@
                             </form>
                         </div>
                     </div>
-
+                </div>
             </div>
         </div>
 </body>
@@ -186,16 +186,17 @@
         } else {
             var post_data = { change_id: change_id, user_name: user_name, login_name: login_name, user_phone_number: user_phone_number, user_job_number: user_job_number, user_gender: user_gender };
             $.ajax({
-                url: "http://localhost/AnswerSystem/user_manage/public/index.php/index/usermanage/updateuser",
+                url: "http://localhost:8080/manage/change_user",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
                 async: false,
                 success: function (data) {
-                  json_data = eval('(' + data + ')');
-                  alert(json_data['result']);
-                  if(json_data['result']=="更新成功"){
-                    window.location.reload();
+                  if(data['result']=="success"){
+                      alert("更新成功");
+                      window.location.reload();
+                  }else{
+                      alert(data['result']);
                   }
                 },
                 error: function (data, status, error) {
@@ -222,17 +223,17 @@
         } else {
             var post_data = { user_name: user_name, login_name: login_name, user_phone_number: user_phone_number, user_job_number: user_job_number, user_gender: user_gender };
             $.ajax({
-                url: "http://localhost/AnswerSystem/user_manage/public/index.php/index/usermanage/adduser",
+                url: "http://localhost:8080/manage/add_user",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
                 async: false,
                 success: function (data) {
-                    json_data = eval('(' + data + ')');
-                    if(json_data['result']!=undefined && json_data['result']!=null && json_data['result']!=''){
-                      alert(json_data['result']);
+                    if(data['result']=="success"){
+                        alert("添加成功");
+                        window.location.reload();
                     }else{
-                      alert("添加成功");
+                        alert(data['result']);
                     }
                 },
                 error: function (data, status, error) {
@@ -252,7 +253,7 @@
     $(document).ready(function () {
         var limit=10;
         var offset=1;
-        var url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+offset+"&limit="+limit;
+        var url="http://localhost:8080/manage/user_manage?offset="+offset+"&limit="+limit;
         loadInit(url,offset);
         //删除用户
         $(".delete_btn").click(function () {
@@ -264,15 +265,19 @@
             var post_data = { delete_id: delete_id };
 
             $.ajax({
-                url: "http://localhost/AnswerSystem/user_manage/public/index.php/index/usermanage/deleteuser",
+                url: "http://localhost:8080/manage/delete_user",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
                 async: false,
                 success: function (data) {
-                    json_data = eval('(' + data + ')');
-                    alert(json_data['result']);
-                    window.location.reload();
+                    if(data['result']=="success"){
+                        alert("删除成功");
+                        window.location.reload();
+                    }else{
+                        alert(data['result']);
+                    }
+
                 },
                 error: function (data, status, error) {
                     alert("跳转失败");
@@ -312,7 +317,7 @@
             var offset=parseInt($("#now_page").val());//获取当前页数,默认为1
             var limit=10;
             var pre_offset=offset-1>1?offset-1:1;
-            var pre_url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+pre_offset+"&limit="+limit;
+            var pre_url="http://localhost:8080/manage/user_manage?offset="+pre_offset+"&limit="+limit;
             loadInit(pre_url,pre_offset);
         });
         $("#next_page_btn").click(function (){
@@ -320,7 +325,7 @@
             var total_page=parseInt($("#total_page").val());
             var limit=10;
             var next_offset=offset+1<total_page?offset+1:total_page;
-            var next_url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+next_offset+"&limit="+limit;
+            var next_url="http://localhost:8080/manage/user_manage?offset="+next_offset+"&limit="+limit;
             loadInit(next_url,next_offset);
         });
         $("#turn_page_btn").click(function (){
@@ -329,7 +334,7 @@
             var limit=10;
             var new_offset=offset>1?offset:1;
             var new_offset=offset<total_page?offset:total_page;
-            var next_url="http://localhost/AnswerSystem/user_manage/public/index.php/users_manage?offset="+new_offset+"&limit="+limit;
+            var next_url="http://localhost:8080/manage/user_manage?offset="+new_offset+"&limit="+limit;
             loadInit(next_url,new_offset);
         });
     });
@@ -343,23 +348,23 @@
             data: post_data,
             async: false,
             success: function (data) {
-                json_data = eval('(' + data + ')');
-                //判断是否正确返回！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
                 //获取返回总页数和当前页数,并添加到页面上
-                var page_num=json_data['page_num'];
+                var page_num=data['page_num'];
                 $("#now_page").val(new_offset);
                 $("#total_page").val(page_num);
                 $("#page_span").html(new_offset+"/"+page_num);
                 //获取用户数据并显示
                 var show_str="";
-                $.each(json_data['user_data'], function (i, item) {
+                $.each(data['user_data'], function (i, item) {
+                    var gender = "男";
+                    if(item.Gender == "1") gender = "女";
 
-                    show_str+="<tr><td>" + item.id + "</td><td>"
-                                                         + item.login_name + "</td><td>"
-                                                         + item.name + "</td><td>"
-                                                         + item.phone_number + "</td><td>"
-                                                         + item.job_number + "</td><td>"
-                                                         + item.gender + "</td><td>"
+                    show_str+="<tr><td>" + item.Id + "</td><td>"
+                                                         + item.Login_name + "</td><td>"
+                                                         + item.Name + "</td><td>"
+                                                         + item.Phone_number + "</td><td>"
+                                                         + item.Job_number + "</td><td>"
+                                                         + gender + "</td><td>"
 
                                                          + "<button class='change_btn pui-btn pui-btn-error pui-btn-small'>" + "修改" + "</button>"
                                                          +" "

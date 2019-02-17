@@ -75,9 +75,9 @@ $(document).ready(function(){
                 async: false,
                 success: function(json_data){
                     if(json_data['result']=="admin"){
-                        window.location.href="index/user_manage";
+                        window.location.href="manage/user_manage_init";
                     }else if(json_data['result']=="user"){
-                        window.location.href="index/user_index";
+                        window.location.href="index/user_index_init";
                     }else if(json_data['result']=="logged"){
                         window.location.href="index/user_index";
                     }else{
