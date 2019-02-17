@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta http-equiv="Cache-Control" content="no-siteapp"/>
+		<meta name="renderer" content="webkit" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="description" content="Plane UI" />
+        <meta name="keywords" content="Plane UI" />
+		<meta name="apple-mobile-web-app-title" content="Plane UI" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<!-- for iOS icons -->
+		<link rel="apple-touch-icon-precomposed" href="../dist/icons/icon-57x57.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../dist/icons/icon-72x72.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../dist/icons/icon-114x114.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="../dist/icons/icon-120x120.png">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../dist/icons/icon-144x144.png" />
+		<link rel="apple-touch-icon-precomposed" sizes="180x180" href="../dist/icons/icon-180x180.png">
+
+		<meta name="google" value="notranslate" />
+		<meta name="theme-color" content="#008FE2" />
+		<meta name="msapplication-TileColor" content="#008FE2" />
+		<meta name="msapplication-TileImage" content="favicon.png" />
+
+		<title>南方基地答题系统</title>
+        <link rel="icon" type="image/png" href="../static/img/CM.png" />
+        <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
+        <link rel="stylesheet" type="text/css" href="../static/css/user_manager.css" />
+        <link rel="stylesheet" href="../static/css/jquery-ui.min.css" />
+
+	</head>
+	<body>
+        <a name="top"></a>
+		<div class="pui-layout">
+            <div class="page-header">
+                <div class="pui-layout pui-layout-fixed pui-layout-fixed-1200">
+                    <div class="pui-menubar pui-menubar-square pui-menubar-header-style pui-bg-none pui-unbordered">
+                        <div class="pui-menubar-aside">
+                            <h2 class="pui-margin-none pui-text-normal page-title" title="中国移动南方基地"> <img src="../static/img/CM.png" class="icon-CM"/> 中国移动南方基地知识题库</h2>
+                        </div>
+                        <div class="pui-menubar-offside">
+                            <ul class="pui-menu pui-menu-inline pui-menu-simple pui-right">
+                                <li>
+                                    <a href="#top">管理员</a>
+                                </li>
+                                <li>
+                                    <a href="#features" id="pwchange">密码修改</a>
+                                </li>
+                                <li>
+                                    <a href="{:url('index/Login/logout')}">退出</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="container ">
+                <div class="pui-row">
+
+                        <div class="pui-grid-md-2">
+                            <div class="pui-btn-group-vertical pui-btn-gradient pui-btn-shadow ">
+                                <div class="pui-btn-group ">
+                                    <a href="/manage/user_manage_init" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow"><i class="fa fa-user fa-large"></i> 用户管理</button></a>
+                                    <a href="/manage/problem_manage_init" ><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow pui-btn-primary-active"><i class="fa fa-list-alt fa-large"></i> 题目管理</button></a>
+                                    <a href="{:url('event/index/showevent')}"><button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i class="fa fa-file-o fa-large"></i> 事件管理</button></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pui-grid-md-9" style="margin-top:1em">
+                            <div >
+                                <table  class="pui-table pui-table-bordered pui-table-text-center pui-table-thead-bg pui-table-interlaced-color box-shadow-bottom pui-table-gradient">
+                                    <thead>
+                                        <tr>
+                                            <th>题目ID</th>
+                                            <th>题目分类</th>
+											<th>题目类型</th>
+                                            <th>题目内容</th>
+                                            <th>题目答案</th>
+											<th>题目选项</th>
+                                        </tr>
+                                    </thead>
+																		<tbody>
+																			{if condition="!empty($data)"}
+																			{volist name="data" id="vo"}
+																			<tr id=t_{$vo.problem_id}>
+																				<td class="problem_id" >{$vo.problem_id}</td>
+																				<td>{switch name="$vo.problem_type"}
+																					      {case value="0"}填空题{/case}
+                                                {case value="1"}单选题{/case}
+																								{case value="2"}多选题{/case}
+                                                {case value="3"}判断题{/case}
+                                                {default /}其他
+                                            {/switch}
+																				</td>
+																				<td>{$vo.problem_class}</td>
+																				<td>{$vo.problem}</td>
+																				<td>{$vo.answer}</td>
+																				<td>
+																					{if condition="!empty($vo.option)"}
+					                        	{foreach $vo.option as $v=>$k}
+																		<p>{$v}{$k}</p>
+
+																		{/foreach}
+																		{/if}
+
+																				</td>
+																			{/volist}
+																			{/if}
+																		</tbody>
+                                </table>
+                                <!-- <button id="create-question" class="create_btn pui-btn pui-btn-primary pui-btn-large pui-text-shadow">创建新问题</button> -->
+                                <div id="question_form"  class="novisibility">
+                                 <form>
+                                     <input type="text" id="question_type" name="question_type" maxlength="16" class="" placeholder="题目类型" />
+                                     <input type="text" style="height: 80px;" id="question_content" name="question_content" maxlength="16" class="" placeholder="题目内容" />
+                                     <input type="text" id="question_answer" name="question_answer" maxlength="16" class="" placeholder="题目答案" />
+                                     <button class="pui-btn pui-btn-primary pui-btn-large" id="question_add" name="question_add" onclick="addquestion()">确定</button>
+                                     <input type="button" class="pui-btn pui-btn-warning pui-btn-large active" id="btn_cancle" value="取消">
+                                     <!-- <button class="pui-btn pui-btn-primary pui-btn-large" id="add_user" name="add_user" onclick="adduser()">确定</button>
+                                     <button class="pui-btn pui-btn-primary pui-btn-large">取消</button> -->
+                                 </form>
+                                </div>
+                                <div id="question_form_change" class="novisibility">
+                                <form>
+                                    <input type="text" id="change_question_type" maxlength="16" class="" placeholder="题目类型" />
+                                    <input type="text" style="height: 80px;" id="change_question_content" name="login_name" maxlength="16" class="" placeholder="题目内容" />
+                                    <input type="text" id="change_question_answer" maxlength="16" class="" placeholder="题目答案" />
+
+                                    <button class="pui-btn pui-btn-primary pui-btn-large" id="change_user"  onclick="changequestion()">确定</button>
+                                    <!-- <button class="pui-btn pui-btn-primary pui-btn-large" id="add_user" name="add_user" onclick="adduser()">确定</button>
+                                    <button class="pui-btn pui-btn-primary pui-btn-large">取消</button> -->
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+
+
+
+        </div>
+		<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+
+    </body>
+    <script>
+        function changequestion() {
+            //var change_id = $(this).parent().parent().find('td').eq(0).html();
+            var question_type = $(".pui-dialog #change_question_type").val();
+            var question_content = $(".pui-dialog #change_question_content").val();
+            var question_answer = $(".pui-dialog #change_question_answer").val();
+            alert(change_id+" "+ question_type+" "+ question_content+" "+question_answer)
+
+            if (question_type == '' || question_content == '' || question_answer == '') {
+                alert("信息不能留空");
+            } else {
+              var post_data = { change_question_id:change_question_id,question_type: question_type, question_content: question_content, question_answer: question_answer};
+              $.ajax({
+                    url: "",
+                    dataType: "json",
+                    type: 'POST',
+                    data: post_data,
+                    async: false,
+                    success: function (data) {
+                        json_data=eval('('+data+')');
+                        alert("修改成功");
+                                            // alert(json_data['result']);
+                    },
+                    error: function (data, status, error) {
+                        alert("跳转失败");
+                        alert(error);
+                    }
+                });
+            }
+            return false;
+        }
+    </script>
+    <script>
+        function addquestion() {
+            var question_type = $("#question_type").val();
+            var question_content = $("#question_content").val();
+            var question_answer = $("#question_answer").val();
+
+            if (question_type == '' || question_content == '' || question_answer == '') {
+                alert("信息不能留空");
+            } else {
+                var post_data = { question_type: question_type, question_content: question_content, question_answer: question_answer};
+                $.ajax({
+                    url: "",
+                    dataType: "json",
+                    type: 'POST',
+                    data: post_data,
+                    async: false,
+                    success: function (data) {
+                        json_data=eval('('+data+')');
+                        alert("添加成功");
+                                            // alert(json_data['result']);
+                    },
+                    error: function (data, status, error) {
+                        alert("跳转失败");
+                        alert(error);
+                    }
+                });
+            }
+            return false;
+        }
+
+    </script>
+
+
+
+
+
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".delete_btn").click(function () {
+            alert("确认删除");
+            var delete_id = $(this).parent().parent().find('td').eq(0).html();
+            var post_data = { delete_id: delete_id };
+
+            $.ajax({
+                url: "{:url('index/usermanage/deleteuser')}",
+                dataType: "json",
+                type: 'POST',
+                data: post_data,
+                async: false,
+                success: function (data) {
+                    json_data = eval('(' + data + ')');
+                    alert(json_data['result']);
+                    window.location.reload();
+                },
+                error: function (data, status, error) {
+                    alert("跳转失败");
+                    alert(error);
+                }
+            });
+        });
+        $(".change_btn").click(function () {
+            change_id = $(this).parent().parent().find('td').eq(0).html();
+            $.dialog({
+			            from : "#question_form_change",
+			            padding: 10
+			        });
+
+
+        });
+        $(".create_btn").click(function again() {
+
+                $.dialog({
+			            from : "#question_form",
+			            padding: 10
+			        });
+
+        });
+    });
+</script>
+

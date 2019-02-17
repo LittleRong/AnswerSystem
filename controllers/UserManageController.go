@@ -74,5 +74,4 @@ func (this *UserManageController) DeleteUser(){
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
-
 }

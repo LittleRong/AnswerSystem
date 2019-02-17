@@ -15,6 +15,13 @@ func init() {
 	beego.Router("/manage/change_user", &controllers.UserManageController{}, `post:ChangeUser`)
 	beego.Router("/manage/add_user", &controllers.UserManageController{}, `post:AddUser`)
 	beego.Router("/manage/delete_user", &controllers.UserManageController{}, `post:DeleteUser`)
+
+	beego.Router("/manage/problem_manage_init", &controllers.ProblemManageController{}, `get:ProblemManageInit`)
+	beego.Router("/manage/problem_manage", &controllers.ProblemManageController{}, `get:ProblemManage`)
+	beego.Router("/manage/change_problem", &controllers.ProblemManageController{}, `post:ChangeProblem`)
+	beego.Router("/manage/add_problem", &controllers.ProblemManageController{}, `post:AddProblem`)
+	beego.Router("/manage/delete_problem", &controllers.ProblemManageController{}, `post:DeleteProblem`)
+
 	beego.Router("/index/user_index", &controllers.UserIndexController{}, `get:UserIndex`)
 	beego.Router("/index/user_index_init", &controllers.UserIndexController{}, `get:UserIndexInit`)
 	beego.Router("/answer/user_problem", &controllers.AnswerController{}, `get:ShowProblemsPage`)
