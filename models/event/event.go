@@ -88,3 +88,11 @@ func GetProblemNumByEventId(event_id int) ProblemNum{
 	beego.Info("========problemNum======",problemNum)
 	return problemNum
 }
+
+func GetEventByManageId(manage_id int) []Event{
+	beego.Info("========GetEventByManageId======")
+	var e []Event
+	o := orm.NewOrm()
+	o.QueryTable("event").Filter("manage_id", manage_id).All(&e, "Event_id","Event_title","Event_description","Event_type")
+	return e
+}
