@@ -96,3 +96,15 @@ func GetEventByManageId(manage_id int) []Event{
 	o.QueryTable("event").Filter("manage_id", manage_id).All(&e, "Event_id","Event_title","Event_description","Event_type")
 	return e
 }
+
+func AddNewEvent(e Event) (bool,int){
+	o := orm.NewOrm()
+	id,err := o.Insert(&e)
+	if err != nil {
+		beego.Info("======AddNewEvent's err=====",err)
+		return false,0
+	} else {
+		beego.Info("======AddNewEvent's id=====",id)
+		return true,int(id)
+	}
+}

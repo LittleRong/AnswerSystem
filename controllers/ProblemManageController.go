@@ -2,6 +2,7 @@ package controllers
 
 import (
     "github.com/astaxie/beego"
+	"log"
 )
 
 type ProblemManageController struct{
@@ -73,4 +74,26 @@ func (this *ProblemManageController) DeleteProblem(){
 	//this.Data["json"] = result
 	//this.ServeJSON()
 	//return
+}
+
+func (this *ProblemManageController) ProblemUploadInit(){
+	this.TplName = "manage/problem_upload.html"
+}
+
+func (this *ProblemManageController) ProblemFileInsert(){
+	f, h, err := this.GetFile("uploadname")
+	if err != nil {
+		log.Fatal("getfile err ", err)
+	}
+	defer f.Close()
+
+	//改名字
+
+	this.SaveToFile("uploadname", "static/upload/" + h.Filename) // 保存位置在 static/upload
+
+	//解析excel内容
+	//格式：题目类型 题目内容 答案 选项A 选项B 选项C 选项D
+
+
+
 }
