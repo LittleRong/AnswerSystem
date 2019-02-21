@@ -114,6 +114,7 @@
                     <form id="upload_file_form" class="pui-form pui-input-sm-large pui-input-md-large pui-grid" style="text-align: center" enctype="multipart/form-data">
                     	<label>选择上传的文件</label>
                     	<input id="upload_file" type="file" name="uploadname" class="pui-input-border-error">
+						<input id="event_id" type="hidden" name="event_id" class="pui-input-border-error" value="1">
 						<button id="upload_btn" type="button" class="pui-btn pui-btn-success" name="submit"/>提交</button>
                     	<input type="button" class="pui-btn pui-btn-success" name="cancel" value="跳过" />
                     </form>
@@ -132,68 +133,17 @@
 					<hr>
 					<h5>多选题<span onclick="ct('t_2')"><i class="fa fa-fw fa-angle-down pui-text-lg"></i></span></h5>
 					<hr>
-					{eq name="data" value=""}
-					<p>无多选题。</p>
-					{else/}
-					<input type="button" class="pui-btn pui-btn-default" onclick="ac('cbox_2');" value="全选">
-					<input type="button" class="pui-btn pui-btn-default" onclick="dc('cbox_2');" value="取消全选">
-					<span style=display:none>{$count=0}</span>
-					<table id="t_2" class="pui-table pui-table-bordered">
-						{foreach $data as $k=>$v}
-						{if condition="($v.problem_type == 2)"}
-						<tr><td><input type="checkbox" class="cbox_2"  name="cbox" value={$v.problem_id}>{++$count}.{$v.problem}</td>
-							{foreach $v.option as $z=>$x}
-							<td>{$z}.{$x}</td>
-							{/foreach}
-						</tr>
-						{/if}
-						{/foreach}
-					</table>
-					{/eq}
+					<div id="multiple_show"></div>
 					<hr>
 					<h5>填空题<span onclick="ct('t_0')"><i class="fa fa-fw fa-angle-down pui-text-lg"></i></span></h5>
 					<hr>
-					{eq name="data" value=""}
-					<p>无填空题。</p>
-					{else/}
-					<span style=display:none>{$count=0}</span>
-					<input type="button" class="pui-btn pui-btn-default"  onclick="ac('cbox_0');" value="全选">
-					<input type="button" class="pui-btn pui-btn-default" onclick="dc('cbox_0');" value="取消全选">
-					<table id="t_0" class="pui-table pui-table-bordered">
-						{foreach $data as $k=>$v}
-						{if condition="($v.problem_type == 0)"}
-						<tr><td><input type="checkbox" class="cbox_0"  name="cbox" value={$v.problem_id}>{++$count}.{$v.problem}</td>
-							{foreach $v.option as $z=>$x}
-							<td>{$z}.{$x}</td>
-							{/foreach}
-						</tr>
-						{/if}
-						{/foreach}
-					</table>
-					{/eq}
+					<div id="fill_show"></div>
 					<h5>判断题<span onclick="ct('t_3')"><i class="fa fa-fw fa-angle-down pui-text-lg"></i></span></h5>
 					<hr>
-					{eq name="data" value=""}
-					<p>无判断题。</p>
-					{else/}
-					<span style=display:none>{$count=0}</span>
-					<input type="button" class="all_3 pui-btn pui-btn-default" onclick="ac('cbox_3');" value="全选">
-					<input type="button" class="cancelall_3 pui-btn pui-btn-default" onclick="dc('cbox_3');"  value="取消全选">
-					<table id="t_3" class="pui-table pui-table-bordered">
-						{foreach $data as $k=>$v}
-						{if condition="($v.problem_type == 3)"}
-						<tr><td><input type="checkbox" class="cbox_3"  name="cbox" value={$v.problem_id}>{++$count}.{$v.problem}</td>
-							{foreach $v.option as $z=>$x}
-							<td>{$z}.{$x}</td>
-							{/foreach}
-						</tr>
-						{/if}
-						{/foreach}
-					</table>
-					{/eq}
+					<div id="judge_show"></div>
 					<hr>
 
-					<a href="{$Think.config.web_res_root}index.php/event/participant/participant_manage" id="submit_message" name="submit_message" class="pui-btn pui-btn-primary ">下一步</a>
+					<a href="/manage/problem_event_insert" id="submit_message" name="submit_message" class="pui-btn pui-btn-primary ">下一步</a>
 					<a href="{$Think.config.web_res_root}index.php/showevent" class="pui-btn pui-btn-secondary " style="margin-left: 20px">取消</a>
 				</div>
 			</div>
@@ -216,7 +166,6 @@
 					alert("请选择文件");
 					return false;
 				}
-					alert("0000")
 					$.ajax({
 						type: 'POST',
 						url: "http://localhost:8080/manage/problem_file_insert",
@@ -245,15 +194,71 @@
 								single_show = "<p>无单选题。</p>";
 							}
 							$('#single_show').html(single_show);
+
+							var multiple_show = ""
+							if(data["multiple"]!=""){
+								multiple_show += "<input type=\"button\" class=\"pui-btn pui-btn-default\"  onclick=\"ac('cbox_2');\" value=\"全选\">&nbsp;&nbsp;"
+										+ "<input type=\"button\" class=\"pui-btn pui-btn-default\" onclick=\"dc('cbox_2');\" value=\"取消全选\">"
+										+ "<table id='t_2' class='pui-table pui-table-bordered'>";
+
+								$.each(data["multiple"],function(i,item){
+
+									multiple_show += "<tr><td><input type='checkbox' class='cbox_2' name='cbox' value='"+"&nbsp;&nbsp;"+item.Problem_id+"'>"+item.Problem_content+"</td>"
+											+"<td>"+item.Problem_answer+"</td>"
+											+"<td>"+item.Problem_option+"</td>";
+								});
+								multiple_show += "</table>";
+
+							}else{
+								multiple_show = "<p>无多选题。</p>";
+							}
+							$('#multiple_show').html(multiple_show);
+
+							var fill_show = ""
+							if(data["fill"]!=""){
+								fill_show += "<input type=\"button\" class=\"pui-btn pui-btn-default\"  onclick=\"ac('cbox_0');\" value=\"全选\">&nbsp;&nbsp;"
+										+ "<input type=\"button\" class=\"pui-btn pui-btn-default\" onclick=\"dc('cbox_0');\" value=\"取消全选\">"
+										+ "<table id='t_0' class='pui-table pui-table-bordered'>";
+
+								$.each(data["fill"],function(i,item){
+
+									fill_show += "<tr><td><input type='checkbox' class='cbox_0' name='cbox' value='"+"&nbsp;&nbsp;"+item.Problem_id+"'>"+item.Problem_content+"</td>"
+											+"<td>"+item.Problem_answer+"</td>"
+											+"<td>"+item.Problem_option+"</td>";
+								});
+								fill_show += "</table>";
+
+							}else{
+								fill_show = "<p>无单选题。</p>";
+							}
+							$('#fill_show').html(fill_show);
+
+							var judge_show = ""
+							if(data["judge"]!=""){
+								judge_show += "<input type=\"button\" class=\"pui-btn pui-btn-default\"  onclick=\"ac('cbox_3');\" value=\"全选\">&nbsp;&nbsp;"
+										+ "<input type=\"button\" class=\"pui-btn pui-btn-default\" onclick=\"dc('cbox_3');\" value=\"取消全选\">"
+										+ "<table id='t_3' class='pui-table pui-table-bordered'>";
+
+								$.each(data["judge"],function(i,item){
+
+									judge_show += "<tr><td><input type='checkbox' class='cbox_3' name='cbox' value='"+"&nbsp;&nbsp;"+item.Problem_id+"'>"+item.Problem_content+"</td>"
+											+"<td>"+item.Problem_answer+"</td>"
+											+"<td>"+item.Problem_option+"</td>";
+								});
+								judge_show += "</table>";
+
+							}else{
+								judge_show = "<p>无单选题。</p>";
+							}
+							$('#judge_show').html(judge_show);
+
+
 						},
 						error:function(e){
 							alert("错误！！");
 							window.clearInterval(timer);
 						}
 					});
-
-
-			alert("错误！！");
 
 		});
 

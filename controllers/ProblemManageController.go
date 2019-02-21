@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/tealeg/xlsx"
+	"hello/models/event"
 	"hello/models/problem"
 	"log"
 	"reflect"
@@ -87,6 +88,7 @@ func (this *ProblemManageController) ProblemUploadInit(){
 }
 
 func (this *ProblemManageController) ProblemFileInsert(){
+	event_id,_ := this.GetInt("event_id")
 	f, h, err := this.GetFile("uploadname")
 	if err != nil {
 		log.Fatal("getfile err ", err)
@@ -179,8 +181,12 @@ func (this *ProblemManageController) ProblemFileInsert(){
 				problem_answer = row.Cells[3].String()
 			}
 			p := problem.Problem{Problem_content:problem_content,Problem_type:problem_type,Problem_class:problem_class,Problem_answer:problem_answer,Problem_option:problem_option}
-			//调用接口插入
+			//插入problem表
 			max_problem_id = problem.AddProblem(p)
+			//插入event_problem表
+			ep := event.EventProblem{Refer_event_id:event_id,Problem_id:max_problem_id}
+			event.AddEventProblem(ep)
+
 			if(i == 1){
 				first_problem_id = max_problem_id
 			}
@@ -201,7 +207,7 @@ func (this *ProblemManageController) ProblemFileInsert(){
 		var result map[string]interface{}
 		result = make(map[string]interface{})
 		result["single"] = single_json
-		result["mutil"] = mutil_json
+		result["multiple"] = mutil_json
 		result["judge"] = judge_json
 		result["fill"] = fill_json
 		beego.Info("======AddProblem's id=====",result)
