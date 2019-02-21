@@ -8,22 +8,15 @@ import (
 	"hello/models/participant_haved_answer"
 	"hello/models/participant"
 	"hello/models/event"
+	"hello/models/problem"
 	"strconv"
 	"time"
 )
 
-// 完成User类型定义
-type Problem struct {
-	Problem_id int `orm:"pk"`
-	Problem_content string
-	Problem_option string
-	Problem_answer string
-	Problem_class string
-	Problem_type int
-}
+
 
 func GetProblemNoAnswer(user_id int,event_id int,team_id int,participant_id int,problemNum event.ProblemNum) (map[string]interface{},bool){
-	var problems []Problem
+	var problems []problem.Problem
 	buildFlag := false//是否已经生成过题目
 	//answerFlag := false//是否已经答题
 	o := orm.NewOrm()
@@ -85,13 +78,13 @@ func GetProblemNoAnswer(user_id int,event_id int,team_id int,participant_id int,
 	return result,buildFlag
 }
 
-func GeneratingProblems(event_id int,participant_id int,problem_type int,problem_num int) []Problem {
+func GeneratingProblems(event_id int,participant_id int,problem_type int,problem_num int) []problem.Problem {
 	if(problem_num<=0){
 		return nil
 	}
 
 	o := orm.NewOrm()
-	var problems []Problem
+	var problems []problem.Problem
 	_, err := o.Raw("SELECT problem.* " +
 		"FROM problem, event_problem " +
 		"WHERE problem.problem_id = event_problem.problem_id " +
@@ -110,7 +103,7 @@ func GeneratingProblems(event_id int,participant_id int,problem_type int,problem
 
 }
 
-func GeneratingFrontProblems(problems []Problem) map[string]interface{}{
+func GeneratingFrontProblems(problems []problem.Problem) map[string]interface{}{
 	var single []map[string]string
 	var mutiple []map[string]string
 	var fill []map[string]string
@@ -173,7 +166,7 @@ func GeneratingFrontProblems(problems []Problem) map[string]interface{}{
 }
 
 
-func GeneratingWaitedAnswer(problems []Problem,answer_date string) map[string]interface{}{
+func GeneratingWaitedAnswer(problems []problem.Problem,answer_date string) map[string]interface{}{
 	var waited_answer map[string]interface{}
 	waited_answer = make(map[string]interface{})
 

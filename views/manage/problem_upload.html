@@ -111,15 +111,11 @@
 
 				<div class="pui-form-group pui-grid-center">
 
-                    <form class="pui-form pui-input-sm-large pui-input-md-large pui-grid" style="text-align: center" action="/manage/problem_file_insert" method="post" enctype="multipart/form-data">
-                    <label>选择上传的文件</label>
-										<a href="/manage/problem_file_insert">
-                    <input id="uplode_file" type="file" name="uploadname" class="pui-input-border-error">
-										<input id="uplode_btn" type="submit" class="pui-btn pui-btn-success" name="submit" value="提交" />
-										</a>
-										<a href="{$Think.config.web_res_root}index.php/event/question/problem_manage">
-                    <input type="button" class="pui-btn pui-btn-success" name="cancel" value="跳过" />
-										</a>
+                    <form id="upload_file_form" class="pui-form pui-input-sm-large pui-input-md-large pui-grid" style="text-align: center" enctype="multipart/form-data">
+                    	<label>选择上传的文件</label>
+                    	<input id="upload_file" type="file" name="uploadname" class="pui-input-border-error">
+						<button id="upload_btn" type="button" class="pui-btn pui-btn-success" name="submit"/>提交</button>
+                    	<input type="button" class="pui-btn pui-btn-success" name="cancel" value="跳过" />
                     </form>
 
                 </div>
@@ -132,24 +128,7 @@
 					<hr>
 					<h5>单选题<span onclick="ct('t_1')"><i class="fa fa-fw fa-angle-down pui-text-lg"></i></span></h5>
 					<hr>
-					{eq name="data" value=""}
-					<p>无单选题。</p>
-					{else/}
-					<input type="button" class=" pui-btn pui-btn-default" onclick="ac('cbox_1');" value="全选">
-					<input type="button" class=" pui-btn pui-btn-default" onclick="dc('cbox_1');" value="取消全选">
-					<span style=display:none>{$count=0}</span>
-					<table id="t_1" class="pui-table pui-table-bordered">
-						{foreach $data as $k=>$v}
-						{if condition="($v.problem_type == 1)"}
-						<tr><td><input type="checkbox" class="cbox_1" name="cbox" value={$v.problem_id}>{++$count}.{$v.problem}</td>
-							{foreach $v.option as $z=>$x}
-							<td>{$z}.{$x}</td>
-							{/foreach}
-						</tr>
-						{/if}
-						{/foreach}
-					</table>
-					{/eq}
+					<div id="single_show"></div>
 					<hr>
 					<h5>多选题<span onclick="ct('t_2')"><i class="fa fa-fw fa-angle-down pui-text-lg"></i></span></h5>
 					<hr>
@@ -230,16 +209,73 @@
 		<script type="text/javascript" src="../static/js/planeui.js"></script>
 
 		<script type="text/javascript">
-		$(document).ready(function(){
-		  $("form").submit(function(e){
-			    var uplode_file = $("#uplode_file").val();
-					if(uplode_file==""){
-						alert("请选择文件");
-						return false;
-					}
-      });
+
+		$("#upload_btn").click(function () {
+				var upload_file = $("#upload_file").val();
+				if(upload_file==""){
+					alert("请选择文件");
+					return false;
+				}
+					alert("0000")
+					$.ajax({
+						type: 'POST',
+						url: "http://localhost:8080/manage/problem_file_insert",
+						data: new FormData($('#upload_file_form')[0]),
+						processData: false,
+						contentType: false,
+						dataType : 'json',
+						async : false,
+						success: function (data) {
+
+							var single_show = ""
+							if(data["single"]!=""){
+								single_show += "<input type=\"button\" class=\"pui-btn pui-btn-default\"  onclick=\"ac('cbox_1');\" value=\"全选\">&nbsp;&nbsp;"
+										+ "<input type=\"button\" class=\"pui-btn pui-btn-default\" onclick=\"dc('cbox_1');\" value=\"取消全选\">"
+										+ "<table id='t_1' class='pui-table pui-table-bordered'>";
+
+								$.each(data["single"],function(i,item){
+
+									single_show += "<tr><td><input type='checkbox' class='cbox_1' name='cbox' value='"+"&nbsp;&nbsp;"+item.Problem_id+"'>"+item.Problem_content+"</td>"
+											+"<td>"+item.Problem_answer+"</td>"
+											+"<td>"+item.Problem_option+"</td>";
+								});
+								single_show += "</table>";
+
+							}else{
+								single_show = "<p>无单选题。</p>";
+							}
+							$('#single_show').html(single_show);
+						},
+						error:function(e){
+							alert("错误！！");
+							window.clearInterval(timer);
+						}
+					});
+
+
+			alert("错误！！");
+
 		});
 
 		</script>
+	<script type="text/javascript">
+		function ac(d){
+			var classname="."+d;
+			$(classname).each(function(){
+				$(this).attr("checked",'true');
+			});
+		}
+		function dc(d){
+			var classname="."+d;
+			$(classname).each(function(){
+				$(this).removeAttr("checked");
+			});
+		}
+		//伸缩问题
+		function ct(d){
+			var c_id="#"+d;
+			$(c_id).slideToggle("fast");
+		}
+	</script>
 
 </html>
