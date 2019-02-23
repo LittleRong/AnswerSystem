@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
+	"hello/models/participant"
+	"hello/models/team"
 	"hello/models/user"
+	"strconv"
 )
 
 type ParticipantManageController struct{
@@ -31,5 +35,35 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 }
 
 func (this *ParticipantManageController) EventParticipantInsert() {
+	event_id,_ := this.GetInt("event_id")
+	team_input := this.Ctx.Request.PostForm.Get("team_data")
+	var f interface{}
+	_ = json.Unmarshal([]byte(team_input), &f)
+	team_array := f.([]interface{})
 
+	for _,value := range team_array{
+		beego.Info(value)
+		s := value.(map[string]interface {})
+		//插入新team
+		team_id := team.AddTeam("",event_id)
+		if(team_id != -1){
+			//插入participant
+			leader_id,_ := strconv.Atoi(s["leader"].(string))
+			participant.AddParticipant(leader_id,event_id,team_id,true)
+
+			member_array := s["member"].([]interface{})
+			for _,member := range member_array{
+				member_id,_ := strconv.Atoi(member.(string))
+				participant.AddParticipant(member_id,event_id,team_id,false)
+			}
+		}
+	}
+
+	//待完善，一个插入失败怎么办
+	var result map[string]interface{}
+	result = make(map[string]interface{})
+	result["result"] = "success"
+	this.Data["json"] = result
+	this.ServeJSON()
+	return
 }

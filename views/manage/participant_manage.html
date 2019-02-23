@@ -250,9 +250,10 @@
         })
 
         $("#submit_message").click(function () {
+            var event_id = 1;
             alert(mydata);
             $(this).attr("disabled", "true"); //设置变灰按钮，防止表单重复提交
-            post_data = {mydata: mydata};
+            post_data = {team_data: JSON.stringify(mydata),event_id:event_id};
             $.ajax({
                 url: "http://localhost:8080/manage/event_participant_insert",
                 dataType: "json",
@@ -260,12 +261,9 @@
                 data: post_data,
                 async: false,
                 success: function (data) {
-                    // alert("跳转成功");
-                    json_data = eval('(' + data + ')');
-                    if (json_data['result'] == "录入成功!") {
-                        alert(json_data['result']);
-                        // $("#myform").submit();
-                        //self.location = '{$Think.config.web_res_root}index.php/showevent';
+                    if (data['result'] == "success") {
+                        alert("录入成功!");
+                        self.location = '/manage/event_manage_init';
                         //登录成功操作......
                     } else {
                         alert("录入失败！");

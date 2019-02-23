@@ -39,3 +39,21 @@ func GetTeamById(team_id int, event_id int) Team{
 	beego.Info("======GetTeamById=====",t)
 	return t
 }
+
+func AddTeam (team_name string,refer_event_id int) int {
+	//login_name不能重复
+	var t Team
+	o := orm.NewOrm()
+
+	t.Refer_event_id = refer_event_id
+	t.Team_name = team_name
+	t.Team_credit = 0
+	id,err := o.Insert(&t)
+	if err == nil {
+		beego.Info("======AddTeam's id=====",id)
+		return int(id)
+	} else {
+		beego.Info("======AddTeam's err=====",err)
+		return -1
+	}
+}

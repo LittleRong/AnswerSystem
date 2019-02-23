@@ -116,3 +116,25 @@ func UpdateParticipantWaitedAnswer(participant_id int,answer string){
 	}
 
 }
+
+func AddParticipant (user_id int,refer_event_id int,team_id int,leader bool) int {
+	//login_name不能重复
+	var p Participant
+	o := orm.NewOrm()
+
+	p.Team_id = team_id
+	p.Refer_event_id = refer_event_id
+	p.Credit = 0
+	p.User_id = user_id
+	p.Leader = leader
+	p.Waited_answer = "null"
+
+	id,err := o.Insert(&p)
+	if err == nil {
+		beego.Info("======AddParticipant's id=====",id)
+		return p.Participant_id
+	} else {
+		beego.Info("======AddParticipant's err=====",err)
+		return -1
+	}
+}
