@@ -30,6 +30,10 @@ func init() {
 	beego.Router("/manage/event_insert_init", &controllers.EventManageController{}, `get:EventInsertInit`)
 	beego.Router("/manage/event_insert", &controllers.EventManageController{}, `post:EventInsert`)
 
+	beego.Router("/manage/participant_insert_init", &controllers.ParticipantManageController{}, `get:ParticipantInsertInit`)
+	beego.Router("/manage/participant_get_user", &controllers.ParticipantManageController{}, `get:ParticipantGetUser`)
+	beego.Router("/manage/event_participant_insert", &controllers.ParticipantManageController{}, `post:EventParticipantInsert`)
+
 
 	beego.Router("/index/user_index", &controllers.UserIndexController{}, `get:UserIndex`)
 	beego.Router("/index/user_index_init", &controllers.UserIndexController{}, `get:UserIndexInit`)
