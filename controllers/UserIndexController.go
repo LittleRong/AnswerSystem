@@ -13,11 +13,11 @@ type UserIndexController struct {
 	beego.Controller
 }
 
-func (this *UserIndexController) UserIndex() {
+func (this *UserIndexController) UserIndexInit() {
 	this.TplName = "index/user_index.html"
 }
 
-func (this *UserIndexController) UserIndexInit() {
+func (this *UserIndexController) UserIndex() {
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	//获取用户信息

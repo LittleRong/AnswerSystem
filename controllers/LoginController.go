@@ -45,28 +45,22 @@ func (this *LoginController) Check() {
 	//	c.TplName = "bad.html"
 	//	return
 	//}
-	beego.Info("========Check======")
 	var result map[string]interface{}
 	user, loginFlag := user.Login(username, password)
 	if loginFlag == false { //登录失败
 		result = map[string]interface{}{"result": "faild", "message": "登陆失败,用户名或密码错误"}
 	} else {
-		user_id := this.GetSession("user_id")
-		if user_id != nil { //已登陆
-			result = map[string]interface{}{"result": "logged"}
-		} else {
-			//设置session
-			user_id = user.Id
-			this.SetSession("user_id", user_id)
+		//设置session
+		user_id := user.Id
+		this.SetSession("user_id", user_id)
+		this.SetSession("permission", user.Permission)
 
-			beego.Info("========session======", this.CruSession)
-
-			//判断用户权限
-			if user.Permission == 1 || user.Permission == 2 { //管理员
-				result = map[string]interface{}{"result": "admin"}
-			} else { //普通用户
-				result = map[string]interface{}{"result": "user"}
-			}
+		//判断用户权限
+		beego.Info("========Check======",user.Permission)
+		if user.Permission == 1 || user.Permission == 2 { //管理员
+			result = map[string]interface{}{"result": "admin"}
+		} else { //普通用户
+			result = map[string]interface{}{"result": "user"}
 		}
 	}
 
