@@ -295,7 +295,7 @@
 
 		$(document).ready(function(){
 		    $("#submit_message").click(function(){
-					 // $(this).attr("disabled","true"); //设置变灰按钮，防止表单重复提交
+					    $(this).attr("disabled","true"); //设置变灰按钮，防止表单重复提交
 						var participant_num = $("#participant_num").val();
 						var ename = $("#ename").val();
 						var start_time = $("#start_time").val();
@@ -370,7 +370,7 @@
 		                success: function(data){
 							if(data['result']=="success"){
 		                        alert(data['result']);
-								self.location='/manage/problem_upload_init?event_id='+data['event_id'];
+								self.location='/manage/problem_upload_init';
 		                    }else{
 		                        alert("创建事件失败！");
 		                        //登录失败操作......

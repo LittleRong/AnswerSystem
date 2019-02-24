@@ -84,11 +84,22 @@ func (this *ProblemManageController) DeleteProblem(){
 }
 
 func (this *ProblemManageController) ProblemUploadInit(){
+	new_event_id := this.GetSession("new_event_id")
+	if new_event_id == nil { //未设置
+		this.Ctx.Redirect(302,"/manage/event_insert_init")
+		return
+	}
 	this.TplName = "manage/problem_upload.html"
 }
 
 func (this *ProblemManageController) ProblemFileInsert(){
-	event_id,_ := this.GetInt("event_id")
+	new_event_id := this.GetSession("new_event_id")
+	if new_event_id == nil { //未设置
+		this.Ctx.Redirect(302,"/manage/event_insert_init")
+		return
+	}
+	event_id := new_event_id.(int)
+
 	f, h, err := this.GetFile("uploadname")
 	if err != nil {
 		log.Fatal("getfile err ", err)
@@ -103,7 +114,7 @@ func (this *ProblemManageController) ProblemFileInsert(){
 	excelFileName := "static/upload/" + h.Filename
 	xlFile, err := xlsx.OpenFile(excelFileName)
 	if err != nil {
-
+		log.Fatal("文件内容错误", err)
 	}
 
 	//获取最大problem_id,这里还有问题

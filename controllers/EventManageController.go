@@ -121,6 +121,8 @@ func (this *EventManageController) EventInsert(){
 		result["result"] = "faild"
 	}
 
+	this.SetSession("new_event_id", event_id)
+
 	this.Data["json"] = result
 	this.ServeJSON()
 	return

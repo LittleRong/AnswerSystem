@@ -45,6 +45,7 @@ func (this *LoginController) Check(){
 		//	c.TplName = "bad.html"
 		//	return
 		//}
+	beego.Info("========Check======")
 		var result map[string]interface{}
 		user,loginFlag := user.Login(username,password)
 		if loginFlag == false {	//登录失败
@@ -57,6 +58,8 @@ func (this *LoginController) Check(){
 				//设置session
 				user_id = user.Id
 				this.SetSession("user_id", user_id)
+
+				beego.Info("========session======",this.CruSession)
 
 				//判断用户权限
 				if user.Permission == 1 || user.Permission == 2  {//管理员

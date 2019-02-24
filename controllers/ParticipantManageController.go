@@ -14,6 +14,11 @@ type ParticipantManageController struct{
 }
 
 func (this *ParticipantManageController) ParticipantInsertInit(){
+	new_event_id := this.GetSession("new_event_id")
+	if new_event_id == nil { //未设置
+		this.Ctx.Redirect(302,"/manage/event_insert_init")
+		return
+	}
 	this.TplName = "manage/participant_manage.html"
 }
 
@@ -35,7 +40,12 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 }
 
 func (this *ParticipantManageController) EventParticipantInsert() {
-	event_id,_ := this.GetInt("event_id")
+	new_event_id := this.GetSession("new_event_id")
+	if new_event_id == nil { //未设置
+		this.Ctx.Redirect(302,"/manage/event_insert_init")
+		return
+	}
+	event_id := new_event_id.(int)
 	team_input := this.Ctx.Request.PostForm.Get("team_data")
 	var f interface{}
 	_ = json.Unmarshal([]byte(team_input), &f)
