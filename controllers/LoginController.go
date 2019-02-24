@@ -92,3 +92,9 @@ func (this *LoginController) ChangePwd() {
 	return
 
 }
+
+func (this *LoginController) Logout() {
+	this.DestroySession()
+	this.Ctx.Redirect(302, "/index")
+	return
+}

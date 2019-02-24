@@ -31,12 +31,12 @@ func (this *UserIndexController) UserIndex() {
 	}
 
 	//获取用户参与的事件，并获取事件信息
-	var event_message map[string]string
-	event_message = make(map[string]string)
 	var event_message_array []map[string]string
 	user_event_list := participant.GetEventListByUserId(user_id.(int))
 	for _, valus := range user_event_list {
 		event := event.GetEventByEventId(valus.Refer_event_id)
+		var event_message map[string]string
+		event_message = make(map[string]string)
 		event_message["event_id"] = strconv.Itoa(event.Event_id)
 		event_message["event_title"] = event.Event_title
 		event_message["event_description"] = event.Event_description

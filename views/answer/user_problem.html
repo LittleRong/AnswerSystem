@@ -20,14 +20,14 @@
         <div style="position: relative;">
             <img src="../static/img/header2.jpg" style="width: 100%;height: auto;min-height: 50px">
             <div class="form-group pui-btn-gradient pui-btn-shadow" style="position: absolute;bottom: 10px;right: 20px">
-                <input type="button" class="pui-btn pui-btn-small pui-btn-default " value="{$name}">
+                <input type="button" class="pui-btn pui-btn-small pui-btn-default " value="">
                 <a type="button" class="pui-btn pui-btn-small pui-btn-primary "
-                   href="{:url('index/Login/logout')}">退出</a>
+                   href="/logout">退出</a>
             </div>
         </div>
     </header>
     <a type="button" class=" pui-btn pui-btn-default" style="float:left;margin-left: 2%;margin-top:10px "
-       href="{:url('index/userindex/user_index')}">返回</a>
+       onclick="javascript:history.back(-1);">返回</a>
 </div>
 
 <div id="content" class="pui-layout" style="width:96%;margin-top:10px ">
