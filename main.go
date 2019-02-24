@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	_ "hello/models"
-	_ "hello/routers"
+	_ "web/models"
+	_ "web/routers"
 )
 
 var FilterUser = func(ctx *context.Context) {

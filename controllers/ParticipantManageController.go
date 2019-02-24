@@ -3,9 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"
-	"hello/models/participant"
-	"hello/models/team"
-	"hello/models/user"
+	"web/models/participant"
+	"web/models/team"
+	"web/models/user"
 	"strconv"
 )
 

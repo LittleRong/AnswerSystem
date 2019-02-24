@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"hello/models/user"
+	"web/models/user"
 )
 
 type UserManageController struct {
