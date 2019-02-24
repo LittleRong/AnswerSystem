@@ -5,22 +5,22 @@ import (
 	"hello/models/user"
 )
 
-type UserManageController struct{
+type UserManageController struct {
 	beego.Controller
 }
 
-func (this *UserManageController) UserManageInit(){
+func (this *UserManageController) UserManageInit() {
 	this.TplName = "manage/user_manage.html"
 }
 
-func (this *UserManageController) UserManage(){
-	offset,_ := this.GetInt("offset")
-	limit,_ := this.GetInt("limit")
+func (this *UserManageController) UserManage() {
+	offset, _ := this.GetInt("offset")
+	limit, _ := this.GetInt("limit")
 
-	user_list := user.GetUserListByOffstAndLimit(offset,limit)
+	user_list := user.GetUserListByOffstAndLimit(offset, limit)
 
 	//user_data,page_num
-	beego.Info("======user_list=====",user_list)
+	beego.Info("======user_list=====", user_list)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["user_data"] = user_list
@@ -31,15 +31,15 @@ func (this *UserManageController) UserManage(){
 
 }
 
-func (this *UserManageController) ChangeUser(){
-	change_id,_ := this.GetInt("change_id")
+func (this *UserManageController) ChangeUser() {
+	change_id, _ := this.GetInt("change_id")
 	user_name := this.GetString("user_name")
 	login_name := this.GetString("login_name")
 	user_phone_number := this.GetString("user_phone_number")
 	user_job_number := this.GetString("user_job_number")
-	user_gender,_ := this.GetInt("user_gender")
+	user_gender, _ := this.GetInt("user_gender")
 
-	r :=user.UpdateUserById (change_id,user_name,login_name,user_phone_number,user_job_number,user_gender)
+	r := user.UpdateUserById(change_id, user_name, login_name, user_phone_number, user_job_number, user_gender)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["result"] = r
@@ -48,14 +48,14 @@ func (this *UserManageController) ChangeUser(){
 	return
 }
 
-func (this *UserManageController) AddUser(){
+func (this *UserManageController) AddUser() {
 	user_name := this.GetString("user_name")
 	login_name := this.GetString("login_name")
 	user_phone_number := this.GetString("user_phone_number")
 	user_job_number := this.GetString("user_job_number")
-	user_gender,_ := this.GetInt("user_gender")
+	user_gender, _ := this.GetInt("user_gender")
 
-	r :=user.AddUser (user_name,login_name,user_phone_number,user_job_number,user_gender)
+	r := user.AddUser(user_name, login_name, user_phone_number, user_job_number, user_gender)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["result"] = r
@@ -65,9 +65,9 @@ func (this *UserManageController) AddUser(){
 
 }
 
-func (this *UserManageController) DeleteUser(){
-	delete_id,_ := this.GetInt("delete_id")
-	r :=user.DeleteUserById(delete_id)
+func (this *UserManageController) DeleteUser() {
+	delete_id, _ := this.GetInt("delete_id")
+	r := user.DeleteUserById(delete_id)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["result"] = r

@@ -10,25 +10,25 @@ import (
 	"strconv"
 )
 
-type EventMessageController struct{
+type EventMessageController struct {
 	beego.Controller
 }
 
-func (this *EventMessageController) EventMessageInit(){
+func (this *EventMessageController) EventMessageInit() {
 	this.TplName = "answer/event_message.html"
 }
 
-func (this *EventMessageController) GetEventMessage(){
-	event_id,_ := this.GetInt("event_id")
+func (this *EventMessageController) GetEventMessage() {
+	event_id, _ := this.GetInt("event_id")
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
-		this.Ctx.Redirect(304,"/index")
+		this.Ctx.Redirect(304, "/index")
 		return
 	}
 	user_id := userSession.(int)
-	p := participant.GetParticipantById(user_id,event_id)
+	p := participant.GetParticipantById(user_id, event_id)
 	team_id := p.Team_id
-	t := team.GetTeamById(team_id,event_id)
+	t := team.GetTeamById(team_id, event_id)
 
 	//*****************************1.获取事件信息event_message*************************************************
 	var event_message map[string]interface{}
@@ -61,7 +61,7 @@ func (this *EventMessageController) GetEventMessage(){
 	event_message["multiple"] = problem_num.Multiple
 	event_message["judge"] = problem_num.Judge
 	event_message["fill"] = problem_num.Fill
-	beego.Info("========event_message======",event_message)
+	beego.Info("========event_message======", event_message)
 
 	//*****************************2.获取积分信息credit_message************************************************
 	var credit_message map[string]interface{}
@@ -70,14 +70,14 @@ func (this *EventMessageController) GetEventMessage(){
 	credit_message["team_credit"] = t.Team_credit
 	credit_log := credit.GetCreditLogByTeamId(team_id)
 	var detail_credit []map[string]interface{}
-	for _,v := range credit_log {
+	for _, v := range credit_log {
 		var d map[string]interface{}
 		d = make(map[string]interface{})
 		d["team_id"] = v.Refer_team_id
-		change_value := strconv.FormatFloat(v.Change_value,'f',-1,64)
-		d["change_reason"] = v.Change_reason+","+change_value+"分"
+		change_value := strconv.FormatFloat(v.Change_value, 'f', -1, 64)
+		d["change_reason"] = v.Change_reason + "," + change_value + "分"
 		d["change_time"] = v.Change_time
-		detail_credit = append(detail_credit,d)
+		detail_credit = append(detail_credit, d)
 	}
 	credit_message["detail_credit"] = detail_credit
 

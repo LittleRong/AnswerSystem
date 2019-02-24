@@ -9,22 +9,22 @@ import (
 	"strconv"
 )
 
-type UserIndexController struct{
+type UserIndexController struct {
 	beego.Controller
 }
 
-func (this *UserIndexController) UserIndex(){
+func (this *UserIndexController) UserIndex() {
 	this.TplName = "index/user_index.html"
 }
 
-func (this *UserIndexController) UserIndexInit(){
+func (this *UserIndexController) UserIndexInit() {
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	//获取用户信息
 	var user_message user.User
 	user_id := this.GetSession("user_id")
 	if user_id == nil { //未登陆
-		this.Ctx.Redirect(304,"/index")
+		this.Ctx.Redirect(304, "/index")
 		return
 	} else {
 		user_message = user.GetUserById(user_id.(int))
@@ -35,7 +35,7 @@ func (this *UserIndexController) UserIndexInit(){
 	event_message = make(map[string]string)
 	var event_message_array []map[string]string
 	user_event_list := participant.GetEventListByUserId(user_id.(int))
-	for _,valus := range user_event_list {
+	for _, valus := range user_event_list {
 		event := event.GetEventByEventId(valus.Refer_event_id)
 		event_message["event_id"] = strconv.Itoa(event.Event_id)
 		event_message["event_title"] = event.Event_title
@@ -63,7 +63,7 @@ func (this *UserIndexController) UserIndexInit(){
 		event_message["multiple"] = event_num_map["multiple"].(string)
 
 		//增加
-		event_message_array = append(event_message_array,event_message)
+		event_message_array = append(event_message_array, event_message)
 
 	}
 	beego.Info(event_message_array)

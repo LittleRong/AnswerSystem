@@ -9,27 +9,27 @@ import (
 	"strconv"
 )
 
-type ParticipantManageController struct{
+type ParticipantManageController struct {
 	beego.Controller
 }
 
-func (this *ParticipantManageController) ParticipantInsertInit(){
+func (this *ParticipantManageController) ParticipantInsertInit() {
 	new_event_id := this.GetSession("new_event_id")
 	if new_event_id == nil { //未设置
-		this.Ctx.Redirect(302,"/manage/event_insert_init")
+		this.Ctx.Redirect(302, "/manage/event_insert_init")
 		return
 	}
 	this.TplName = "manage/participant_manage.html"
 }
 
 func (this *ParticipantManageController) ParticipantGetUser() {
-	offset,_ := this.GetInt("offset")
-	limit,_ := this.GetInt("limit")
+	offset, _ := this.GetInt("offset")
+	limit, _ := this.GetInt("limit")
 
-	user_list := user.GetUserListByOffstAndLimit(offset,limit)
+	user_list := user.GetUserListByOffstAndLimit(offset, limit)
 
 	//user_data,page_num
-	beego.Info("======user_list=====",user_list)
+	beego.Info("======user_list=====", user_list)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["user_data"] = user_list
@@ -42,7 +42,7 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 func (this *ParticipantManageController) EventParticipantInsert() {
 	new_event_id := this.GetSession("new_event_id")
 	if new_event_id == nil { //未设置
-		this.Ctx.Redirect(302,"/manage/event_insert_init")
+		this.Ctx.Redirect(302, "/manage/event_insert_init")
 		return
 	}
 	event_id := new_event_id.(int)
@@ -51,20 +51,20 @@ func (this *ParticipantManageController) EventParticipantInsert() {
 	_ = json.Unmarshal([]byte(team_input), &f)
 	team_array := f.([]interface{})
 
-	for _,value := range team_array{
+	for _, value := range team_array {
 		beego.Info(value)
-		s := value.(map[string]interface {})
+		s := value.(map[string]interface{})
 		//插入新team
-		team_id := team.AddTeam("",event_id)
-		if(team_id != -1){
+		team_id := team.AddTeam("", event_id)
+		if (team_id != -1) {
 			//插入participant
-			leader_id,_ := strconv.Atoi(s["leader"].(string))
-			participant.AddParticipant(leader_id,event_id,team_id,true)
+			leader_id, _ := strconv.Atoi(s["leader"].(string))
+			participant.AddParticipant(leader_id, event_id, team_id, true)
 
 			member_array := s["member"].([]interface{})
-			for _,member := range member_array{
-				member_id,_ := strconv.Atoi(member.(string))
-				participant.AddParticipant(member_id,event_id,team_id,false)
+			for _, member := range member_array {
+				member_id, _ := strconv.Atoi(member.(string))
+				participant.AddParticipant(member_id, event_id, team_id, false)
 			}
 		}
 	}

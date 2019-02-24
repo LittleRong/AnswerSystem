@@ -5,11 +5,11 @@ import (
 	"hello/models/user"
 )
 
-type LoginController struct{
+type LoginController struct {
 	beego.Controller
 }
 
-func (this *LoginController) Index(){
+func (this *LoginController) Index() {
 	/*
 	user_id := this.GetSession("user_id")
 	if user_id != nil {//用户已经登陆，直接进入用户中心
@@ -30,69 +30,69 @@ func (this *LoginController) Index(){
 	this.TplName = "index.html"
 }
 
-func (this *LoginController) Check(){
-    //判断是否为POST方法
+func (this *LoginController) Check() {
+	//判断是否为POST方法
 
-		username := this.GetString("username") // login.html中传过来的数据，这个GetInt返回两个值
-		password := this.GetString("password")
+	username := this.GetString("username") // login.html中传过来的数据，这个GetInt返回两个值
+	password := this.GetString("password")
 
-		//校验
-		//valid := validation.Validation{}
-		//valid.Required(password, "password")
-		// valid.MaxSize(id, 20, "id")
-		//if valid.HasErrors() {
-		//	fmt.Println(valid.Errors[0].Key + valid.Errors[0].Message)
-		//	c.TplName = "bad.html"
-		//	return
-		//}
+	//校验
+	//valid := validation.Validation{}
+	//valid.Required(password, "password")
+	// valid.MaxSize(id, 20, "id")
+	//if valid.HasErrors() {
+	//	fmt.Println(valid.Errors[0].Key + valid.Errors[0].Message)
+	//	c.TplName = "bad.html"
+	//	return
+	//}
 	beego.Info("========Check======")
-		var result map[string]interface{}
-		user,loginFlag := user.Login(username,password)
-		if loginFlag == false {	//登录失败
-			result = map[string]interface{}{"result": "faild","message":"登陆失败,用户名或密码错误"}
+	var result map[string]interface{}
+	user, loginFlag := user.Login(username, password)
+	if loginFlag == false { //登录失败
+		result = map[string]interface{}{"result": "faild", "message": "登陆失败,用户名或密码错误"}
+	} else {
+		user_id := this.GetSession("user_id")
+		if user_id != nil { //已登陆
+			result = map[string]interface{}{"result": "logged"}
 		} else {
-			user_id := this.GetSession("user_id")
-			if user_id != nil { //已登陆
-				result = map[string]interface{}{"result": "logged"}
-			} else {
-				//设置session
-				user_id = user.Id
-				this.SetSession("user_id", user_id)
+			//设置session
+			user_id = user.Id
+			this.SetSession("user_id", user_id)
 
-				beego.Info("========session======",this.CruSession)
+			beego.Info("========session======", this.CruSession)
 
-				//判断用户权限
-				if user.Permission == 1 || user.Permission == 2  {//管理员
-					result = map[string]interface{}{"result": "admin"}
-				} else {//普通用户
-					result = map[string]interface{}{"result": "user"}
-				}
+			//判断用户权限
+			if user.Permission == 1 || user.Permission == 2 { //管理员
+				result = map[string]interface{}{"result": "admin"}
+			} else { //普通用户
+				result = map[string]interface{}{"result": "user"}
 			}
 		}
+	}
 
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
 }
 
-func (this *LoginController) ChangePwdInit(){
+func (this *LoginController) ChangePwdInit() {
 	this.TplName = "index/change_pwd.html"
 }
 
-func (this *LoginController) ChangePwd(){
+func (this *LoginController) ChangePwd() {
 	new_pwd := this.GetString("new_password")
 	old_pwd := this.GetString("old_password")
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
-		this.Ctx.Redirect(304,"/index")
+		this.Ctx.Redirect(304, "/index")
 		return
 	}
 	user_id := userSession.(int)
-	flag := user.UpdateUserPwd(user_id,old_pwd,new_pwd)
+	flag := user.UpdateUserPwd(user_id, old_pwd, new_pwd)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["result"] = flag
-	beego.Info("========result======",result)
+	beego.Info("========result======", result)
 	this.Data["json"] = result
 	this.ServeJSON()
 	return

@@ -7,79 +7,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- bootstrap -->
     <link rel="stylesheet" href="../static/css/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
 </head>
 <body>
-<div  class="pui-layout">
+<div class="pui-layout">
     <header>
         <div style="position: relative;">
             <img src="../static/img/header2.jpg" style="width: 100%;height: auto">
         </div>
     </header>
 </div>
-    <form class="pui-form pui-input-sm-large pui-input-md-small pui-grid"  id="login_form" method="post">
-        <h3 style="text-align: left">修改密码</h3>
-        <hr>
-        <div class="pui-row pui-form-group pui-form-group-underline-dashed">
-            <label>原密码</label>
-            <input type="password" id="old_password" name="old_password"/>
-        </div>
-        <div class="pui-row pui-form-group pui-form-group-underline-dashed">
-            <label>新密码</label>
-            <input type="password" minlength="6" maxlength="20" id="new_password" name="new_password"/>
-        </div>
-        <div class="pui-row pui-form-group pui-form-group-underline-dashed">
-            <label>新密码确认</label>
-            <input type="password" minlength="6" maxlength="20" id="new_password_again" name="new_password_again"/>
-        </div>
-        <div class="pui-row pui-form-group pui-form-group-underline-dashed">
-            <button id="change_pwd__btn" class="pui-btn pui-btn-small pui-btn-primary ">确认修改</button>
-            <a class="pui-btn pui-btn-small pui-btn-default " href="{:url('index/userindex/user_index')}">返回</a>
-        </div>
-    </form>
+<form class="pui-form pui-input-sm-large pui-input-md-small pui-grid" id="login_form" method="post">
+    <h3 style="text-align: left">修改密码</h3>
+    <hr>
+    <div class="pui-row pui-form-group pui-form-group-underline-dashed">
+        <label>原密码</label>
+        <input type="password" id="old_password" name="old_password"/>
+    </div>
+    <div class="pui-row pui-form-group pui-form-group-underline-dashed">
+        <label>新密码</label>
+        <input type="password" minlength="6" maxlength="20" id="new_password" name="new_password"/>
+    </div>
+    <div class="pui-row pui-form-group pui-form-group-underline-dashed">
+        <label>新密码确认</label>
+        <input type="password" minlength="6" maxlength="20" id="new_password_again" name="new_password_again"/>
+    </div>
+    <div class="pui-row pui-form-group pui-form-group-underline-dashed">
+        <button id="change_pwd__btn" class="pui-btn pui-btn-small pui-btn-primary ">确认修改</button>
+        <a class="pui-btn pui-btn-small pui-btn-default " href="{:url('index/userindex/user_index')}">返回</a>
+    </div>
+</form>
 </body>
 
 <script src="../static/js/jquery-2.1.1.min.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function(){
-    $("#change_pwd__btn").click(function(){
-        $(this).attr("disabled","true"); //设置变灰按钮，防止表单重复提交
-        var old_password = $("#old_password").val();
-        var new_password = $("#new_password").val();
-        var new_password_again = $("#new_password_again").val();
+    $(document).ready(function () {
+        $("#change_pwd__btn").click(function () {
+            $(this).attr("disabled", "true"); //设置变灰按钮，防止表单重复提交
+            var old_password = $("#old_password").val();
+            var new_password = $("#new_password").val();
+            var new_password_again = $("#new_password_again").val();
 
-        //验证两次新密码输入是否相同
-        if(old_password==""||new_password==""||new_password_again==""){
-            alert("输入不能为空，请重新输入");
-        }else if(new_password!=new_password_again){
-            alert("两次密码不相同，请重新输入");
-        }else{
-            var post_data = {old_password:old_password,new_password:new_password};
-            $.ajax({
-                url:"http://localhost:8080/index/change_pwd",
-                dataType: "json",
-                type: 'POST',
-                data: post_data,
-                async: false,
-                success: function(data){
-                    if(data['result']=='success'){
-                        alert("密码修改成功")
-                        window.location.href="/index/user_index";
-                    }else if (data['result']=='old password error'){
-                        alert("旧密码输入错误")
+            //验证两次新密码输入是否相同
+            if (old_password == "" || new_password == "" || new_password_again == "") {
+                alert("输入不能为空，请重新输入");
+            } else if (new_password != new_password_again) {
+                alert("两次密码不相同，请重新输入");
+            } else {
+                var post_data = {old_password: old_password, new_password: new_password};
+                $.ajax({
+                    url: "http://localhost:8080/index/change_pwd",
+                    dataType: "json",
+                    type: 'POST',
+                    data: post_data,
+                    async: false,
+                    success: function (data) {
+                        if (data['result'] == 'success') {
+                            alert("密码修改成功")
+                            window.location.href = "/index/user_index";
+                        } else if (data['result'] == 'old password error') {
+                            alert("旧密码输入错误")
+                        }
+                    },
+                    error: function (data, status, error) {
+                        alert("跳转失败");
+                        alert(error);
                     }
-                },
-                error: function(data, status, error){
-                    alert("跳转失败");
-                    alert(error);
-                }
-            });
-        }
-        $(this).removeAttr("disabled");
-        return false;
+                });
+            }
+            $(this).removeAttr("disabled");
+            return false;
+        });
     });
-});
 
 </script>
 

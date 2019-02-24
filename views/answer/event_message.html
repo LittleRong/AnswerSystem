@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
-    <meta name="renderer" content="webkit" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="renderer" content="webkit"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 
     <title>事件详情</title>
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css" />
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
 </head>
 <body>
 <div class="pui-layout">
@@ -18,7 +18,8 @@
     </header>
 </div>
 <article style="width: 98%;margin: 0 auto">
-    <h2 style="margin-top: 10px;text-align: left"><a type="button" class="pui-btn pui-btn-default" href="{:url('index/userindex/user_index')}" >返回</a></h2>
+    <h2 style="margin-top: 10px;text-align: left"><a type="button" class="pui-btn pui-btn-default"
+                                                     href="{:url('index/userindex/user_index')}">返回</a></h2>
     <h2 style="text-align: left;margin: 0" id="event_title"></h2>
     <div class="pui-article-subtitle" id="event_type"></div>
     <div class="pui-article-subtitle" id="event_description"></div>
@@ -56,50 +57,50 @@
         }
     }
 
-    $(document).ready(function(){
-            var event_id = getUrlParam("event_id");
-            var post_data = {event_id:event_id};
+    $(document).ready(function () {
+        var event_id = getUrlParam("event_id");
+        var post_data = {event_id: event_id};
         $.ajax({
             url: "http://localhost:8080/answer/get_event_message",
             dataType: "json",
             type: "GET",
             data: post_data,
             async: false,
-            success: function(data){
+            success: function (data) {
                 //事件信息
                 $("#event_title").html(data["event_message"]["event_title"]);
-                $("#event_type").html("类型："+data["event_message"]["event_type"]);
-                $("#event_description").html("简介："+data["event_message"]["event_description"]);
-                $("#event_time").html("活动时间："+data["event_message"]["start_time"]+"至"+data["event_message"]["end_time"]);
+                $("#event_type").html("类型：" + data["event_message"]["event_type"]);
+                $("#event_description").html("简介：" + data["event_message"]["event_description"]);
+                $("#event_time").html("活动时间：" + data["event_message"]["start_time"] + "至" + data["event_message"]["end_time"]);
                 var credit_message = "积分规则：<br>"
-                    +"单选题"+data["event_message"]["single"]+"道，每题"+data["event_message"]["single_score"]+"分<br>"
-                                              +"多选题"+data["event_message"]["multiple"]+"道，每题"+data["event_message"]["multiple_score"]+"分<br>"
-                                              +"判断题"+data["event_message"]["judge"]+"道，每题"+data["event_message"]["judge_score"]+"分<br>"
-                                              +"填空题"+data["event_message"]["fill"]+"道，每题"+data["event_message"]["fill_score"]+"分<br>"
-                    +"当日团队全对额外加"+data["event_message"]["team_score"]+"分<br>"
-                    +"团队总积分上限"+data["event_message"]["team_score_up"]+"分<br>"
-                    +"当日个人全对额外加"+data["event_message"]["person_score"]+"分<br>"
-                    +"个人总积分上限"+data["event_message"]["person_score_up"]+"分<br>";
+                    + "单选题" + data["event_message"]["single"] + "道，每题" + data["event_message"]["single_score"] + "分<br>"
+                    + "多选题" + data["event_message"]["multiple"] + "道，每题" + data["event_message"]["multiple_score"] + "分<br>"
+                    + "判断题" + data["event_message"]["judge"] + "道，每题" + data["event_message"]["judge_score"] + "分<br>"
+                    + "填空题" + data["event_message"]["fill"] + "道，每题" + data["event_message"]["fill_score"] + "分<br>"
+                    + "当日团队全对额外加" + data["event_message"]["team_score"] + "分<br>"
+                    + "团队总积分上限" + data["event_message"]["team_score_up"] + "分<br>"
+                    + "当日个人全对额外加" + data["event_message"]["person_score"] + "分<br>"
+                    + "个人总积分上限" + data["event_message"]["person_score_up"] + "分<br>";
                 $("#credit_rule").html(credit_message);
 
                 var answer_day = data["event_message"]["answer_day"];
                 var show_answer_day = "答题时间：";
                 var arr = answer_day.split(",");
-                var day_turn = {"0":"星期日","1":"星期一","2":"星期二","3":"星期三","4":"星期四","5":"星期五","6":"星期六"}
-                for ( var i = 0; i <arr.length; i++){
+                var day_turn = {"0": "星期日", "1": "星期一", "2": "星期二", "3": "星期三", "4": "星期四", "5": "星期五", "6": "星期六"}
+                for (var i = 0; i < arr.length; i++) {
                     show_answer_day += day_turn[arr[i]] + ",";
                 }
 
                 $("#answer_day").html(show_answer_day);
 
                 //积分信息
-                $("#person_credit").html("个人得分："+data["credit_message"]["person_credit"]);
-                $("#team_credit").html("团队得分："+data["credit_message"]["team_credit"]);
+                $("#person_credit").html("个人得分：" + data["credit_message"]["person_credit"]);
+                $("#team_credit").html("团队得分：" + data["credit_message"]["team_credit"]);
 
                 //积分详情
-                var show_str="";
-                if(data["credit_message"]["detail_credit"] != ""){
-                    show_str += '积分详情：'+ '<table class="pui-table pui-table-bordered pui-table-text-center pui-table-thead-bg pui-table-interlaced-color box-shadow-bottom pui-table-gradient">' +
+                var show_str = "";
+                if (data["credit_message"]["detail_credit"] != "") {
+                    show_str += '积分详情：' + '<table class="pui-table pui-table-bordered pui-table-text-center pui-table-thead-bg pui-table-interlaced-color box-shadow-bottom pui-table-gradient">' +
                         '                            <thead>' +
                         '                            <tr>' +
                         '                            <th>组ID</th>' +
@@ -110,19 +111,19 @@
                         '                            <tbody>';
                     $.each(data["credit_message"]["detail_credit"], function (i, item) {
                         show_str += '<tr>'
-                        +'<td>'+item.team_id+'</td>'
-                            +'<td>'+item.change_reason+'</td>'
-                            +'<td>'+item.change_time+'</td>'
-                       +' </tr>';
+                            + '<td>' + item.team_id + '</td>'
+                            + '<td>' + item.change_reason + '</td>'
+                            + '<td>' + item.change_time + '</td>'
+                            + ' </tr>';
                     });
                     show_str += '</tbody></table>';
-                }else{
+                } else {
                     show_str = "积分详情：暂时没有记录"
                 }
                 $("#detail_credit").html(show_str);
 
             },
-            error: function(data, status, error){
+            error: function (data, status, error) {
                 alert("跳转失败");
                 alert(error);
             }

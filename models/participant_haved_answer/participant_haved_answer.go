@@ -6,44 +6,44 @@ import (
 	"time"
 )
 
-type Participant_haved_answer struct{
-	Refer_participant_id int `orm:"pk"`//参赛者id
-	Refer_problem_id int `orm:"pk"`//题id
-	Refer_team_id int //关联的组id
-	Answer_date string //用户答题日期
-	User_answer string //用户答题结果
-	True_or_false bool //用户答题是否正确
+type Participant_haved_answer struct {
+	Refer_participant_id int `orm:"pk"` //参赛者id
+	Refer_problem_id     int `orm:"pk"` //题id
+	Refer_team_id        int            //关联的组id
+	Answer_date          string         //用户答题日期
+	User_answer          string         //用户答题结果
+	True_or_false        bool           //用户答题是否正确
 }
 
-func UpdateUserAnswer(participant_id int, problem_id int,user_answer string,true_or_false bool)  {
+func UpdateUserAnswer(participant_id int, problem_id int, user_answer string, true_or_false bool) {
 	//用户答题时间
 	var answer_date string
-	 now_date := time.Now()
-	 unix_time := now_date.Unix()
-	 answer_date = time.Unix(unix_time,0).Format("2006-01-02 15:04:05")
+	now_date := time.Now()
+	unix_time := now_date.Unix()
+	answer_date = time.Unix(unix_time, 0).Format("2006-01-02 15:04:05")
 
-	 //更新
-	 o := orm.NewOrm()
-	rawSetter,err := o.Raw("UPDATE participant_haved_answer " +
-		"SET answer_date=?, user_answer=?, true_or_false=? " +
-		"WHERE refer_participant_id=? AND refer_problem_id=?",answer_date,user_answer,true_or_false,participant_id,problem_id).Exec();
+	//更新
+	o := orm.NewOrm()
+	rawSetter, err := o.Raw("UPDATE participant_haved_answer "+
+		"SET answer_date=?, user_answer=?, true_or_false=? "+
+		"WHERE refer_participant_id=? AND refer_problem_id=?", answer_date, user_answer, true_or_false, participant_id, problem_id).Exec();
 	num, err := rawSetter.RowsAffected()
-	if err!=nil{
-		beego.Info("======UpdateUserAnswer's err=====",err)
+	if err != nil {
+		beego.Info("======UpdateUserAnswer's err=====", err)
 	} else {
-		beego.Info("======UpdateUserAnswer's num=====",num)
+		beego.Info("======UpdateUserAnswer's num=====", num)
 	}
 
 }
 
-func AddProblems(problems Participant_haved_answer)  {
-	beego.Info("======AddProblems's problems=====",problems)
+func AddProblems(problems Participant_haved_answer) {
+	beego.Info("======AddProblems's problems=====", problems)
 	o := orm.NewOrm()
-	_,err := o.Raw("INSERT INTO participant_haved_answer " +
-		"(refer_participant_id,refer_problem_id,refer_team_id,answer_date) " +
-		"VALUES (?,?,?,?) ",problems.Refer_participant_id,problems.Refer_problem_id,problems.Refer_team_id,problems.Answer_date).Exec();
-	if err!=nil{
-		beego.Info("======AddProblems's err!!!=====",err)
+	_, err := o.Raw("INSERT INTO participant_haved_answer "+
+		"(refer_participant_id,refer_problem_id,refer_team_id,answer_date) "+
+		"VALUES (?,?,?,?) ", problems.Refer_participant_id, problems.Refer_problem_id, problems.Refer_team_id, problems.Answer_date).Exec();
+	if err != nil {
+		beego.Info("======AddProblems's err!!!=====", err)
 	}
 
 }
