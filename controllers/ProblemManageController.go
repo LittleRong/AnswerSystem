@@ -21,20 +21,20 @@ func (this *ProblemManageController) ProblemManageInit() {
 }
 
 func (this *ProblemManageController) ProblemManage() {
-	//offset,_ := this.GetInt("offset")
-	//limit,_ := this.GetInt("limit")
-	//
-	//problem_list := problem.GetProblemListByOffstAndLimit(offset,limit)
-	//
-	////problem_data,page_num
-	//beego.Info("======problem_list=====",problem_list)
-	//var result map[string]interface{}
-	//result = make(map[string]interface{})
-	//result["problem_data"] = problem_list
-	//result["page_num"] = offset
-	//this.Data["json"] = result
-	//this.ServeJSON()
-	//return
+	offset,_ := this.GetInt("offset")
+	limit,_ := this.GetInt("limit")
+
+	problem_list := problem.GetProblemListByOffstAndLimit(offset,limit)
+
+	//problem_data,page_num
+	beego.Info("======problem_list=====",problem_list)
+	var result map[string]interface{}
+	result = make(map[string]interface{})
+	result["problem_data"] = problem_list
+	result["page_num"] = offset
+	this.Data["json"] = result
+	this.ServeJSON()
+	return
 
 }
 

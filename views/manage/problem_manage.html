@@ -95,35 +95,10 @@
                             <th>题目内容</th>
                             <th>题目答案</th>
                             <th>题目选项</th>
+                            <th>编辑</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {if condition="!empty($data)"}
-                        {volist name="data" id="vo"}
-                        <tr id=t_{$vo.problem_id}>
-                            <td class="problem_id">{$vo.problem_id}</td>
-                            <td>{switch name="$vo.problem_type"}
-                                {case value="0"}填空题{/case}
-                                {case value="1"}单选题{/case}
-                                {case value="2"}多选题{/case}
-                                {case value="3"}判断题{/case}
-                                {default /}其他
-                                {/switch}
-                            </td>
-                            <td>{$vo.problem_class}</td>
-                            <td>{$vo.problem}</td>
-                            <td>{$vo.answer}</td>
-                            <td>
-                                {if condition="!empty($vo.option)"}
-                                {foreach $vo.option as $v=>$k}
-                                <p>{$v}{$k}</p>
-
-                                {/foreach}
-                                {/if}
-
-                            </td>
-                            {/volist}
-                            {/if}
+                        <tbody id="problem_message_body">
                         </tbody>
                     </table>
                     <!-- <button id="create-question" class="create_btn pui-btn pui-btn-primary pui-btn-large pui-text-shadow">创建新问题</button> -->
@@ -167,6 +142,7 @@
 
 </div>
 <script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../static/js/planeui.js"></script>
 
 </body>
 <script>
@@ -221,13 +197,12 @@
                 question_answer: question_answer
             };
             $.ajax({
-                url: "",
+                url: "http://localhost:8080/manage/add_problem",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
                 async: false,
                 success: function (data) {
-                    json_data = eval('(' + data + ')');
                     alert("添加成功");
                     // alert(json_data['result']);
                 },
@@ -246,20 +221,78 @@
 </html>
 <script type="text/javascript">
     $(document).ready(function () {
+        var post_data = {limit: 10, offset: 1};
+        $.ajax({
+            url: "http://localhost:8080/manage/problem_manage",
+            dataType: "json",
+            type: 'GET',
+            data: post_data,
+            async: false,
+            success: function (data) {
+                var show_str = "";
+                if (data["problem_data"] == "" || data["problem_data"] == null) {
+                    show_str += "<div class='pui-card-box'><h1>当前无题目<small></small></h1></div>"
+                } else {
+                    $.each(data['problem_data'], function (i, item) {
+                        var problem_answer_json = eval("(" + item.Problem_answer + ")");
+                        var problem_answer = "";
+                        var problem_type = "";
+                        var problem_option = "";
+                        if (item.Problem_type == 1) {
+                            problem_answer = problem_answer_json["content"];
+                            problem_type = "单选题";
+                            var problem_option_json = eval("(" + item.Problem_option + ")");
+                            $.each(problem_option_json, function (j, answer) {
+                                problem_option += answer["content"] + "<br>";
+                            });
+                        } else if (item.Problem_type == 2) {
+                            $.each(problem_answer_json, function (j, answer) {
+                                problem_answer += answer["content"] + "<br>";
+                            });
+                            problem_type = "多选题";
+                            var problem_option_json = eval("(" + item.Problem_option + ")");
+                            $.each(problem_option_json, function (j, answer) {
+                                problem_option += answer["content"] + "<br>";
+                            });
+                        } else if (item.Problem_type == 3) {
+                            problem_answer = problem_answer_json == false ? "否" : "是";
+                            problem_type = "判断题";
+                        } else {
+                            problem_answer = problem_answer_json;
+                            problem_type = "填空题";
+                        }
+                        show_str += '<tr id="t_' + item.Problem_id + '">'
+                            + '<td class="problem_id">' + item.Problem_id + '</td>'
+                            + '<td class="problem_type">' + problem_type + '</td>'
+                            + '<td class="problem_class">' + item.Problem_class + '</td>'
+                            + '<td class="problem_content">' + item.Problem_content + '</td>'
+                            + '<td class="problem_answer">' + problem_answer + '</td>'
+                            + '<td class="problem_option">' + problem_option + '</td>'
+                            + "<td><button class='change_btn pui-btn pui-btn-error pui-btn-small'>" + "修改" + "</button>"
+                            + "<button class='delete_btn pui-btn pui-btn-primary pui-btn-small'>" + "删除" + "</button></td>";
+                    });
+                }
+                $('#problem_message_body').html(show_str);
+            },
+            error: function (data, status, error) {
+                alert("跳转失败");
+                alert(error);
+            }
+        });
+
         $(".delete_btn").click(function () {
             alert("确认删除");
             var delete_id = $(this).parent().parent().find('td').eq(0).html();
             var post_data = {delete_id: delete_id};
 
             $.ajax({
-                url: "{:url('index/usermanage/deleteuser')}",
+                url: "http://localhost:8080/manage/delete_problem",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
                 async: false,
                 success: function (data) {
-                    json_data = eval('(' + data + ')');
-                    alert(json_data['result']);
+
                     window.location.reload();
                 },
                 error: function (data, status, error) {
@@ -270,11 +303,17 @@
         });
         $(".change_btn").click(function () {
             change_id = $(this).parent().parent().find('td').eq(0).html();
+            var problem_class = $(this).parent().parent().find('td').eq(2).html();
+            var problem_content = $(this).parent().parent().find('td').eq(3).html();
+            var problem_answer = $(this).parent().parent().find('td').eq(4).html();
             $.dialog({
                 from: "#question_form_change",
                 padding: 10
             });
-
+            //显示在dialog上
+            $(".pui-dialog #change_question_type").val(problem_class);
+            $(".pui-dialog #change_question_content").val(problem_content);
+            $(".pui-dialog #change_question_answer").val(problem_answer);//这里的答案还要改
 
         });
         $(".create_btn").click(function again() {

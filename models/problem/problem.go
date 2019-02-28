@@ -39,3 +39,12 @@ func GetNewProblemByType(start int, peoblem_type int) []Problem {
 	o.QueryTable("problem").Filter("problem_id__gte", start).Filter("problem_type", peoblem_type).All(&p)
 	return p
 }
+
+func GetProblemListByOffstAndLimit(offset int, limit int) []Problem {
+	var u []Problem
+	o := orm.NewOrm()
+	offset = offset - 1
+	o.QueryTable("problem").Offset(offset * limit).Limit(limit).All(&u)
+	beego.Info("======GetProblemListByOffstAndLimit=====", u)
+	return u
+}
