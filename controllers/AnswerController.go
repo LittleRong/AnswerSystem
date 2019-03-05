@@ -56,7 +56,15 @@ func (this *AnswerController) GetUserProblems() {
 
 	//*****************************1.获取用户题目*************************************************
 	problemNum := event.GetProblemNumByEventId(event_id)
-	problem, buildFlag := union.GetProblemNoAnswer(user_id, event_id, team_id, paticipant_id, problemNum)
+	problem, buildFlag, answerFlag := union.GetProblemNoAnswer(user_id, event_id, team_id, paticipant_id, problemNum)
+	if answerFlag == true {
+		var result map[string]interface{}
+		result = make(map[string]interface{})
+		result["result"] = "已经完成答题，不能再答题了！"
+		this.Data["json"] = result
+		this.ServeJSON()
+		return
+	}
 
 	//*****************************2.获取剩余答题时间*************************************************
 	var answer_time float64

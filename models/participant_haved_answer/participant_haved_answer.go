@@ -47,3 +47,19 @@ func AddProblems(problems Participant_haved_answer) {
 	}
 
 }
+
+func JudgeIfHaveAnswer(participant_id int) bool {
+	var answer_date string
+	now_date := time.Now()
+	unix_time := now_date.Unix()
+	answer_date = time.Unix(unix_time, 0).Format("2006-01-02")
+	o := orm.NewOrm()
+	var p []Participant_haved_answer
+	num, err := o.Raw("SELECT * FROM participant_haved_answer WHERE refer_participant_id =? AND user_answer != ''  AND answer_date like ? ", participant_id, answer_date).QueryRows(&p);
+	beego.Info("**************JudgeIfHaveAnswer*****************", err)
+
+	if err == nil && num >0 {
+		return true//已经提交了
+	}
+	return false
+}

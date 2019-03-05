@@ -88,9 +88,6 @@
 
 <script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
 <script type="text/javascript">
-    $(function () {
-        alert("倒计时开始，请在规定时间内交卷");
-    })
 
     function leftTimer(year, month, day, hour, minute, second) {
         // 准备
@@ -140,11 +137,18 @@
             data: post_data,
             async: false,
             success: function (data) {
+                if(data.hasOwnProperty("result")){
+                    alert(data['result'])
+                    window.location.href = "../index/user_index_init";
+                    return false;
+                }
+
                 //倒计时
+                alert("倒计时开始，请在规定时间内交卷");
                 var answer_time = data['answer_time'];
                 if (answer_time == '-1' || answer_time <= 0) {
                     alert("您的答题时间已经用完了哦！");
-                    window.location.href = "../index/user_index";
+                    window.location.href = "../index/user_index_init";
                     return false;
                 } else {
                     $("#time").val(answer_time)
@@ -296,6 +300,7 @@
                 if (s_answer) {
                 } else {
                     flag++;
+                    s_answer = "-1"
                 }//添加题目未做数量
                 var answer_single = {};
                 answer_single['problem_id'] = s;
@@ -321,9 +326,9 @@
                 });
                 // var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
                 if (id_array.toString() == "") {
-                    flag++
-                }
-                ;
+                    flag++;
+                    id_array = [-1]
+                };
                 var answer_multi = {};
                 answer_multi['problem_id'] = m;
                 answer_multi['answer'] = id_array;
@@ -338,9 +343,12 @@
                 var j = $("#judge_panel .timu_item").eq(i).attr("id");
                 var j_answer = $("#judge_panel .timu_item input[type='radio']:checked").eq(i).val();
                 var answer_judge = {};
+                if (j_answer == "" || j_answer == null) {
+                    flag++;
+                    j_answer = "-1"
+                };
                 answer_judge['problem_id'] = j;
                 answer_judge['answer'] = j_answer;
-
                 judge_items[i] = answer_judge;
 
             }
@@ -352,7 +360,10 @@
                 var f = $("#fill_panel .timu_item").eq(i).attr("id");
                 var f_answer = $("#fill_panel .timu_item input[type='text']").eq(i).val();
                 var answer_fill = {};
-
+                if (f_answer == "") {
+                    flag++;
+                    f_answer = "未答题"
+                };
                 answer_fill['problem_id'] = f;
                 answer_fill['answer'] = f_answer;
 
@@ -375,7 +386,6 @@
 
 
             if (confirm("确认交卷吗？")) {
-                alert(JSON.stringify(user_answer));
                 $.ajax({
                     type: "POST",
                     url: "http://localhost:8080/answer/get_user_answer",

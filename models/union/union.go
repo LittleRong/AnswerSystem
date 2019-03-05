@@ -13,10 +13,10 @@ import (
 	"time"
 )
 
-func GetProblemNoAnswer(user_id int, event_id int, team_id int, participant_id int, problemNum event.ProblemNum) (map[string]interface{}, bool) {
+func GetProblemNoAnswer(user_id int, event_id int, team_id int, participant_id int, problemNum event.ProblemNum) (map[string]interface{}, bool,bool) {
 	var problems []problem.Problem
 	buildFlag := false //是否已经生成过题目
-	//answerFlag := false//是否已经答题
+	answerFlag := false//是否已经答题
 	o := orm.NewOrm()
 	now_time := time.Now()
 	unix_time := now_time.Unix()
@@ -24,6 +24,11 @@ func GetProblemNoAnswer(user_id int, event_id int, team_id int, participant_id i
 	answer_date := time.Unix(unix_time, 0).Format("2006-01-02 15:04:05")
 
 	//*****************************1.检查是否已完成答题*************************************************
+	answerFlag = participant_haved_answer.JudgeIfHaveAnswer(participant_id)
+	beego.Info("**************JudgeIfHaveAnswer*****************", answerFlag)
+	if answerFlag == true {
+		return nil, true, answerFlag
+	}
 
 	//*****************************2.检查是否已经生成题目，若已经生成，直接查询返回*************************
 	_, err := o.Raw("SELECT problem.* "+
@@ -72,7 +77,7 @@ func GetProblemNoAnswer(user_id int, event_id int, team_id int, participant_id i
 	//*****************************5.设置传给前端的参数*****************************************
 	result := GeneratingFrontProblems(problems)
 
-	return result, buildFlag
+	return result, buildFlag, answerFlag
 }
 
 func GeneratingProblems(event_id int, participant_id int, problem_type int, problem_num int) []problem.Problem {
