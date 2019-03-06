@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+service UserManage {
+    rpc GetUserListByOffstAndLimit(GetUserListReq) returns (UserListRsp) {}
+}
+
+message GetUserListReq {
+    int32 offset = 1;
+    int32 limit = 2;
+    int64 manageId = 3;
+}
+
+message UserMesssage {
+    int64 id = 1;
+    string loginName = 2;
+    string pwd = 3;
+    string name = 4;
+    string phoneNumber = 5;
+    string jobNumber = 6;
+    int32 permission = 7;
+    int32 gender = 8;
+    bool deleted = 9;
+}
+
+message UserListRsp {
+    repeated UserMesssage userList= 1;
+}
+
