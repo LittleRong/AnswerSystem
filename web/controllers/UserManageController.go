@@ -3,6 +3,9 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"web/models/user"
+	"context"
+	micro "github.com/micro/go-micro"
+	proto "service/protoc" //proto文件放置路径
 )
 
 type UserManageController struct {
@@ -16,14 +19,31 @@ func (this *UserManageController) UserManageInit() {
 func (this *UserManageController) UserManage() {
 	offset, _ := this.GetInt("offset")
 	limit, _ := this.GetInt("limit")
+	//获取用户信息
+	userSession := this.GetSession("user_id")
+	if userSession == nil { //未登陆
+		this.Ctx.Redirect(304, "/index")
+		return
+	}
+	userId := userSession.(int)
 
-	user_list := user.GetUserListByOffstAndLimit(offset, limit)
+	//user_list := user.GetUserListByOffstAndLimit(offset, limit)
+	//调用服务
+	service := micro.NewService(micro.Name("UserManage.client"))
+	service.Init()
+
+	//create new client
+	userManage := proto.NewUserManageService("UserManage",service.Client())
+
+	//call the userManage method
+	req := proto.GetUserListReq{Offset:int32(offset),Limit:int32(limit),ManageId:int64(userId)}
+	user_list, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
 
 	//user_data,page_num
-	beego.Info("======user_list=====", user_list)
+	beego.Info("======user_list=====", user_list.UserList,"-----------------",err)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["user_data"] = user_list
+	result["user_data"] = user_list.UserList
 	result["page_num"] = offset
 	this.Data["json"] = result
 	this.ServeJSON()

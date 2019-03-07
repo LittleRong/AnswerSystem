@@ -400,13 +400,13 @@
                 var show_str = "";
                 $.each(data['user_data'], function (i, item) {
                     var gender = "男";
-                    if (item.Gender == "1") gender = "女";
+                    if (item.gender == "1") gender = "女";
 
-                    show_str += "<tr><td>" + item.Id + "</td><td>"
-                        + item.Login_name + "</td><td>"
-                        + item.Name + "</td><td>"
-                        + item.Phone_number + "</td><td>"
-                        + item.Job_number + "</td><td>"
+                    show_str += "<tr><td>" + item.id + "</td><td>"
+                        + item.login_name + "</td><td>"
+                        + item.name + "</td><td>"
+                        + item.phone_number + "</td><td>"
+                        + item.job_number + "</td><td>"
                         + gender + "</td><td>"
 
                         + "<button class='change_btn pui-btn pui-btn-error pui-btn-small'>" + "修改" + "</button>"

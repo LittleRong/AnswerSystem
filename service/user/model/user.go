@@ -26,3 +26,7 @@ func GetUserListByOffstAndLimit(offset int, limit int) []User {
 	beego.Info("======GetUserListByOffstAndLimit=====", u)
 	return u
 }
+
+func init() {
+	orm.RegisterModel(new(User)) // 注册模型，建立User类型对象，注册模型时，需要引入包
+}

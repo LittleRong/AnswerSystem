@@ -100,7 +100,7 @@ func GetUserListByOffstAndLimit(offset int, limit int) []User {
 	o := orm.NewOrm()
 	offset = offset - 1
 	o.QueryTable("user").Filter("deleted", 0).Offset(offset * limit).Limit(limit).All(&u, "id", "login_name", "name", "phone_number", "job_number", "gender")
-	beego.Info("======GetUserListByOffstAndLimit=====", u)
+	beego.Info("======web GetUserListByOffstAndLimit=====", u)
 	return u
 }
 

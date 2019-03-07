@@ -12,11 +12,11 @@ message GetUserListReq {
 
 message UserMesssage {
     int64 id = 1;
-    string loginName = 2;
+    string login_name = 2;
     string pwd = 3;
     string name = 4;
-    string phoneNumber = 5;
-    string jobNumber = 6;
+    string phone_number = 5;
+    string job_number = 6;
     int32 permission = 7;
     int32 gender = 8;
     bool deleted = 9;
