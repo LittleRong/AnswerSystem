@@ -11,6 +11,12 @@ It has these top-level messages:
 	GetUserListReq
 	UserMesssage
 	UserListRsp
+	ChangeUserReq
+	ChangeUserRsp
+	AddUserReq
+	AddUserRsp
+	DeleteUserReq
+	DeleteUserRsp
 */
 package userManage
 
@@ -44,6 +50,9 @@ var _ server.Option
 
 type UserManageService interface {
 	GetUserListByOffstAndLimit(ctx context.Context, in *GetUserListReq, opts ...client.CallOption) (*UserListRsp, error)
+	UpdateUserById(ctx context.Context, in *ChangeUserReq, opts ...client.CallOption) (*ChangeUserRsp, error)
+	AddUser(ctx context.Context, in *AddUserReq, opts ...client.CallOption) (*AddUserRsp, error)
+	DeleteUserById(ctx context.Context, in *DeleteUserReq, opts ...client.CallOption) (*DeleteUserRsp, error)
 }
 
 type userManageService struct {
@@ -74,15 +83,51 @@ func (c *userManageService) GetUserListByOffstAndLimit(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *userManageService) UpdateUserById(ctx context.Context, in *ChangeUserReq, opts ...client.CallOption) (*ChangeUserRsp, error) {
+	req := c.c.NewRequest(c.name, "UserManage.UpdateUserById", in)
+	out := new(ChangeUserRsp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManageService) AddUser(ctx context.Context, in *AddUserReq, opts ...client.CallOption) (*AddUserRsp, error) {
+	req := c.c.NewRequest(c.name, "UserManage.AddUser", in)
+	out := new(AddUserRsp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManageService) DeleteUserById(ctx context.Context, in *DeleteUserReq, opts ...client.CallOption) (*DeleteUserRsp, error) {
+	req := c.c.NewRequest(c.name, "UserManage.DeleteUserById", in)
+	out := new(DeleteUserRsp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for UserManage service
 
 type UserManageHandler interface {
 	GetUserListByOffstAndLimit(context.Context, *GetUserListReq, *UserListRsp) error
+	UpdateUserById(context.Context, *ChangeUserReq, *ChangeUserRsp) error
+	AddUser(context.Context, *AddUserReq, *AddUserRsp) error
+	DeleteUserById(context.Context, *DeleteUserReq, *DeleteUserRsp) error
 }
 
 func RegisterUserManageHandler(s server.Server, hdlr UserManageHandler, opts ...server.HandlerOption) error {
 	type userManage interface {
 		GetUserListByOffstAndLimit(ctx context.Context, in *GetUserListReq, out *UserListRsp) error
+		UpdateUserById(ctx context.Context, in *ChangeUserReq, out *ChangeUserRsp) error
+		AddUser(ctx context.Context, in *AddUserReq, out *AddUserRsp) error
+		DeleteUserById(ctx context.Context, in *DeleteUserReq, out *DeleteUserRsp) error
 	}
 	type UserManage struct {
 		userManage
@@ -97,4 +142,16 @@ type userManageHandler struct {
 
 func (h *userManageHandler) GetUserListByOffstAndLimit(ctx context.Context, in *GetUserListReq, out *UserListRsp) error {
 	return h.UserManageHandler.GetUserListByOffstAndLimit(ctx, in, out)
+}
+
+func (h *userManageHandler) UpdateUserById(ctx context.Context, in *ChangeUserReq, out *ChangeUserRsp) error {
+	return h.UserManageHandler.UpdateUserById(ctx, in, out)
+}
+
+func (h *userManageHandler) AddUser(ctx context.Context, in *AddUserReq, out *AddUserRsp) error {
+	return h.UserManageHandler.AddUser(ctx, in, out)
+}
+
+func (h *userManageHandler) DeleteUserById(ctx context.Context, in *DeleteUserReq, out *DeleteUserRsp) error {
+	return h.UserManageHandler.DeleteUserById(ctx, in, out)
 }

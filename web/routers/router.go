@@ -15,7 +15,7 @@ func init() {
 	beego.Router("/manage/user_manage", &controllers.UserManageController{}, `get:UserManage`)
 	beego.Router("/manage/change_user", &controllers.UserManageController{}, `post:ChangeUser`)
 	beego.Router("/manage/add_user", &controllers.UserManageController{}, `post:AddUser`)
-	beego.Router("/manage/delete_user", &controllers.UserManageController{}, `post:DeleteUser`)
+	beego.Router("/manage/delete_user", &controllers.UserManageController{}, `post:DeleteUserById`)
 
 	beego.Router("/manage/problem_manage_init", &controllers.ProblemManageController{}, `get:ProblemManageInit`)
 	beego.Router("/manage/problem_manage", &controllers.ProblemManageController{}, `get:ProblemManage`)

@@ -29,6 +29,48 @@ func (this *UserManage) GetUserListByOffstAndLimit(ctx context.Context, req *pro
 	return nil
 }
 
+func (this *UserManage) UpdateUserById(ctx context.Context, req *proto.ChangeUserReq, rsp *proto.ChangeUserRsp) error{
+	var changeId = req.ChangeId
+	var name = req.Name
+	var loginName = req.LoginName
+	var phoneNumber = req.PhoneNumber
+	var jobNumber = req.JobNumber
+	var gender = req.Gender
+
+	result,id := model.UpdateUserById(int(changeId),name,loginName,phoneNumber,jobNumber,int(gender))
+
+	rsp.Message = result
+	rsp.UserId = int64(id)
+
+	return nil
+}
+
+func (this *UserManage) AddUser(ctx context.Context, req *proto.AddUserReq, rsp *proto.AddUserRsp) error{
+	var name = req.Name
+	var loginName = req.LoginName
+	var phoneNumber = req.PhoneNumber
+	var jobNumber = req.JobNumber
+	var gender = req.Gender
+
+	result,id := model.AddUser(name,loginName,phoneNumber,jobNumber,int(gender))
+
+	rsp.Message = result
+	rsp.UserId = int64(id)
+
+	return nil
+}
+
+func (this *UserManage) DeleteUserById(ctx context.Context, req *proto.DeleteUserReq, rsp *proto.DeleteUserRsp) error{
+	var deleteId = req.DeleteId
+
+	result,id := model.DeleteUserById(int(deleteId))
+
+	rsp.Message = result
+	rsp.UserId = int64(id)
+
+	return nil
+}
+
 func main(){
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
@@ -47,7 +89,7 @@ func main(){
 
 	//run the server
 	if err:=service.Run();err != nil {
-		beego.Info("========GetUserListByOffstAndLimit's err===========",err)
+		beego.Info("========UserManage's err===========",err)
 	}
 }
 

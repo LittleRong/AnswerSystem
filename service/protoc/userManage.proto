@@ -2,6 +2,9 @@ syntax = "proto3";
 
 service UserManage {
     rpc GetUserListByOffstAndLimit(GetUserListReq) returns (UserListRsp) {}
+    rpc UpdateUserById(ChangeUserReq) returns (ChangeUserRsp) {}
+    rpc AddUser(AddUserReq) returns (AddUserRsp) {}
+    rpc DeleteUserById(DeleteUserReq) returns (DeleteUserRsp) {}
 }
 
 message GetUserListReq {
@@ -26,3 +29,38 @@ message UserListRsp {
     repeated UserMesssage userList= 1;
 }
 
+message ChangeUserReq {
+    int64 changeId = 1;
+    string name = 2;
+    string loginName = 3;
+    string phoneNumber = 4;
+    string jobNumber = 5;
+    int32 gender = 6;
+}
+
+message ChangeUserRsp {
+    string message = 1;
+    int64 userId = 2;
+}
+
+message AddUserReq {
+    string name = 1;
+    string loginName = 2;
+    string phoneNumber = 3;
+    string jobNumber = 4;
+    int32 gender = 5;
+}
+
+message AddUserRsp {
+    string message = 1;
+    int64 userId = 2;
+}
+
+message DeleteUserReq {
+    int64 deleteId = 1;
+}
+
+message DeleteUserRsp {
+    string message = 1;
+    int64 userId = 2;
+}

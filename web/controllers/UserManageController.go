@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"web/models/user"
 	"context"
 	micro "github.com/micro/go-micro"
 	proto "service/protoc" //proto文件放置路径
@@ -17,8 +16,8 @@ func (this *UserManageController) UserManageInit() {
 }
 
 func (this *UserManageController) UserManage() {
-	offset, _ := this.GetInt("offset")
-	limit, _ := this.GetInt("limit")
+	offset, _ := this.GetInt32("offset")
+	limit, _ := this.GetInt32("limit")
 	//获取用户信息
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
@@ -27,7 +26,6 @@ func (this *UserManageController) UserManage() {
 	}
 	userId := userSession.(int)
 
-	//user_list := user.GetUserListByOffstAndLimit(offset, limit)
 	//调用服务
 	service := micro.NewService(micro.Name("UserManage.client"))
 	service.Init()
@@ -36,7 +34,7 @@ func (this *UserManageController) UserManage() {
 	userManage := proto.NewUserManageService("UserManage",service.Client())
 
 	//call the userManage method
-	req := proto.GetUserListReq{Offset:int32(offset),Limit:int32(limit),ManageId:int64(userId)}
+	req := proto.GetUserListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
 	user_list, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
 
 	//user_data,page_num
@@ -52,46 +50,77 @@ func (this *UserManageController) UserManage() {
 }
 
 func (this *UserManageController) ChangeUser() {
-	change_id, _ := this.GetInt("change_id")
-	user_name := this.GetString("user_name")
-	login_name := this.GetString("login_name")
-	user_phone_number := this.GetString("user_phone_number")
-	user_job_number := this.GetString("user_job_number")
-	user_gender, _ := this.GetInt("user_gender")
+	changeId, _ := this.GetInt64("change_id")
+	userName := this.GetString("user_name")
+	loginName := this.GetString("login_name")
+	userPhoneNumber := this.GetString("user_phone_number")
+	userJobNumber := this.GetString("user_job_number")
+	userGender, _ := this.GetInt32("user_gender")
 
-	r := user.UpdateUserById(change_id, user_name, login_name, user_phone_number, user_job_number, user_gender)
+	//call the userManage method
+	userManage := this.initUserManage()
+	req := proto.ChangeUserReq{ChangeId:changeId,Name:userName,LoginName:loginName,PhoneNumber:userPhoneNumber,JobNumber:userJobNumber,Gender:userGender}
+	rsp, err := userManage.UpdateUserById(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("======ChangeUser=====", rsp.UserId,"-------err--------",err)
+	}
+
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["result"] = r
+	result["result"] = rsp.Message
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
 }
 
 func (this *UserManageController) AddUser() {
-	user_name := this.GetString("user_name")
-	login_name := this.GetString("login_name")
-	user_phone_number := this.GetString("user_phone_number")
-	user_job_number := this.GetString("user_job_number")
-	user_gender, _ := this.GetInt("user_gender")
+	userName := this.GetString("user_name")
+	loginName := this.GetString("login_name")
+	userPhoneNumber := this.GetString("user_phone_number")
+	userJobNumber := this.GetString("user_job_number")
+	userGender, _ := this.GetInt32("user_gender")
 
-	r := user.AddUser(user_name, login_name, user_phone_number, user_job_number, user_gender)
+	//call the userManage method
+	userManage := this.initUserManage()
+	req := proto.AddUserReq{Name:userName,LoginName:loginName,PhoneNumber:userPhoneNumber,JobNumber:userJobNumber,Gender:userGender}
+	rsp, err := userManage.AddUser(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("======AddUser=====", rsp.UserId,"-------err--------",err)
+	}
+
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["result"] = r
+	result["result"] = rsp.Message
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
 
 }
 
-func (this *UserManageController) DeleteUser() {
-	delete_id, _ := this.GetInt("delete_id")
-	r := user.DeleteUserById(delete_id)
+func (this *UserManageController) DeleteUserById() {
+	deleteId, _ := this.GetInt64("delete_id")
+
+	//call the userManage method
+	userManage := this.initUserManage()
+	req := proto.DeleteUserReq{DeleteId:deleteId}
+	rsp, err := userManage.DeleteUserById(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("======DeleteUserById=====", rsp.UserId,"-------err--------",err)
+	}
+
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["result"] = r
+	result["result"] = rsp.Message
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
+}
+
+func (this *UserManageController) initUserManage() proto.UserManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("UserManage.client"))
+	service.Init()
+
+	//create new client
+	return proto.NewUserManageService("UserManage",service.Client())
 }
