@@ -1,14 +1,25 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/astaxie/beego"
+	"github.com/micro/go-micro"
+	proto "service/protoc/eventManage" //proto文件放置路径
 	"web/models/event"
-	"strconv"
 )
 
 type EventManageController struct {
 	beego.Controller
+}
+
+func (this *EventManageController) initEventManage() proto.EventManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("EventManage.client"))
+	service.Init()
+
+	//create new client
+	return proto.NewEventManageService("EventManage",service.Client())
 }
 
 func (this *EventManageController) EventManageInit() {
@@ -16,33 +27,27 @@ func (this *EventManageController) EventManageInit() {
 }
 
 func (this *EventManageController) EventManage() {
-	////还需要加上偏移
-	//offset,_ := this.GetInt("offset")
-	//limit,_ := this.GetInt("limit")
-	beego.Info("========EventManage======")
-
+	offset,_ := this.GetInt32("offset")
+	limit,_ := this.GetInt32("limit")
+	//获取用户信息
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
 		this.Ctx.Redirect(304, "/index")
-		beego.Info("========未登录======")
 		return
 	}
-	user_id := userSession.(int)
-	e := event.GetEventByManageId(user_id)
-	var event_data []map[string]string
-	for _, v := range e {
-		var t map[string]string
-		t = make(map[string]string)
-		t["event_id"] = strconv.Itoa(v.Event_id)
-		t["event_title"] = v.Event_title
-		t["event_description"] = v.Event_description
-		t["event_type"] = v.Event_type
-		event_data = append(event_data, t)
+	userId := userSession.(int)
+
+	//call the userManage method
+	eventManage := this.initEventManage()
+	req := proto.GetEventListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
+	rsp, err := eventManage.GetEventListByManageIdAndOffst(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("======ProblemManage=====", rsp.EventList,"-------err--------",err)
 	}
 
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["event_data"] = event_data
+	result["event_data"] = rsp.EventList
 	this.Data["json"] = result
 	this.ServeJSON()
 	return

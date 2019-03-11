@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+service EventManage {
+    rpc GetEventListByManageIdAndOffst(GetEventListReq) returns (EventListRsp) {}
+    rpc AddNewEvent(AddEventReq) returns (AddEventRsp) {}
+}
+
+message GetEventListReq {
+    int32 offset = 1;
+    int32 limit = 2;
+    int64 manageId = 3;
+}
+
+message EventMesssage {
+    int64 eventId = 1;
+    string eventTitle = 2;
+    string eventDescription = 3;
+    string eventType = 4;
+}
+
+message EventListRsp {
+    repeated EventMesssage eventList= 1;
+}
+
+message AddEventReq {
+    int64 manageId=1;
+    string eventTitle=2;
+    string eventDescription=3;
+    string eventTime=4;
+    string eventNum=5;
+    string eventType=6;
+    bool problemRandom=7;
+    bool optionRandom=8;
+    string answerTime=9;
+    string creditRule=10;
+    int32 participantNum=11;
+}
+
+message AddEventRsp {
+    string message = 1;
+    int64 eventId = 2;
+}

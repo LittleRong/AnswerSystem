@@ -46,8 +46,9 @@ func (this *ProblemManageController) ProblemManage() {
 	problemManage := this.initProblemManage()
 	req := proto.GetProblemListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
 	rsp, err := problemManage.GetProblemListByOffstAndLimit(context.TODO(),&req)
-
+	if err!=nil{
 		beego.Info("======ProblemManage=====", rsp.ProblemList,"-------err--------",err)
+	}
 
 	var result map[string]interface{}
 	result = make(map[string]interface{})
