@@ -3,14 +3,25 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"
+	"github.com/micro/go-micro"
 	"github.com/tealeg/xlsx"
-	"web/models/event"
-	"web/models/problem"
 	"log"
 	"reflect"
+	"context"
+	proto "service/protoc/problemManage" //proto文件放置路径
 	"strconv"
 	"strings"
+	"web/models/event"
+	"web/models/problem"
 )
+func (this *ProblemManageController) initProblemManage() proto.ProblemManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("ProblemManage.client"))
+	service.Init()
+
+	//create new client
+	return proto.NewProblemManageService("ProblemManage",service.Client())
+}
 
 type ProblemManageController struct {
 	beego.Controller
@@ -21,16 +32,26 @@ func (this *ProblemManageController) ProblemManageInit() {
 }
 
 func (this *ProblemManageController) ProblemManage() {
-	offset,_ := this.GetInt("offset")
-	limit,_ := this.GetInt("limit")
+	offset,_ := this.GetInt32("offset")
+	limit,_ := this.GetInt32("limit")
+	//获取用户信息
+	userSession := this.GetSession("user_id")
+	if userSession == nil { //未登陆
+		this.Ctx.Redirect(304, "/index")
+		return
+	}
+	userId := userSession.(int)
 
-	problem_list := problem.GetProblemListByOffstAndLimit(offset,limit)
+	//call the userManage method
+	problemManage := this.initProblemManage()
+	req := proto.GetProblemListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
+	rsp, err := problemManage.GetProblemListByOffstAndLimit(context.TODO(),&req)
 
-	//problem_data,page_num
-	beego.Info("======problem_list=====",problem_list)
+		beego.Info("======ProblemManage=====", rsp.ProblemList,"-------err--------",err)
+
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["problem_data"] = problem_list
+	result["problem_data"] = rsp.ProblemList
 	result["page_num"] = offset
 	this.Data["json"] = result
 	this.ServeJSON()

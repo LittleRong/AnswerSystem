@@ -234,38 +234,38 @@
                     show_str += "<div class='pui-card-box'><h1>当前无题目<small></small></h1></div>"
                 } else {
                     $.each(data['problem_data'], function (i, item) {
-                        var problem_answer_json = eval("(" + item.Problem_answer + ")");
+                        var problem_answer_json = eval("(" + item.problemAnswer + ")");
                         var problem_answer = "";
                         var problem_type = "";
                         var problem_option = "";
-                        if (item.Problem_type == 1) {
+                        if (item.problemType == 1) {
                             problem_answer = problem_answer_json["content"];
                             problem_type = "单选题";
-                            var problem_option_json = eval("(" + item.Problem_option + ")");
+                            var problem_option_json = eval("(" + item.problemOption + ")");
                             $.each(problem_option_json, function (j, answer) {
                                 problem_option += answer["content"] + "<br>";
                             });
-                        } else if (item.Problem_type == 2) {
+                        } else if (item.problemType == 2) {
                             $.each(problem_answer_json, function (j, answer) {
                                 problem_answer += answer["content"] + "<br>";
                             });
                             problem_type = "多选题";
-                            var problem_option_json = eval("(" + item.Problem_option + ")");
+                            var problem_option_json = eval("(" + item.problemOption + ")");
                             $.each(problem_option_json, function (j, answer) {
                                 problem_option += answer["content"] + "<br>";
                             });
-                        } else if (item.Problem_type == 3) {
+                        } else if (item.problemType == 3) {
                             problem_answer = problem_answer_json == false ? "否" : "是";
                             problem_type = "判断题";
                         } else {
                             problem_answer = problem_answer_json;
                             problem_type = "填空题";
                         }
-                        show_str += '<tr id="t_' + item.Problem_id + '">'
-                            + '<td class="problem_id">' + item.Problem_id + '</td>'
+                        show_str += '<tr id="t_' + item.problemId + '">'
+                            + '<td class="problem_id">' + item.problemId + '</td>'
                             + '<td class="problem_type">' + problem_type + '</td>'
-                            + '<td class="problem_class">' + item.Problem_class + '</td>'
-                            + '<td class="problem_content">' + item.Problem_content + '</td>'
+                            + '<td class="problem_class">' + item.problemClass + '</td>'
+                            + '<td class="problem_content">' + item.problemContent + '</td>'
                             + '<td class="problem_answer">' + problem_answer + '</td>'
                             + '<td class="problem_option">' + problem_option + '</td>'
                             + "<td><button class='change_btn pui-btn pui-btn-error pui-btn-small'>" + "修改" + "</button>"

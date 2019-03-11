@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+service ProblemManage {
+    rpc GetProblemListByOffstAndLimit(GetProblemListReq) returns (ProblemListRsp) {}
+}
+
+message GetProblemListReq {
+    int32 offset = 1;
+    int32 limit = 2;
+    int64 manageId = 3;
+}
+
+message ProblemMesssage {
+    int64 problemId = 1;
+    string problemContent = 2;
+    string problemOption = 3;
+    string problemAnswer = 4;
+    string problemClass = 5;
+    int32 problemType = 6;
+}
+
+message ProblemListRsp {
+    repeated ProblemMesssage problemList= 1;
+}

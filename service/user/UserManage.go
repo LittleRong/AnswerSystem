@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"context"
 	micro "github.com/micro/go-micro"
-	proto "service/protoc" //proto文件放置路径
+	proto "service/protoc/userManage" //proto文件放置路径
 )
 
 type UserManage struct{}

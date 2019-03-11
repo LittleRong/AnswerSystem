@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"context"
 	micro "github.com/micro/go-micro"
-	proto "service/protoc" //proto文件放置路径
+	proto "service/protoc/userManage" //proto文件放置路径
 )
 
 type UserManageController struct {
@@ -29,10 +29,8 @@ func (this *UserManageController) UserManage() {
 	//调用服务
 	service := micro.NewService(micro.Name("UserManage.client"))
 	service.Init()
-
 	//create new client
 	userManage := proto.NewUserManageService("UserManage",service.Client())
-
 	//call the userManage method
 	req := proto.GetUserListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
 	user_list, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
@@ -46,7 +44,6 @@ func (this *UserManageController) UserManage() {
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
-
 }
 
 func (this *UserManageController) ChangeUser() {
