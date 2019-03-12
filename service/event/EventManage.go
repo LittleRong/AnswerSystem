@@ -30,6 +30,28 @@ func (this *EventManage) GetEventListByManageIdAndOffst(ctx context.Context, req
 	return nil
 }
 
+func (this *EventManage) AddNewEvent(ctx context.Context, req *proto.AddEventReq, rsp *proto.AddEventRsp) error{
+	var e model.Event
+	e.Manage_id = int(req.ManageId)
+	e.Event_title = req.EventTitle
+	e.Event_description = req.EventDescription
+	e.Event_time = req.EventTime
+	e.Event_num = req.EventNum
+	e.Event_type = req.EventType
+	e.Problem_random = req.ProblemRandom
+	e.Option_random = req.OptionRandom
+	e.Answer_time = req.AnswerTime
+	e.Credit_rule = req.CreditRule
+	e.Participant_num = int(req.ParticipantNum)
+
+	result,id := model.AddNewEvent(e)
+
+	rsp.Message = result
+	rsp.EventId = int64(id)
+
+	return nil
+}
+
 func main(){
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭

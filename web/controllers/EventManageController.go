@@ -102,30 +102,34 @@ func (this *EventManageController) EventInsert() {
 	crule := event.CreditRule{Single_score: single_score, Multi_score: multiple_score, Fill_score: fill_score, Judge_score: judge_score, Person_score: person_score, Person_score_up: person_score_up, Team_score: team_score, Team_score_up: team_score_up}
 	credit_rule, _ := json.Marshal(crule)
 
-	e := event.Event{Manage_id: manage_id,
-		Event_title:       etitle,
-		Event_description: message,
-		Event_time:        string(event_time),
-		Event_num:         string(event_num),
-		Event_type:        ekind,
-		Problem_random:    pro_random,
-		Option_random:     opt_random,
-		Answer_time:       answer_time,
-		Credit_rule:       string(credit_rule),
-		Participant_num:   participant_num}
-
-	flag, event_id := event.AddNewEvent(e)
+	//call the userManage method
+	eventManage := this.initEventManage()
+	req := proto.AddEventReq{ManageId: int64(manage_id),
+		EventTitle:       etitle,
+		EventDescription: message,
+		EventTime:        string(event_time),
+		EventNum:         string(event_num),
+		EventType:        ekind,
+		ProblemRandom:    pro_random,
+		OptionRandom:     opt_random,
+		AnswerTime:       answer_time,
+		CreditRule:       string(credit_rule),
+		ParticipantNum:   int32(participant_num)}
+	rsp, err := eventManage.AddNewEvent(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("-------err--------",err)
+	}
 
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	if (flag) {
-		result["result"] = "success"
-		result["event_id"] = event_id
+	if (rsp.EventId != -1) {
+		result["result"] = rsp.Message
+		result["event_id"] = rsp.EventId
 	} else {
-		result["result"] = "faild"
+		result["result"] = rsp.Message
 	}
 
-	this.SetSession("new_event_id", event_id)
+	this.SetSession("new_event_id", int(rsp.EventId))
 
 	this.Data["json"] = result
 	this.ServeJSON()
