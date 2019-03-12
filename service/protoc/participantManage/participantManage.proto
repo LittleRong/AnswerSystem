@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+service ParticipantManage {
+    rpc EventParticipantInsert(EPInsertReq) returns (EPInsertRsp) {}
+}
+
+message participantMember {
+    int64 leaderId = 1;
+    repeated int64 memberId = 2;
+}
+
+message EPInsertReq {
+    int64 eventId = 1;
+    repeated participantMember participantMemberList = 2;
+}
+
+message EPInsertRsp {
+    string message = 1;
+}

@@ -33,13 +33,13 @@ func (this *UserManageController) UserManage() {
 	userManage := proto.NewUserManageService("UserManage",service.Client())
 	//call the userManage method
 	req := proto.GetUserListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
-	user_list, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
+	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
 
 	//user_data,page_num
-	beego.Info("======user_list=====", user_list.UserList,"-----------------",err)
+	beego.Info("======user_list=====", rsp.UserList,"-----------------",err)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["user_data"] = user_list.UserList
+	result["user_data"] = rsp.UserList
 	result["page_num"] = offset
 	this.Data["json"] = result
 	this.ServeJSON()
