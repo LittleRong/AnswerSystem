@@ -17,6 +17,7 @@ It has these top-level messages:
 	AddUserRsp
 	DeleteUserReq
 	DeleteUserRsp
+	GetUserByIdReq
 */
 package userManage
 
@@ -53,6 +54,7 @@ type UserManageService interface {
 	UpdateUserById(ctx context.Context, in *ChangeUserReq, opts ...client.CallOption) (*ChangeUserRsp, error)
 	AddUser(ctx context.Context, in *AddUserReq, opts ...client.CallOption) (*AddUserRsp, error)
 	DeleteUserById(ctx context.Context, in *DeleteUserReq, opts ...client.CallOption) (*DeleteUserRsp, error)
+	GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...client.CallOption) (*UserMesssage, error)
 }
 
 type userManageService struct {
@@ -113,6 +115,16 @@ func (c *userManageService) DeleteUserById(ctx context.Context, in *DeleteUserRe
 	return out, nil
 }
 
+func (c *userManageService) GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...client.CallOption) (*UserMesssage, error) {
+	req := c.c.NewRequest(c.name, "UserManage.GetUserById", in)
+	out := new(UserMesssage)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for UserManage service
 
 type UserManageHandler interface {
@@ -120,6 +132,7 @@ type UserManageHandler interface {
 	UpdateUserById(context.Context, *ChangeUserReq, *ChangeUserRsp) error
 	AddUser(context.Context, *AddUserReq, *AddUserRsp) error
 	DeleteUserById(context.Context, *DeleteUserReq, *DeleteUserRsp) error
+	GetUserById(context.Context, *GetUserByIdReq, *UserMesssage) error
 }
 
 func RegisterUserManageHandler(s server.Server, hdlr UserManageHandler, opts ...server.HandlerOption) error {
@@ -128,6 +141,7 @@ func RegisterUserManageHandler(s server.Server, hdlr UserManageHandler, opts ...
 		UpdateUserById(ctx context.Context, in *ChangeUserReq, out *ChangeUserRsp) error
 		AddUser(ctx context.Context, in *AddUserReq, out *AddUserRsp) error
 		DeleteUserById(ctx context.Context, in *DeleteUserReq, out *DeleteUserRsp) error
+		GetUserById(ctx context.Context, in *GetUserByIdReq, out *UserMesssage) error
 	}
 	type UserManage struct {
 		userManage
@@ -154,4 +168,8 @@ func (h *userManageHandler) AddUser(ctx context.Context, in *AddUserReq, out *Ad
 
 func (h *userManageHandler) DeleteUserById(ctx context.Context, in *DeleteUserReq, out *DeleteUserRsp) error {
 	return h.UserManageHandler.DeleteUserById(ctx, in, out)
+}
+
+func (h *userManageHandler) GetUserById(ctx context.Context, in *GetUserByIdReq, out *UserMesssage) error {
+	return h.UserManageHandler.GetUserById(ctx, in, out)
 }

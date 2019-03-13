@@ -7,6 +7,9 @@ import (
 	"web/models/participant"
 	"web/models/user"
 	"strconv"
+	"github.com/micro/go-micro"
+	proto "service/protoc/userManage" //proto文件放置路径
+	"context"
 )
 
 type UserIndexController struct {
@@ -17,17 +20,34 @@ func (this *UserIndexController) UserIndexInit() {
 	this.TplName = "index/user_index.html"
 }
 
+func (this *UserIndexController) initUserManage() proto.UserManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("UserManage.client"))
+	service.Init()
+
+	//create new client
+	return proto.NewUserManageService("UserManage",service.Client())
+}
+
 func (this *UserIndexController) UserIndex() {
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	//获取用户信息
-	var user_message user.User
-	user_id := this.GetSession("user_id")
-	if user_id == nil { //未登陆
+	var user_message *proto.UserMesssage
+	userSession := this.GetSession("user_id")
+	if userSession == nil { //未登陆
 		this.Ctx.Redirect(304, "/index")
 		return
 	} else {
-		user_message = user.GetUserById(user_id.(int))
+		user_id := userSession.(int64)
+		//call the userManage method
+		userManage := this.initUserManage()
+		req := proto.GetUserByIdReq{UserId:user_id}
+		var err error
+		user_message,err = userManage.GetUserById(context.TODO(),&req)
+		if err!=nil{
+			beego.Info("======UserIndex user_message=====", user_message,"-------err--------",err)
+		}
 	}
 
 	//获取用户参与的事件，并获取事件信息

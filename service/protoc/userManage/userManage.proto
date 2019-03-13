@@ -5,6 +5,7 @@ service UserManage {
     rpc UpdateUserById(ChangeUserReq) returns (ChangeUserRsp) {}
     rpc AddUser(AddUserReq) returns (AddUserRsp) {}
     rpc DeleteUserById(DeleteUserReq) returns (DeleteUserRsp) {}
+    rpc GetUserById(GetUserByIdReq) returns (UserMesssage) {}
 }
 
 message GetUserListReq {
@@ -63,4 +64,8 @@ message DeleteUserReq {
 message DeleteUserRsp {
     string message = 1;
     int64 userId = 2;
+}
+
+message GetUserByIdReq {
+    int64 userId = 1;
 }

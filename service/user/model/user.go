@@ -7,7 +7,7 @@ import (
 
 // 完成User类型定义
 type User struct {
-	Id           int `orm:"pk"` // 设置为主键，字段Id, Password首字母必须大写
+	Id           int64 `orm:"pk"` // 设置为主键，字段Id, Password首字母必须大写
 	Login_name   string
 	Pwd          string
 	Name         string
@@ -32,7 +32,7 @@ func GetUserListByOffstAndLimit(offset int, limit int) []User {
 	return u
 }
 
-func UpdateUserById(change_id int, user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string,int) {
+func UpdateUserById(change_id int64, user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string,int64) {
 	u := User{Id: change_id}
 	o := orm.NewOrm()
 	if o.Read(&u) == nil {
@@ -52,7 +52,7 @@ func UpdateUserById(change_id int, user_name string, login_name string, user_pho
 	return " user doesn't exist ",-1
 }
 
-func AddUser(user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string,int) {
+func AddUser(user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string,int64) {
 	//login_name不能重复
 	var u User
 	o := orm.NewOrm()
@@ -81,7 +81,7 @@ func AddUser(user_name string, login_name string, user_phone_number string, user
 	}
 }
 
-func DeleteUserById(delete_id int) (string,int) {
+func DeleteUserById(delete_id int64) (string,int64) {
 	u := User{Id: delete_id}
 	o := orm.NewOrm()
 	if o.Read(&u) == nil {
@@ -95,4 +95,15 @@ func DeleteUserById(delete_id int) (string,int) {
 		}
 	}
 	return " user doesn't exist ",-1
+}
+
+func GetUserById(id int64) (User) {
+	u := User{Id: id}
+	o := orm.NewOrm()
+	err := o.Read(&u, "Id")
+	if err != nil {
+		return User{}
+	} else {
+		return u
+	}
 }

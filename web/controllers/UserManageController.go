@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
 	"context"
-	micro "github.com/micro/go-micro"
+	"github.com/astaxie/beego"
+	"github.com/micro/go-micro"
 	proto "service/protoc/userManage" //proto文件放置路径
 )
 

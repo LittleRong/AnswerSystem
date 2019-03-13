@@ -37,10 +37,10 @@ func (this *UserManage) UpdateUserById(ctx context.Context, req *proto.ChangeUse
 	var jobNumber = req.JobNumber
 	var gender = req.Gender
 
-	result,id := model.UpdateUserById(int(changeId),name,loginName,phoneNumber,jobNumber,int(gender))
+	result,id := model.UpdateUserById(changeId,name,loginName,phoneNumber,jobNumber,int(gender))
 
 	rsp.Message = result
-	rsp.UserId = int64(id)
+	rsp.UserId = id
 
 	return nil
 }
@@ -63,11 +63,20 @@ func (this *UserManage) AddUser(ctx context.Context, req *proto.AddUserReq, rsp 
 func (this *UserManage) DeleteUserById(ctx context.Context, req *proto.DeleteUserReq, rsp *proto.DeleteUserRsp) error{
 	var deleteId = req.DeleteId
 
-	result,id := model.DeleteUserById(int(deleteId))
+	result,id := model.DeleteUserById(deleteId)
 
 	rsp.Message = result
-	rsp.UserId = int64(id)
+	rsp.UserId = id
 
+	return nil
+}
+
+func (this *UserManage) GetUserById(ctx context.Context, req *proto.GetUserByIdReq, rsp *proto.UserMesssage) error{
+	var userId = req.UserId
+	v := model.GetUserById(userId)
+
+	//类型转换
+	rsp = &proto.UserMesssage{Id:v.Id,LoginName:v.Login_name,Name:v.Name,JobNumber:v.Job_number,PhoneNumber:v.Phone_number,Permission:int32(v.Permission),Deleted:v.Deleted,Gender:int32(v.Gender)}
 	return nil
 }
 
