@@ -54,6 +54,7 @@
             </div>
         </div>
     </div>
+</div>
 </body>
 
 <script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
@@ -72,9 +73,9 @@
                 //判空
 
                 //侧边栏
-                $("#user_name").html(data["user_message"]["Login_name"]);
-                $("#user_phone").html(data["user_message"]["Phone_number"]);
-                if (data["user_message"]["Gender"] == 1) {
+                $("#user_name").html(data["user_message"]["login_name"]);
+                $("#user_phone").html(data["user_message"]["phone_number"]);
+                if (data["user_message"]["gender"] == 1) {
                     $("#user_image").append('<img src="../static/img/boy.jpg" class="pui-img-circle pui-box-shadow-plus">');
                 } else {
                     $("#user_image").append('<img src="../static/img/girl.jpg" class="pui-img-circle pui-box-shadow-plus">');
@@ -84,17 +85,16 @@
                 var show_str = "";
 
                 $.each(data['event_message'], function (i, item) {
-                    var url = '"/answer/user_problem?event_id=' + item.event_id + '"';
-                    //var eventUrl = '"/answer/event_message.html?event_id='+item.event_id+'"';
-                    var eventUrl = '"/answer/event_message_init?event_id=' + item.event_id + '"';
+                    var url = '"/answer/user_problem?event_id=' + item.eventId + '"';
+                    var eventUrl = '"/answer/event_message_init?event_id=' + item.eventId + '"';
                     show_str += "<div class='clear pui-card pui-card-shadow pui-card-radius'>"
                         + "<div class='pui-card-box'>"
-                        + "<h1>" + item.event_title + "</h1>"
-                        + "<p class='pui-text-indent'>" + item.event_description + "</p>"
+                        + "<h1>" + item.eventTitle + "</h1>"
+                        + "<p class='pui-text-indent'>" + item.eventDescription + "</p>"
                         + "<p>"
-                        + "<strong>参赛形式:</strong>" + item.participant_num + "人"
+                        + "<strong>参赛形式:</strong>" + item.participantNum + "人"
                         + "<strong>&emsp;答题规则：</strong>总共" + "" + "道题量。单选题" + item.single + "道，判断题" + item.judge + "道，多选题" + item.multiple + "道，填空题" + item.fill + "道</br>"
-                        + "<strong>活动时间：</strong>" + item.start_time + "至" + item.end_time + "</br>"
+                        + "<strong>活动时间：</strong>" + item.startTime + "至" + item.endTime + "</br>"
                         + "</p>"
                         + "<p>"
                         + "<input type='button' onclick='location.href=(" + url + ")' class='pui-btn pui-btn-default' value='开始答题'/>"

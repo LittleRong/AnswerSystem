@@ -36,6 +36,21 @@ func (this *ParticipantManage) EventParticipantInsert(ctx context.Context, req *
 	return nil
 }
 
+func (this *ParticipantManage) GetParticipantListByUserId (ctx context.Context, req *proto.GetPListByUserIdReq, rsp *proto.PEMessageList) error {
+	userId := req.UserId
+
+	list := model.GetParticipantListByUserId(userId)
+	//类型转换
+	var pMessage []*proto.PEMessage
+	for _,v := range list {
+		u := proto.PEMessage{ParticipantId:int64(v.Participant_id),ReferEventId:int64(v.Refer_event_id)}
+		pMessage = append(pMessage,&u)
+	}
+	rsp.PEList = pMessage
+
+	return nil
+}
+
 func main(){
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭

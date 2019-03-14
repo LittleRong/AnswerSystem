@@ -7,7 +7,7 @@ import (
 )
 
 type Event struct {
-	Event_id          int `orm:"pk"`
+	Event_id          int64 `orm:"pk"`
 	Manage_id         int
 	Event_title       string
 	Event_description string
@@ -49,7 +49,7 @@ func init() {
 	orm.RegisterModel(new(Event)) // 注册模型，建立User类型对象，注册模型时，需要引入包
 }
 
-func GetEventByEventId(event_id int) (event *Event) {
+func GetEventByEventId(event_id int64) (event *Event) {
 	e := Event{Event_id: event_id}
 	o := orm.NewOrm()
 	err := o.Read(&e, "Event_id")

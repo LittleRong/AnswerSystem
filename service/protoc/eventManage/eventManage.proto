@@ -3,6 +3,24 @@ syntax = "proto3";
 service EventManage {
     rpc GetEventListByManageIdAndOffst(GetEventListReq) returns (EventListRsp) {}
     rpc AddNewEvent(AddEventReq) returns (AddEventRsp) {}
+    rpc GetEventByEventId(EventIdReq) returns (EventShowMesssage) {}
+}
+
+message EventIdReq {
+    int64 eventId = 1;
+}
+
+message EventShowMesssage {
+    int64 eventId=1;
+    string eventTitle=2;
+    string eventDescription=3;
+    int32 participantNum=4;
+    string startTime = 5;
+    string endTime = 6;
+    string single = 7;
+    string fill = 8;
+    string judge = 9;
+    string multiple = 10;
 }
 
 message GetEventListReq {

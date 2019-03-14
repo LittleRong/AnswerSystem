@@ -22,7 +22,7 @@ func init() {
 	orm.RegisterModel(new(Participant))
 }
 
-func GetEventListByUserId(user_id int) ([]Participant) {
+func GetParticipantListByUserId(user_id int64) ([]Participant) {
 	var p []Participant
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("User_id", user_id).All(&p, "Participant_id", "Refer_event_id")

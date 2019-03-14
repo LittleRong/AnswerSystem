@@ -76,7 +76,15 @@ func (this *UserManage) GetUserById(ctx context.Context, req *proto.GetUserByIdR
 	v := model.GetUserById(userId)
 
 	//类型转换
-	rsp = &proto.UserMesssage{Id:v.Id,LoginName:v.Login_name,Name:v.Name,JobNumber:v.Job_number,PhoneNumber:v.Phone_number,Permission:int32(v.Permission),Deleted:v.Deleted,Gender:int32(v.Gender)}
+	rsp.Id = v.Id
+	rsp.LoginName = v.Login_name
+	rsp.Name = v.Name
+	rsp.JobNumber = v.Job_number
+	rsp.PhoneNumber = v.Phone_number
+	rsp.Permission = int32(v.Permission)
+	rsp.Deleted = v.Deleted
+	rsp.Gender = int32(v.Gender)
+
 	return nil
 }
 

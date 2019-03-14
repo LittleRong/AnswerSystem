@@ -1,15 +1,12 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/astaxie/beego"
-	"web/models/event"
-	"web/models/participant"
-	"web/models/user"
-	"strconv"
 	"github.com/micro/go-micro"
-	proto "service/protoc/userManage" //proto文件放置路径
+	userProto "service/protoc/userManage" //proto文件放置路径
 	"context"
+	participantProto "service/protoc/participantManage" //proto文件放置路径
+	eventProto "service/protoc/eventManage"
 )
 
 type UserIndexController struct {
@@ -20,73 +17,80 @@ func (this *UserIndexController) UserIndexInit() {
 	this.TplName = "index/user_index.html"
 }
 
-func (this *UserIndexController) initUserManage() proto.UserManageService{
+func (this *UserIndexController) initUserManage() userProto.UserManageService{
 	//调用服务
 	service := micro.NewService(micro.Name("UserManage.client"))
 	service.Init()
 
 	//create new client
-	return proto.NewUserManageService("UserManage",service.Client())
+	return userProto.NewUserManageService("UserManage",service.Client())
 }
+
+func (this *UserIndexController) initParticipantManage() participantProto.ParticipantManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("ParticipantManage.client"))
+	service.Init()
+
+	//create new client
+	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
+}
+
+func (this *UserIndexController) initEventManage() eventProto.EventManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("EventManage.client"))
+	service.Init()
+
+	//create new client
+	return eventProto.NewEventManageService("EventManage",service.Client())
+}
+
 
 func (this *UserIndexController) UserIndex() {
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	//获取用户信息
-	var user_message *proto.UserMesssage
+	var user_message *userProto.UserMesssage
 	userSession := this.GetSession("user_id")
+	var userId int
 	if userSession == nil { //未登陆
 		this.Ctx.Redirect(304, "/index")
 		return
 	} else {
-		user_id := userSession.(int64)
+		userId = userSession.(int)
 		//call the userManage method
 		userManage := this.initUserManage()
-		req := proto.GetUserByIdReq{UserId:user_id}
+		req := userProto.GetUserByIdReq{UserId:int64(userId)}
 		var err error
 		user_message,err = userManage.GetUserById(context.TODO(),&req)
-		if err!=nil{
-			beego.Info("======UserIndex user_message=====", user_message,"-------err--------",err)
+		if err==nil{
+			beego.Info("-------err--------",err)
 		}
 	}
 
 	//获取用户参与的事件，并获取事件信息
-	var event_message_array []map[string]string
-	user_event_list := participant.GetEventListByUserId(user_id.(int))
-	for _, valus := range user_event_list {
-		event := event.GetEventByEventId(valus.Refer_event_id)
-		var event_message map[string]string
-		event_message = make(map[string]string)
-		event_message["event_id"] = strconv.Itoa(event.Event_id)
-		event_message["event_title"] = event.Event_title
-		event_message["event_description"] = event.Event_description
-		event_message["participant_num"] = strconv.Itoa(event.Participant_num)
+	var event_message_array []*eventProto.EventShowMesssage
+	//call the participantManage method
+	participantManage := this.initParticipantManage()
+	req := participantProto.GetPListByUserIdReq{UserId:int64(userId)}
+	var err error
+	rsp,err := participantManage.GetParticipantListByUserId(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("======UserIndex user_event_list=====", rsp.PEList,"-------err--------",err)
+	}
 
-		event_time := event.Event_time
-		var event_time_map map[string]interface{}
-		//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
-		if err := json.Unmarshal([]byte(event_time), &event_time_map); err != nil {
-			return
+	for _, value := range rsp.PEList {
+		//call the participantManage method
+		eventManage := this.initEventManage()
+		req := eventProto.EventIdReq{EventId:value.ReferEventId}
+		var err error
+		rsp,err := eventManage.GetEventByEventId(context.TODO(),&req)
+		if err!=nil{
+			beego.Info("-------err--------",err)
 		}
-		event_message["start_time"] = event_time_map["start_time"].(string)
-		event_message["end_time"] = event_time_map["end_time"].(string)
-
-		event_num := event.Event_num
-		var event_num_map map[string]interface{}
-		//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
-		if err := json.Unmarshal([]byte(event_num), &event_num_map); err != nil {
-			return
-		}
-		event_message["single"] = event_num_map["single"].(string)
-		event_message["fill"] = event_num_map["fill"].(string)
-		event_message["judge"] = event_num_map["judge"].(string)
-		event_message["multiple"] = event_num_map["multiple"].(string)
-
 		//增加
-		event_message_array = append(event_message_array, event_message)
+		event_message_array = append(event_message_array, rsp)
 
 	}
-	beego.Info(event_message_array)
 
 	//返回
 	result["user_message"] = user_message

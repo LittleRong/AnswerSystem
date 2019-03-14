@@ -1,13 +1,13 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"service/event/model"
-
 	_ "github.com/go-sql-driver/mysql"
-	"context"
-	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro"
+	"service/event/model"
 	proto "service/protoc/eventManage" //proto文件放置路径
 )
 
@@ -26,6 +26,40 @@ func (this *EventManage) GetEventListByManageIdAndOffst(ctx context.Context, req
 		eventMessage = append(eventMessage,&u)
 	}
 	rsp.EventList = eventMessage
+
+	return nil
+}
+
+func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.EventIdReq, rsp *proto.EventShowMesssage) error{
+	eventId := req.EventId
+
+	event := model.GetEventByEventId(eventId)
+	rsp.EventId = event.Event_id
+	rsp.EventTitle = event.Event_title
+	rsp.EventDescription = event.Event_description
+	rsp.ParticipantNum = int32(event.Participant_num)
+
+	event_time := event.Event_time
+	var event_time_map map[string]interface{}
+	//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
+	if err := json.Unmarshal([]byte(event_time), &event_time_map); err != nil {
+		return err
+	}
+	rsp.StartTime = event_time_map["start_time"].(string)
+	rsp.EndTime = event_time_map["end_time"].(string)
+
+	event_num := event.Event_num
+	var event_num_map map[string]interface{}
+	//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
+	if err := json.Unmarshal([]byte(event_num), &event_num_map); err != nil {
+		return err
+	}
+	rsp.Single = event_num_map["single"].(string)
+	rsp.Fill= event_num_map["fill"].(string)
+	rsp.Judge = event_num_map["judge"].(string)
+	rsp.Multiple = event_num_map["multiple"].(string)
+
+	beego.Info("======UserIndex rsp=====", rsp)
 
 	return nil
 }

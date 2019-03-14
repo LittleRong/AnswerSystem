@@ -8,6 +8,8 @@ It is generated from these files:
 	eventManage.proto
 
 It has these top-level messages:
+	EventIdReq
+	EventShowMesssage
 	GetEventListReq
 	EventMesssage
 	EventListRsp
@@ -47,6 +49,7 @@ var _ server.Option
 type EventManageService interface {
 	GetEventListByManageIdAndOffst(ctx context.Context, in *GetEventListReq, opts ...client.CallOption) (*EventListRsp, error)
 	AddNewEvent(ctx context.Context, in *AddEventReq, opts ...client.CallOption) (*AddEventRsp, error)
+	GetEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventShowMesssage, error)
 }
 
 type eventManageService struct {
@@ -87,17 +90,29 @@ func (c *eventManageService) AddNewEvent(ctx context.Context, in *AddEventReq, o
 	return out, nil
 }
 
+func (c *eventManageService) GetEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventShowMesssage, error) {
+	req := c.c.NewRequest(c.name, "EventManage.GetEventByEventId", in)
+	out := new(EventShowMesssage)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for EventManage service
 
 type EventManageHandler interface {
 	GetEventListByManageIdAndOffst(context.Context, *GetEventListReq, *EventListRsp) error
 	AddNewEvent(context.Context, *AddEventReq, *AddEventRsp) error
+	GetEventByEventId(context.Context, *EventIdReq, *EventShowMesssage) error
 }
 
 func RegisterEventManageHandler(s server.Server, hdlr EventManageHandler, opts ...server.HandlerOption) error {
 	type eventManage interface {
 		GetEventListByManageIdAndOffst(ctx context.Context, in *GetEventListReq, out *EventListRsp) error
 		AddNewEvent(ctx context.Context, in *AddEventReq, out *AddEventRsp) error
+		GetEventByEventId(ctx context.Context, in *EventIdReq, out *EventShowMesssage) error
 	}
 	type EventManage struct {
 		eventManage
@@ -116,4 +131,8 @@ func (h *eventManageHandler) GetEventListByManageIdAndOffst(ctx context.Context,
 
 func (h *eventManageHandler) AddNewEvent(ctx context.Context, in *AddEventReq, out *AddEventRsp) error {
 	return h.EventManageHandler.AddNewEvent(ctx, in, out)
+}
+
+func (h *eventManageHandler) GetEventByEventId(ctx context.Context, in *EventIdReq, out *EventShowMesssage) error {
+	return h.EventManageHandler.GetEventByEventId(ctx, in, out)
 }

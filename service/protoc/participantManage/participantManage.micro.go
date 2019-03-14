@@ -11,6 +11,9 @@ It has these top-level messages:
 	ParticipantMember
 	EPInsertReq
 	EPInsertRsp
+	GetPListByUserIdReq
+	PEMessage
+	PEMessageList
 */
 package participantManage
 
@@ -44,6 +47,7 @@ var _ server.Option
 
 type ParticipantManageService interface {
 	EventParticipantInsert(ctx context.Context, in *EPInsertReq, opts ...client.CallOption) (*EPInsertRsp, error)
+	GetParticipantListByUserId(ctx context.Context, in *GetPListByUserIdReq, opts ...client.CallOption) (*PEMessageList, error)
 }
 
 type participantManageService struct {
@@ -74,15 +78,27 @@ func (c *participantManageService) EventParticipantInsert(ctx context.Context, i
 	return out, nil
 }
 
+func (c *participantManageService) GetParticipantListByUserId(ctx context.Context, in *GetPListByUserIdReq, opts ...client.CallOption) (*PEMessageList, error) {
+	req := c.c.NewRequest(c.name, "ParticipantManage.GetParticipantListByUserId", in)
+	out := new(PEMessageList)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ParticipantManage service
 
 type ParticipantManageHandler interface {
 	EventParticipantInsert(context.Context, *EPInsertReq, *EPInsertRsp) error
+	GetParticipantListByUserId(context.Context, *GetPListByUserIdReq, *PEMessageList) error
 }
 
 func RegisterParticipantManageHandler(s server.Server, hdlr ParticipantManageHandler, opts ...server.HandlerOption) error {
 	type participantManage interface {
 		EventParticipantInsert(ctx context.Context, in *EPInsertReq, out *EPInsertRsp) error
+		GetParticipantListByUserId(ctx context.Context, in *GetPListByUserIdReq, out *PEMessageList) error
 	}
 	type ParticipantManage struct {
 		participantManage
@@ -97,4 +113,8 @@ type participantManageHandler struct {
 
 func (h *participantManageHandler) EventParticipantInsert(ctx context.Context, in *EPInsertReq, out *EPInsertRsp) error {
 	return h.ParticipantManageHandler.EventParticipantInsert(ctx, in, out)
+}
+
+func (h *participantManageHandler) GetParticipantListByUserId(ctx context.Context, in *GetPListByUserIdReq, out *PEMessageList) error {
+	return h.ParticipantManageHandler.GetParticipantListByUserId(ctx, in, out)
 }
