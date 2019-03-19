@@ -55,6 +55,7 @@ type EventManageService interface {
 	AddNewEvent(ctx context.Context, in *AddEventReq, opts ...client.CallOption) (*AddEventRsp, error)
 	GetEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventShowMesssage, error)
 	GetDetailEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventDetailMesssage, error)
+	GetCreditRuleByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*CreditRule, error)
 }
 
 type eventManageService struct {
@@ -115,6 +116,16 @@ func (c *eventManageService) GetDetailEventByEventId(ctx context.Context, in *Ev
 	return out, nil
 }
 
+func (c *eventManageService) GetCreditRuleByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*CreditRule, error) {
+	req := c.c.NewRequest(c.name, "EventManage.GetCreditRuleByEventId", in)
+	out := new(CreditRule)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for EventManage service
 
 type EventManageHandler interface {
@@ -122,6 +133,7 @@ type EventManageHandler interface {
 	AddNewEvent(context.Context, *AddEventReq, *AddEventRsp) error
 	GetEventByEventId(context.Context, *EventIdReq, *EventShowMesssage) error
 	GetDetailEventByEventId(context.Context, *EventIdReq, *EventDetailMesssage) error
+	GetCreditRuleByEventId(context.Context, *EventIdReq, *CreditRule) error
 }
 
 func RegisterEventManageHandler(s server.Server, hdlr EventManageHandler, opts ...server.HandlerOption) error {
@@ -130,6 +142,7 @@ func RegisterEventManageHandler(s server.Server, hdlr EventManageHandler, opts .
 		AddNewEvent(ctx context.Context, in *AddEventReq, out *AddEventRsp) error
 		GetEventByEventId(ctx context.Context, in *EventIdReq, out *EventShowMesssage) error
 		GetDetailEventByEventId(ctx context.Context, in *EventIdReq, out *EventDetailMesssage) error
+		GetCreditRuleByEventId(ctx context.Context, in *EventIdReq, out *CreditRule) error
 	}
 	type EventManage struct {
 		eventManage
@@ -156,4 +169,8 @@ func (h *eventManageHandler) GetEventByEventId(ctx context.Context, in *EventIdR
 
 func (h *eventManageHandler) GetDetailEventByEventId(ctx context.Context, in *EventIdReq, out *EventDetailMesssage) error {
 	return h.EventManageHandler.GetDetailEventByEventId(ctx, in, out)
+}
+
+func (h *eventManageHandler) GetCreditRuleByEventId(ctx context.Context, in *EventIdReq, out *CreditRule) error {
+	return h.EventManageHandler.GetCreditRuleByEventId(ctx, in, out)
 }

@@ -4,6 +4,30 @@ service CreditManage {
     rpc GetTeamCredit(TeamEventIdReq) returns (CreditRsp) {}
     rpc GetPersonCredit(UserEventIdReq) returns (CreditRsp) {}
     rpc GetCreditLogByTeamId(TeamIdReq) returns (CreditLogListRsp) {}
+    rpc AddCreditLog(CreditLog) returns (AddCreditLogRsp) {}
+    rpc WhetherMemberAllRight(AllRightReq) returns (AllRightRsp) {}
+    rpc UpdateTeamCredit(UpdateTeamCreditReq) returns (CreditRsp) {}
+    rpc UpdateParticipantCredit(UpdatePCreditReq) returns (CreditRsp) {}
+}
+
+message UpdateTeamCreditReq {
+    int64 teamId = 1;
+    double changeCredit = 2;
+}
+
+message UpdatePCreditReq {
+    int64 paticipantId = 1;
+    double changeCredit = 2;
+}
+
+message AllRightReq {
+    int64 teamId = 1;
+    string nowDate = 2;
+    int32 participantNum = 3;
+}
+
+message AllRightRsp {
+    bool allRightFlag = 1;
 }
 
 message TeamIdReq {
@@ -37,4 +61,9 @@ message CreditLog {
 
 message CreditLogListRsp {
     repeated CreditLog creditLogList = 1;
+}
+
+message AddCreditLogRsp {
+    string message = 1;
+    int64 creditLogId = 2;
 }

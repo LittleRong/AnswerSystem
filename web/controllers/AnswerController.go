@@ -1,17 +1,20 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/astaxie/beego"
-	"web/models/credit"
+	"github.com/micro/go-micro"
+	creditProto "service/protoc/answerManage"
+	participantProto "service/protoc/answerManage"
+	eventProto "service/protoc/eventManage"
+	userProto "service/protoc/userManage"
+	"strconv"
+	"time"
 	"web/models/event"
 	"web/models/participant"
 	"web/models/participant_haved_answer"
-	"web/models/team"
 	"web/models/union"
-	"web/models/user"
-	"strconv"
-	"time"
 )
 
 type AnswerController struct {
@@ -35,6 +38,43 @@ func (this *AnswerController) ShowProblemsPage() {
 	event_id, _ := this.GetInt("event_id")
 	this.SetSession("event_id", event_id)
 
+}
+
+func (this *AnswerController) initEventManage() eventProto.EventManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("EventManage.client"))
+	service.Init()
+
+	//create new client
+	return eventProto.NewEventManageService("EventManage",service.Client())
+}
+
+func (this *AnswerController) initUserManage() userProto.UserManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("UserManage.client"))
+	service.Init()
+
+	//create new client
+	return userProto.NewUserManageService("UserManage",service.Client())
+}
+
+
+func (this *AnswerController) initParticipantManage() participantProto.ParticipantManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("ParticipantManage.client"))
+	service.Init()
+
+	//create new client
+	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
+}
+
+func (this *AnswerController) initCreditManage() creditProto.CreditManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("CreditManage.client"))
+	service.Init()
+
+	//create new client
+	return creditProto.NewCreditManageService("CreditManage",service.Client())
 }
 
 func (this *AnswerController) GetUserProblems() {
@@ -114,9 +154,12 @@ func (this *AnswerController) GetUserAnswers() {
 	team_id := p.Team_id
 
 	//*****************************1.获取该事件评分标准*************************************************
-	var creditRule event.CreditRule
-	creditRule = event.GetCreditRuleByEventId(event_id)
-	beego.Info("========creditRule======", creditRule)
+	eventManage := this.initEventManage()
+	eventReq := eventProto.EventIdReq{EventId:int64(event_id)}
+	creditRule,creditRuleErr := eventManage.GetCreditRuleByEventId(context.TODO(),&eventReq)
+	if creditRuleErr!=nil{
+		beego.Info("-------creditRuleErr--------",creditRuleErr)
+	}
 
 	//*****************************2.获取正确答案*******************************************************
 	var correct_answer map[string]interface{}
@@ -143,10 +186,10 @@ func (this *AnswerController) GetUserAnswers() {
 	fill_array := f.([]interface{})
 
 	//*****************************4.计算分数,并将用户答案写入participant_haved_answer表***********************
-	single_user_score, single_right_num := JudgeUserInputAnswer(single_array, correct_answer["single"].(map[string]interface{}), paticipant_id, creditRule.Single_score, 1)
-	judge_score, judge_right_num := JudgeUserInputAnswer(judge_array, correct_answer["judge"].(map[string]interface{}), paticipant_id, creditRule.Judge_score, 3)
-	fill_score, fill_right_num := JudgeUserInputAnswer(fill_array, correct_answer["fill"].(map[string]interface{}), paticipant_id, creditRule.Fill_score, 0)
-	multi_score, multi_right_num := JudgeUserInputAnswer(multi_array, correct_answer["multi"].(map[string]interface{}), paticipant_id, creditRule.Multi_score, 2)
+	single_user_score, single_right_num := JudgeUserInputAnswer(single_array, correct_answer["single"].(map[string]interface{}), paticipant_id, creditRule.SingleScore, 1)
+	judge_score, judge_right_num := JudgeUserInputAnswer(judge_array, correct_answer["judge"].(map[string]interface{}), paticipant_id, creditRule.JudgeScore, 3)
+	fill_score, fill_right_num := JudgeUserInputAnswer(fill_array, correct_answer["fill"].(map[string]interface{}), paticipant_id, creditRule.FillScore, 0)
+	multi_score, multi_right_num := JudgeUserInputAnswer(multi_array, correct_answer["multi"].(map[string]interface{}), paticipant_id, creditRule.MultipleScore, 2)
 
 	user_score := single_user_score + judge_score + fill_score + multi_score
 	right_num := single_right_num + judge_right_num + fill_right_num + multi_right_num
@@ -156,57 +199,71 @@ func (this *AnswerController) GetUserAnswers() {
 	problemNum := event.GetProblemNumByEventId(event_id)
 	all_num := problemNum.Fill + problemNum.Multiple + problemNum.Single + problemNum.Judge
 	if (right_num == all_num) {
-		user_score += creditRule.Person_score
+		user_score += creditRule.PersonScore
 		user_all_right = true
-		beego.Info("个人答对额外加分", creditRule.Person_score)
+		beego.Info("个人答对额外加分", creditRule.PersonScore)
 	}
 
 	//*****************************6.更新积分*****************************************
 	//1.更新个人积分
-	user_total_credit := participant.UpdateParticipantCredit(paticipant_id, user_score)
+	creditManage := this.initCreditManage()
+	pCreditReq := creditProto.UpdatePCreditReq{PaticipantId:int64(paticipant_id),ChangeCredit:user_score}
+	pCreditRsp,_ := creditManage.UpdateParticipantCredit(context.TODO(),&pCreditReq)
+	user_total_credit := pCreditRsp.Credit
 	now_time := time.Now()
 	UnixTime := now_time.Unix()
 	now := time.Unix(UnixTime, 0).Format("2006-01-02 15:04:05")
 	reason := ""
 	user_score_log := user_score
+
 	if (user_all_right) {
 		reason = "当日全部答对额外加分"
-		log := credit.Credit_log{Refer_event_id: event_id, Refer_participant_id: paticipant_id,
-			Refer_team_id: team_id, Change_time: now, Change_value: creditRule.Person_score, Change_type: 2, Change_reason: reason}
-		credit.AddCreditLog(log)
-		user_score_log = user_score - creditRule.Person_score
+		log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
+			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.PersonScore), ChangeType: 2, ChangeReason: reason}
+		creditManage.AddCreditLog(context.TODO(),&log)
+		user_score_log = user_score - creditRule.PersonScore
 	}
 	reason = "答题得分"
-	log := credit.Credit_log{Refer_event_id: event_id, Refer_participant_id: paticipant_id,
-		Refer_team_id: team_id, Change_time: now, Change_value: user_score_log, Change_type: 1, Change_reason: reason}
-	credit.AddCreditLog(log)
+	log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
+		TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(user_score_log), ChangeType: 1, ChangeReason: reason}
+	creditManage.AddCreditLog(context.TODO(),&log)
 
 	//2.更新组积分
+	event := event.GetEventByEventId(event_id)
+
 	team_score := user_score
 	//判断是否当日全部答对，若组员全部答对额外加分
 	now_date := time.Unix(UnixTime, 0).Format("2006-01-02")
-	event := event.GetEventByEventId(event_id)
-	team_allright_flag := credit.WhetherMemberAllRight(team_id, now_date, event.Participant_num)
+	allRightReq := creditProto.AllRightReq{TeamId:int64(team_id),NowDate:now_date,ParticipantNum:int32(event.Participant_num)}
+	allRightRsp,_ := creditManage.WhetherMemberAllRight(context.TODO(),&allRightReq)
+	team_allright_flag := allRightRsp.AllRightFlag
 	if (team_allright_flag == true) {
 		//写积分表
 		reason = "当日全组全部答对额外加分"
-		log := credit.Credit_log{Refer_event_id: event_id, Refer_participant_id: paticipant_id,
-			Refer_team_id: team_id, Change_time: now, Change_value: creditRule.Team_score, Change_type: 3, Change_reason: reason}
-		credit.AddCreditLog(log)
-		team_score += creditRule.Team_score
+		log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
+			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.TeamScore), ChangeType: 3, ChangeReason: reason}
+		creditManage.AddCreditLog(context.TODO(),&log)
+		team_score += creditRule.TeamScore
 	}
 
-	team_score = team.UpdateTeamCredit(team_id, team_score)
+	teamCreditReq := creditProto.UpdateTeamCreditReq{TeamId:int64(team_id),ChangeCredit:team_score}
+	teamCreditRsp,_ := creditManage.UpdateTeamCredit(context.TODO(),&teamCreditReq)
+	team_score = teamCreditRsp.Credit
 
 	//*****************************7.获取队友分数*****************************************
 	member := participant.GetMemberCreditByTeamId(team_id, event_id)
 	var member_credit []map[string]string
 	for _, v := range member {
-		user_id := v.User_id
-		u := user.GetUserById(user_id)
+		userId := v.User_id
+		userManage := this.initUserManage()
+		req := userProto.GetUserByIdReq{UserId:int64(userId)}
+		user_message,err := userManage.GetUserById(context.TODO(),&req)
+		if err==nil{
+			beego.Info("-------err--------",err)
+		}
 		var m map[string]string
 		m = make(map[string]string)
-		m["name"] = u.Name
+		m["name"] = user_message.Name
 		m["credit"] = strconv.FormatFloat(v.Credit, 'f', -1, 64)
 		member_credit = append(member_credit, m)
 	}
@@ -218,10 +275,10 @@ func (this *AnswerController) GetUserAnswers() {
 	result["user_credit"] = user_total_credit //累计得分
 	result["team_credit"] = team_score        //团队累计得分
 	if (user_all_right == true) {
-		result["user_all_right"] = creditRule.Person_score //单人全部答对额外加分，没有全部答对则传空值
+		result["user_all_right"] = creditRule.PersonScore //单人全部答对额外加分，没有全部答对则传空值
 	}
 	if (team_allright_flag == true) {
-		result["team_all_right"] = creditRule.Team_score //团队全部答对额外加分，没有全部答对则传空值
+		result["team_all_right"] = creditRule.TeamScore //团队全部答对额外加分，没有全部答对则传空值
 	}
 	result["team_mates"] = member_credit    //队友得分[{"name":"A","credit":"1"},{"name":"B","credit":"2"},...]
 	result["right_answer"] = correct_answer //正确答案,{"single":{"problem_id":"正确答案的q_id","problem_id":"正确答案的q_id",...}}

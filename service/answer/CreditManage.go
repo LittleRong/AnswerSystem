@@ -1,13 +1,12 @@
 package main
 
 import (
+	"context"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"service/answer/model"
-
 	_ "github.com/go-sql-driver/mysql"
-	"context"
-	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro"
+	"service/answer/model"
 	proto "service/protoc/answerManage" //proto文件放置路径
 )
 
@@ -46,6 +45,48 @@ func (this *CreditManage) GetCreditLogByTeamId (ctx context.Context, req *proto.
 	}
 	rsp.CreditLogList = pMessage
 
+	return nil
+}
+
+func (this *CreditManage) WhetherMemberAllRight (ctx context.Context, req *proto.AllRightReq, rsp *proto.AllRightRsp) error {
+	teamId := req.TeamId
+	participantNum := req.ParticipantNum
+	nowDate := req.NowDate
+
+	t := model.WhetherMemberAllRight(teamId,nowDate,int(participantNum))
+	rsp.AllRightFlag = t
+
+	return nil
+}
+
+func (this *CreditManage) UpdateTeamCredit (ctx context.Context, req *proto.UpdateTeamCreditReq, rsp *proto.CreditRsp) error {
+	teamId := req.TeamId
+	changeCredit := req.ChangeCredit
+
+	t := model.UpdateTeamCredit(teamId,changeCredit)
+	rsp.Credit = t
+
+	return nil
+}
+
+func (this *CreditManage) UpdateParticipantCredit (ctx context.Context, req *proto.UpdatePCreditReq, rsp *proto.CreditRsp) error {
+	paticipantId := req.PaticipantId
+	changeCredit := req.ChangeCredit
+
+	t := model.UpdateParticipantCredit(paticipantId,changeCredit)
+	rsp.Credit = t
+
+	return nil
+}
+
+func (this *CreditManage) AddCreditLog (ctx context.Context, req *proto.CreditLog, rsp *proto.AddCreditLogRsp) error {
+	log := model.Credit_log{Refer_event_id: req.EventId, Refer_participant_id: req.ParticipantId,
+		Refer_team_id: req.TeamId, Change_time: req.ChangeTime, Change_value: req.ChangeValue, Change_type: req.ChangeType, Change_reason: req.ChangeReason}
+
+	result,id := model.AddCreditLog(log)
+
+	rsp.Message = result
+	rsp.CreditLogId = int64(id)
 	return nil
 }
 

@@ -5,6 +5,7 @@ service EventManage {
     rpc AddNewEvent(AddEventReq) returns (AddEventRsp) {}
     rpc GetEventByEventId(EventIdReq) returns (EventShowMesssage) {}
     rpc GetDetailEventByEventId(EventIdReq) returns (EventDetailMesssage) {}
+    rpc GetCreditRuleByEventId(EventIdReq) returns (CreditRule) {}
 }
 
 message EventIdReq {

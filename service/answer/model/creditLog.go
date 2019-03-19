@@ -20,17 +20,19 @@ func init() {
 	orm.RegisterModel(new(Credit_log))
 }
 
-func AddCreditLog(log Credit_log) {
+func AddCreditLog(log Credit_log) (string,int64){
 	o := orm.NewOrm()
 	id, err := o.Insert(&log)
 	if err != nil {
 		beego.Info("======AddCreditLog's err=====", err)
+		return "faild",-1
 	} else {
 		beego.Info("======AddCreditLog's id=====", id)
+		return "success",id
 	}
 }
 
-func WhetherMemberAllRight(team_id int, date string, team_num int) bool {
+func WhetherMemberAllRight(team_id int64, date string, team_num int) bool {
 	var log []Credit_log
 	o := orm.NewOrm()
 	like_date := "%" + date + "%"

@@ -64,6 +64,30 @@ func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.Event
 	return nil
 }
 
+func (this *EventManage) GetCreditRuleByEventId(ctx context.Context, req *proto.EventIdReq, rsp *proto.CreditRule) error {
+	eventId := req.EventId
+
+	event := model.GetEventByEventId(eventId)
+	var credit_rule model.CreditRule
+	if err := json.Unmarshal([]byte(event.Credit_rule), &credit_rule); err != nil {
+		return err
+	}
+
+	rsp.SingleScore = credit_rule.Single_score
+	rsp.MultipleScore = credit_rule.Multi_score
+	rsp.JudgeScore = credit_rule.Judge_score
+	rsp.FillScore = credit_rule.Fill_score
+	rsp.TeamScore = credit_rule.Team_score
+	rsp.TeamScoreUp = credit_rule.Team_score_up
+	rsp.PersonScore = credit_rule.Person_score
+	rsp.PersonScoreUp = credit_rule.Person_score_up
+
+	beego.Info("======GetCreditRuleByEventId rsp=====", rsp)
+
+	return nil
+}
+
+
 func (this *EventManage) GetDetailEventByEventId(ctx context.Context, req *proto.EventIdReq, rsp *proto.EventDetailMesssage) error{
 	eventId := req.EventId
 

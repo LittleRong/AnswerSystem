@@ -4,6 +4,11 @@ service ParticipantManage {
     rpc EventParticipantInsert(EPInsertReq) returns (EPInsertRsp) {}
     rpc GetParticipantListByUserId(GetPListByUserIdReq) returns (PEMessageList) {}
     rpc GetParticipantByUserAndEvent(PUserEventIdReq) returns (ParticipantMessage) {}
+    rpc GetCorrectAnswerByParticipantId(participantIdReq) returns () {}
+}
+
+message participantIdReq {
+    int64 participantId = 1;
 }
 
 message participantMember {
