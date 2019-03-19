@@ -9,6 +9,7 @@ It is generated from these files:
 
 It has these top-level messages:
 	EventIdReq
+	EventDetailMesssage
 	EventShowMesssage
 	GetEventListReq
 	EventMesssage
@@ -50,6 +51,7 @@ type EventManageService interface {
 	GetEventListByManageIdAndOffst(ctx context.Context, in *GetEventListReq, opts ...client.CallOption) (*EventListRsp, error)
 	AddNewEvent(ctx context.Context, in *AddEventReq, opts ...client.CallOption) (*AddEventRsp, error)
 	GetEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventShowMesssage, error)
+	GetDetailEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventDetailMesssage, error)
 }
 
 type eventManageService struct {
@@ -100,12 +102,23 @@ func (c *eventManageService) GetEventByEventId(ctx context.Context, in *EventIdR
 	return out, nil
 }
 
+func (c *eventManageService) GetDetailEventByEventId(ctx context.Context, in *EventIdReq, opts ...client.CallOption) (*EventDetailMesssage, error) {
+	req := c.c.NewRequest(c.name, "EventManage.GetDetailEventByEventId", in)
+	out := new(EventDetailMesssage)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for EventManage service
 
 type EventManageHandler interface {
 	GetEventListByManageIdAndOffst(context.Context, *GetEventListReq, *EventListRsp) error
 	AddNewEvent(context.Context, *AddEventReq, *AddEventRsp) error
 	GetEventByEventId(context.Context, *EventIdReq, *EventShowMesssage) error
+	GetDetailEventByEventId(context.Context, *EventIdReq, *EventDetailMesssage) error
 }
 
 func RegisterEventManageHandler(s server.Server, hdlr EventManageHandler, opts ...server.HandlerOption) error {
@@ -113,6 +126,7 @@ func RegisterEventManageHandler(s server.Server, hdlr EventManageHandler, opts .
 		GetEventListByManageIdAndOffst(ctx context.Context, in *GetEventListReq, out *EventListRsp) error
 		AddNewEvent(ctx context.Context, in *AddEventReq, out *AddEventRsp) error
 		GetEventByEventId(ctx context.Context, in *EventIdReq, out *EventShowMesssage) error
+		GetDetailEventByEventId(ctx context.Context, in *EventIdReq, out *EventDetailMesssage) error
 	}
 	type EventManage struct {
 		eventManage
@@ -135,4 +149,8 @@ func (h *eventManageHandler) AddNewEvent(ctx context.Context, in *AddEventReq, o
 
 func (h *eventManageHandler) GetEventByEventId(ctx context.Context, in *EventIdReq, out *EventShowMesssage) error {
 	return h.EventManageHandler.GetEventByEventId(ctx, in, out)
+}
+
+func (h *eventManageHandler) GetDetailEventByEventId(ctx context.Context, in *EventIdReq, out *EventDetailMesssage) error {
+	return h.EventManageHandler.GetDetailEventByEventId(ctx, in, out)
 }

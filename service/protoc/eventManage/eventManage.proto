@@ -4,10 +4,34 @@ service EventManage {
     rpc GetEventListByManageIdAndOffst(GetEventListReq) returns (EventListRsp) {}
     rpc AddNewEvent(AddEventReq) returns (AddEventRsp) {}
     rpc GetEventByEventId(EventIdReq) returns (EventShowMesssage) {}
+    rpc GetDetailEventByEventId(EventIdReq) returns (EventDetailMesssage) {}
 }
 
 message EventIdReq {
     int64 eventId = 1;
+}
+
+message EventDetailMesssage {
+    int64 eventId=1;
+    string eventTitle=2;
+    string eventType=3;
+    string eventDescription=4;
+    int32 participantNum=5;
+    string startTime = 6;
+    string endTime = 7;
+    string answerDay = 8;
+    double singleScore = 9;
+    double fillScore = 10;
+    double judgeScore = 11;
+    double multipleScore = 12;
+    double teamScore = 13;
+    double teamScoreUp = 14;
+    double personScore = 15;
+    double personScoreUp = 16;
+    string single = 17;
+    string fill = 18;
+    string judge = 19;
+    string multiple = 20;
 }
 
 message EventShowMesssage {

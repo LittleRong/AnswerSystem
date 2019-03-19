@@ -67,22 +67,22 @@
             async: false,
             success: function (data) {
                 //事件信息
-                $("#event_title").html(data["event_message"]["event_title"]);
-                $("#event_type").html("类型：" + data["event_message"]["event_type"]);
-                $("#event_description").html("简介：" + data["event_message"]["event_description"]);
-                $("#event_time").html("活动时间：" + data["event_message"]["start_time"] + "至" + data["event_message"]["end_time"]);
+                $("#event_title").html(data["event_message"]["eventTitle"]);
+                $("#event_type").html("类型：" + data["event_message"]["eventType"]);
+                $("#event_description").html("简介：" + data["event_message"]["eventDescription"]);
+                $("#event_time").html("活动时间：" + data["event_message"]["startTime"] + "至" + data["event_message"]["endTime"]);
                 var credit_message = "积分规则：<br>"
-                    + "单选题" + data["event_message"]["single"] + "道，每题" + data["event_message"]["single_score"] + "分<br>"
-                    + "多选题" + data["event_message"]["multiple"] + "道，每题" + data["event_message"]["multiple_score"] + "分<br>"
-                    + "判断题" + data["event_message"]["judge"] + "道，每题" + data["event_message"]["judge_score"] + "分<br>"
-                    + "填空题" + data["event_message"]["fill"] + "道，每题" + data["event_message"]["fill_score"] + "分<br>"
-                    + "当日团队全对额外加" + data["event_message"]["team_score"] + "分<br>"
-                    + "团队总积分上限" + data["event_message"]["team_score_up"] + "分<br>"
-                    + "当日个人全对额外加" + data["event_message"]["person_score"] + "分<br>"
-                    + "个人总积分上限" + data["event_message"]["person_score_up"] + "分<br>";
+                    + "单选题" + data["event_message"]["single"] + "道，每题" + data["event_message"]["singleScore"] + "分<br>"
+                    + "多选题" + data["event_message"]["multiple"] + "道，每题" + data["event_message"]["multipleScore"] + "分<br>"
+                    + "判断题" + data["event_message"]["judge"] + "道，每题" + data["event_message"]["judgeScore"] + "分<br>"
+                    + "填空题" + data["event_message"]["fill"] + "道，每题" + data["event_message"]["fillScore"] + "分<br>"
+                    + "当日团队全对额外加" + data["event_message"]["teamScore"] + "分<br>"
+                    + "团队总积分上限" + data["event_message"]["teamScoreUp"] + "分<br>"
+                    + "当日个人全对额外加" + data["event_message"]["personScore"] + "分<br>"
+                    + "个人总积分上限" + data["event_message"]["personScoreUp"] + "分<br>";
                 $("#credit_rule").html(credit_message);
 
-                var answer_day = data["event_message"]["answer_day"];
+                var answer_day = data["event_message"]["answerDay"];
                 var show_answer_day = "答题时间：";
                 var arr = answer_day.split(",");
                 var day_turn = {"0": "星期日", "1": "星期一", "2": "星期二", "3": "星期三", "4": "星期四", "5": "星期五", "6": "星期六"}
@@ -102,17 +102,25 @@
                     show_str += '积分详情：' + '<table class="pui-table pui-table-bordered pui-table-text-center pui-table-thead-bg pui-table-interlaced-color box-shadow-bottom pui-table-gradient">' +
                         '                            <thead>' +
                         '                            <tr>' +
-                        '                            <th>组ID</th>' +
+                        '                            <th>操作类型</th>' +
                         '                            <th>积分操作</th>' +
                         '                            <th>操作时间</th>' +
                         '                            </tr>' +
                         '                            </thead>' +
                         '                            <tbody>';
                     $.each(data["credit_message"]["detail_credit"], function (i, item) {
+                        var changeType = "无";
+                        if(item.changeType == '1'){
+                            changeType = "答题加分";
+                        } else if (item.changeType == '2'){
+                            changeType = "当日全部答对额外加分";
+                        } else if (item.changeType == '3'){
+                            changeType = "当日小组全部答对额外加分";
+                        }
                         show_str += '<tr>'
-                            + '<td>' + item.team_id + '</td>'
-                            + '<td>' + item.change_reason + '</td>'
-                            + '<td>' + item.change_time + '</td>'
+                            + '<td>' + changeType + '</td>'
+                            + '<td>更改'+item.changeValue + '分</td>'
+                            + '<td>' + item.changeTime + '</td>'
                             + ' </tr>';
                     });
                     show_str += '</tbody></table>';

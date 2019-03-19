@@ -6,7 +6,7 @@ import (
 	"context"
 	micro "github.com/micro/go-micro"
 	userProto "service/protoc/userManage"
-	participantProto "service/protoc/participantManage"
+	participantProto "service/protoc/answerManage"
 	"strconv"
 )
 

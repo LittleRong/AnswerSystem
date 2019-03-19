@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"context"
 	micro "github.com/micro/go-micro"
-	proto "service/protoc/participantManage" //proto文件放置路径
+	proto "service/protoc/answerManage" //proto文件放置路径
 )
 
 type ParticipantManage struct{}
@@ -47,6 +47,22 @@ func (this *ParticipantManage) GetParticipantListByUserId (ctx context.Context, 
 		pMessage = append(pMessage,&u)
 	}
 	rsp.PEList = pMessage
+
+	return nil
+}
+
+func (this *ParticipantManage) GetParticipantByUserAndEvent (ctx context.Context, req *proto.PUserEventIdReq, rsp *proto.ParticipantMessage) error {
+	userId := req.UserId
+	eventId := req.EventId
+
+	event := model.GetParticipantById(userId,eventId)
+
+	rsp.EventId = event.Refer_event_id
+	rsp.UserId = event.User_id
+	rsp.Credit = event.Credit
+	rsp.ParticipantId = event.Participant_id
+	rsp.Leader  = event.Leader
+	rsp.TeamId = event.Team_id
 
 	return nil
 }

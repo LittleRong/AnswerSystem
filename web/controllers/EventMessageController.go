@@ -1,13 +1,12 @@
 package controllers
 
 import (
-	"encoding/json"
+	"context"
 	"github.com/astaxie/beego"
-	"web/models/credit"
-	"web/models/event"
-	"web/models/participant"
-	"web/models/team"
-	"strconv"
+	"github.com/micro/go-micro"
+	creditProto "service/protoc/answerManage"
+	participantProto "service/protoc/answerManage"
+	eventProto "service/protoc/eventManage"
 )
 
 type EventMessageController struct {
@@ -18,6 +17,34 @@ func (this *EventMessageController) EventMessageInit() {
 	this.TplName = "answer/event_message.html"
 }
 
+
+func (this *EventMessageController) initEventManage() eventProto.EventManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("EventManage.client"))
+	service.Init()
+
+	//create new client
+	return eventProto.NewEventManageService("EventManage",service.Client())
+}
+
+func (this *EventMessageController) initParticipantManage() participantProto.ParticipantManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("ParticipantManage.client"))
+	service.Init()
+
+	//create new client
+	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
+}
+
+func (this *EventMessageController) initCreditManage() creditProto.CreditManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("CreditManage.client"))
+	service.Init()
+
+	//create new client
+	return creditProto.NewCreditManageService("CreditManage",service.Client())
+}
+
 func (this *EventMessageController) GetEventMessage() {
 	event_id, _ := this.GetInt("event_id")
 	userSession := this.GetSession("user_id")
@@ -26,62 +53,51 @@ func (this *EventMessageController) GetEventMessage() {
 		return
 	}
 	user_id := userSession.(int)
-	p := participant.GetParticipantById(user_id, event_id)
-	team_id := p.Team_id
-	t := team.GetTeamById(team_id, event_id)
+	pManage := this.initParticipantManage()
+	pReq := participantProto.PUserEventIdReq{EventId:int64(event_id),UserId:int64(user_id)}
+	participant,pErr := pManage.GetParticipantByUserAndEvent(context.TODO(),&pReq)
+	if pErr!=nil{
+		beego.Info("-------pErr--------",pErr)
+	}
+	team_id := participant.TeamId
 
 	//*****************************1.获取事件信息event_message*************************************************
-	var event_message map[string]interface{}
-	event_message = make(map[string]interface{})
-	e := event.GetEventByEventId(event_id)
-	event_message["event_title"] = e.Event_title
-	event_message["event_type"] = e.Event_type
-	event_message["event_description"] = e.Event_description
-	//时间
-	var event_time event.EventTime
-	json.Unmarshal([]byte(e.Event_time), &event_time)
-	event_message["start_time"] = event_time.Start_time
-	event_message["end_time"] = event_time.End_time
-	event_message["answer_day"] = event_time.Answer_day
-	//积分规则
-	var credit_rule event.CreditRule
-	json.Unmarshal([]byte(e.Credit_rule), &credit_rule)
-	event_message["single_score"] = credit_rule.Single_score
-	event_message["multiple_score"] = credit_rule.Multi_score
-	event_message["judge_score"] = credit_rule.Judge_score
-	event_message["fill_score"] = credit_rule.Fill_score
-	event_message["team_score"] = credit_rule.Team_score
-	event_message["team_score_up"] = credit_rule.Team_score_up
-	event_message["person_score"] = credit_rule.Person_score
-	event_message["person_score_up"] = credit_rule.Person_score_up
-	//数量
-	var problem_num event.ProblemNum
-	json.Unmarshal([]byte(e.Event_num), &problem_num)
-	event_message["single"] = problem_num.Single
-	event_message["multiple"] = problem_num.Multiple
-	event_message["judge"] = problem_num.Judge
-	event_message["fill"] = problem_num.Fill
-	beego.Info("========event_message======", event_message)
+	eventManage := this.initEventManage()
+	req := eventProto.EventIdReq{EventId:int64(event_id)}
+	var err error
+	event_message,err := eventManage.GetDetailEventByEventId(context.TODO(),&req)
+	if err!=nil{
+		beego.Info("-------err--------",err)
+	}
 
 	//*****************************2.获取积分信息credit_message************************************************
+	creditManage := this.initCreditManage()
+	userCreditReq := creditProto.UserEventIdReq{EventId:int64(event_id),UserId:int64(user_id)}
+	personCredit,personErr := creditManage.GetPersonCredit(context.TODO(),&userCreditReq)
+	if personErr!=nil{
+		beego.Info("-------personErr--------",personErr)
+	}
+
+	teamCreditReq := creditProto.TeamEventIdReq{EventId:int64(event_id),TeamId:int64(team_id)}
+	teamCredit,teamErr := creditManage.GetTeamCredit(context.TODO(),&teamCreditReq)
+	if teamErr!=nil{
+		beego.Info("-------teamErr--------",teamErr)
+	}
+
 	var credit_message map[string]interface{}
 	credit_message = make(map[string]interface{})
-	credit_message["person_credit"] = p.Credit
-	credit_message["team_credit"] = t.Team_credit
-	credit_log := credit.GetCreditLogByTeamId(team_id)
-	var detail_credit []map[string]interface{}
-	for _, v := range credit_log {
-		var d map[string]interface{}
-		d = make(map[string]interface{})
-		d["team_id"] = v.Refer_team_id
-		change_value := strconv.FormatFloat(v.Change_value, 'f', -1, 64)
-		d["change_reason"] = v.Change_reason + "," + change_value + "分"
-		d["change_time"] = v.Change_time
-		detail_credit = append(detail_credit, d)
-	}
-	credit_message["detail_credit"] = detail_credit
+	credit_message["person_credit"] = personCredit.Credit
+	credit_message["team_credit"] = teamCredit.Credit
 
-	//*****************************3.返回结果******************************************************************
+	//*****************************3.获取积分日志************************************************
+	creditLogReq := creditProto.TeamIdReq{TeamId:int64(team_id)}
+	creditLogCredit,creditLogErr := creditManage.GetCreditLogByTeamId(context.TODO(),&creditLogReq)
+	if creditLogErr!=nil{
+		beego.Info("-------creditLogErr--------",creditLogErr)
+	}
+	credit_message["detail_credit"] = creditLogCredit.CreditLogList
+
+	//*****************************4.返回结果******************************************************************
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["event_message"] = event_message

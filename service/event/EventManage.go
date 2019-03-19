@@ -64,6 +64,56 @@ func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.Event
 	return nil
 }
 
+func (this *EventManage) GetDetailEventByEventId(ctx context.Context, req *proto.EventIdReq, rsp *proto.EventDetailMesssage) error{
+	eventId := req.EventId
+
+	event := model.GetEventByEventId(eventId)
+	rsp.EventId = event.Event_id
+	rsp.EventTitle = event.Event_title
+	rsp.EventDescription = event.Event_description
+	rsp.ParticipantNum = int32(event.Participant_num)
+
+	event_time := event.Event_time
+	var event_time_map map[string]interface{}
+	//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
+	if err := json.Unmarshal([]byte(event_time), &event_time_map); err != nil {
+		return err
+	}
+	rsp.StartTime = event_time_map["start_time"].(string)
+	rsp.EndTime = event_time_map["end_time"].(string)
+	rsp.AnswerDay = event_time_map["answer_day"].(string)
+
+
+	var credit_rule model.CreditRule
+	if err := json.Unmarshal([]byte(event.Credit_rule), &credit_rule); err != nil {
+		return err
+	}
+
+	rsp.SingleScore = credit_rule.Single_score
+	rsp.MultipleScore = credit_rule.Multi_score
+	rsp.JudgeScore = credit_rule.Judge_score
+	rsp.FillScore = credit_rule.Fill_score
+	rsp.TeamScore = credit_rule.Team_score
+	rsp.TeamScoreUp = credit_rule.Team_score_up
+	rsp.PersonScore = credit_rule.Person_score
+	rsp.PersonScoreUp = credit_rule.Person_score_up
+
+	event_num := event.Event_num
+	var event_num_map map[string]interface{}
+	//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
+	if err := json.Unmarshal([]byte(event_num), &event_num_map); err != nil {
+		return err
+	}
+	rsp.Single = event_num_map["single"].(string)
+	rsp.Fill= event_num_map["fill"].(string)
+	rsp.Judge = event_num_map["judge"].(string)
+	rsp.Multiple = event_num_map["multiple"].(string)
+
+	beego.Info("======UserIndex rsp=====", rsp)
+
+	return nil
+}
+
 func (this *EventManage) AddNewEvent(ctx context.Context, req *proto.AddEventReq, rsp *proto.AddEventRsp) error{
 	var e model.Event
 	e.Manage_id = int(req.ManageId)

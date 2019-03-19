@@ -9,7 +9,7 @@ import (
 
 // 完成User类型定义
 type Participant struct {
-	Participant_id int `orm:"pk"`
+	Participant_id int64 `orm:"pk"`
 	Refer_event_id int64
 	User_id        int64
 	Team_id        int64
@@ -69,7 +69,7 @@ func GetAnswerTimeByParticipantId(participant_id int) (time.Time) {
 	return participant_time
 }
 
-func GetParticipantById(user_id int, event_id int) Participant {
+func GetParticipantById(user_id int64, event_id int64) Participant {
 	var p Participant
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("user_id", user_id).Filter("Refer_event_id", event_id).One(&p)
@@ -77,7 +77,7 @@ func GetParticipantById(user_id int, event_id int) Participant {
 	return p
 }
 
-func UpdateParticipantCredit(participant_id int, credit float64) float64 {
+func UpdateParticipantCredit(participant_id int64, credit float64) float64 {
 	new_credit := 0.0
 	//更新
 	participant := Participant{Participant_id: participant_id}
@@ -105,7 +105,7 @@ func GetMemberCreditByTeamId(team_id int, event_id int) []Participant {
 	return p
 }
 
-func UpdateParticipantWaitedAnswer(participant_id int, answer string) {
+func UpdateParticipantWaitedAnswer(participant_id int64, answer string) {
 	//待增加对answer格式的校验
 
 	participant := Participant{Participant_id: participant_id}
@@ -121,7 +121,7 @@ func UpdateParticipantWaitedAnswer(participant_id int, answer string) {
 
 }
 
-func AddParticipant(user_id int64, refer_event_id int64, team_id int64, leader bool) int {
+func AddParticipant(user_id int64, refer_event_id int64, team_id int64, leader bool) int64 {
 	//login_name不能重复
 	var p Participant
 	o := orm.NewOrm()

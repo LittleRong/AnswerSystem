@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+service CreditManage {
+    rpc GetTeamCredit(TeamEventIdReq) returns (CreditRsp) {}
+    rpc GetPersonCredit(UserEventIdReq) returns (CreditRsp) {}
+    rpc GetCreditLogByTeamId(TeamIdReq) returns (CreditLogListRsp) {}
+}
+
+message TeamIdReq {
+    int64 teamId = 1;
+}
+
+message TeamEventIdReq {
+    int64 teamId = 1;
+    int64 eventId = 2;
+}
+
+message UserEventIdReq {
+    int64 userId = 1;
+    int64 eventId = 2;
+}
+
+message CreditRsp {
+    double credit = 1;
+}
+
+message CreditLog {
+    int64 creditLogId = 1;
+    int64 eventId = 2;
+    int64 teamId = 3;
+    int64 participantId = 4;
+    string changeReason = 5;
+    float changeValue = 6;
+    string changeTime = 7;
+    int32 changeType = 8;
+}
+
+message CreditLogListRsp {
+    repeated CreditLog creditLogList = 1;
+}

@@ -33,3 +33,11 @@ func AddTeam(team_name string, refer_event_id int64) int64 {
 		return -1
 	}
 }
+
+func GetTeamById(team_id int64, event_id int64) Team {
+	var t Team
+	o := orm.NewOrm()
+	o.QueryTable("team").Filter("team_id", team_id).Filter("Refer_event_id", event_id).One(&t)
+	beego.Info("======GetTeamById=====", t)
+	return t
+}

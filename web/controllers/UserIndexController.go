@@ -5,7 +5,7 @@ import (
 	"github.com/micro/go-micro"
 	userProto "service/protoc/userManage" //proto文件放置路径
 	"context"
-	participantProto "service/protoc/participantManage" //proto文件放置路径
+	participantProto "service/protoc/answerManage" //proto文件放置路径
 	eventProto "service/protoc/eventManage"
 )
 
