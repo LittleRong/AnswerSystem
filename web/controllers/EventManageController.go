@@ -6,7 +6,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/micro/go-micro"
 	proto "service/protoc/eventManage" //proto文件放置路径
-	"web/models/event"
 )
 
 type EventManageController struct {
@@ -79,15 +78,15 @@ func (this *EventManageController) EventInsert() {
 	end_time := this.GetString("end_time")
 	answer_day := this.GetString("answer_day")
 	//answer_day转换成字符串
-	etime := event.EventTime{Start_time: start_time, End_time: end_time, Answer_day: answer_day}
+	etime := proto.EventTime{StartTime: start_time, EndTime: end_time, AnswerDay: answer_day}
 	event_time, _ := json.Marshal(etime)
 
 	//event_num
-	single, _ := this.GetInt("single")
-	multiple, _ := this.GetInt("multiple")
-	fill, _ := this.GetInt("fill")
-	judge, _ := this.GetInt("judge")
-	enum := event.ProblemNum{Single: single, Multiple: multiple, Fill: fill, Judge: judge}
+	single, _ := this.GetInt32("single")
+	multiple, _ := this.GetInt32("multiple")
+	fill, _ := this.GetInt32("fill")
+	judge, _ := this.GetInt32("judge")
+	enum := proto.ProblemNum{Single: single, Multiple: multiple, Fill: fill, Judge: judge}
 	event_num, _ := json.Marshal(enum)
 
 	//credit_rule
@@ -99,7 +98,7 @@ func (this *EventManageController) EventInsert() {
 	team_score, _ := this.GetFloat("team_score")
 	person_score_up, _ := this.GetFloat("person_score_up")
 	team_score_up, _ := this.GetFloat("team_score_up")
-	crule := event.CreditRule{Single_score: single_score, Multi_score: multiple_score, Fill_score: fill_score, Judge_score: judge_score, Person_score: person_score, Person_score_up: person_score_up, Team_score: team_score, Team_score_up: team_score_up}
+	crule := proto.CreditRule{SingleScore: single_score, MultipleScore: multiple_score, FillScore: fill_score, JudgeScore: judge_score, PersonScore: person_score, PersonScoreUp: person_score_up, TeamScore: team_score, TeamScoreUp: team_score_up}
 	credit_rule, _ := json.Marshal(crule)
 
 	//call the userManage method

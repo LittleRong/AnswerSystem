@@ -82,3 +82,27 @@ message AddEventRsp {
     string message = 1;
     int64 eventId = 2;
 }
+
+message EventTime {
+    string startTime = 1;
+    string endTime = 2;
+    string answerDay = 3;
+}
+
+message ProblemNum {
+    int32 single = 1;
+    int32 multiple = 2;
+    int32 fill = 3;
+    int32 judge = 4;
+}
+
+message CreditRule {
+    double singleScore = 1;
+    double multipleScore = 2;
+    double fillScore = 3;
+    double judgeScore = 4;
+    double personScore = 5;
+    double personScoreUp = 6;
+    double teamScore = 7;
+    double teamScoreUp = 8;
+}

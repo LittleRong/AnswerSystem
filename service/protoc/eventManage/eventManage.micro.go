@@ -16,6 +16,9 @@ It has these top-level messages:
 	EventListRsp
 	AddEventReq
 	AddEventRsp
+	EventTime
+	ProblemNum
+	CreditRule
 */
 package eventManage
 
