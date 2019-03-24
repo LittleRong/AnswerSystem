@@ -4,21 +4,95 @@ service ParticipantManage {
     rpc EventParticipantInsert(EPInsertReq) returns (EPInsertRsp) {}
     rpc GetParticipantListByUserId(GetPListByUserIdReq) returns (PEMessageList) {}
     rpc GetParticipantByUserAndEvent(PUserEventIdReq) returns (ParticipantMessage) {}
-    rpc GetCorrectAnswerByParticipantId(participantIdReq) returns () {}
+    rpc GetCorrectAnswerByParticipantId(ParticipantIdReq) returns (WaitAnswerRsp) {}
+    rpc GetAnswerTimeByParticipantId(ParticipantIdReq) returns (AnswerTimeReq) {}
+    rpc GetMemberCreditByTeamId(PTeamEventIdReq) returns (ParticipantMessageList) {}
+    rpc UpdateUserAnswer(UpdateUserAnswerReq) returns (UpdateUserAnswerRsp) {}
+    rpc UpdateParticipantWaitedAnswer(UpdateWaitedAnswerReq) returns (UpdateWaitedAnswerResp) {}
+    rpc JudgeIfHaveAnswer(JudgeReq) returns (JudgeRsp) {}
+    rpc AddProblemHavedAnswer(AddProblemHavedAnswerReq) returns (AddProblemHavedAnswerRsp) {}
 }
 
-message participantIdReq {
+message JudgeReq {
     int64 participantId = 1;
 }
 
-message participantMember {
+message JudgeRsp {
+    bool answerFlag = 1;
+}
+
+message AddProblemHavedAnswerReq {
+    int64 participantId = 1;
+	int64 problemId = 2;
+	int64 teamId = 3;
+	string answerDate = 4;
+}
+
+message AddProblemHavedAnswerRsp {
+    string message = 1;
+}
+
+message UpdateWaitedAnswerReq {
+    int64 participantId = 1;
+    string waitedAnswer = 2;
+}
+
+message UpdateWaitedAnswerResp {
+    string message = 1;
+}
+
+message UpdateUserAnswerReq {
+    int64 participantId = 1;
+    int64 problemId = 2;
+    string userAnswer = 3;
+    bool trueOrFalse = 4;
+
+}
+
+message UpdateUserAnswerRsp {
+    string result = 1;
+}
+
+message PTeamEventIdReq {
+    int64 teamId = 1;
+    int64 eventId = 2;
+}
+
+message WaitAnswerRsp {
+    string participantTime = 1;
+    repeated nolAnswer fillAnswerList = 2;
+    repeated nolAnswer judgeAnswerList = 3;
+    repeated nolAnswer singleAnswerList = 4;
+    repeated multiAnswer multiAnswerList = 5;
+}
+
+message nolAnswer {
+    string problemId = 1;
+    string answer = 2;
+}
+
+
+message multiAnswer {
+    string problemId = 1;
+    repeated double answer = 2;
+}
+
+message ParticipantIdReq {
+    int64 participantId = 1;
+}
+
+message AnswerTimeReq {
+    string answerTime = 1;
+}
+
+message ParticipantMember {
     int64 leaderId = 1;
     repeated int64 memberId = 2;
 }
 
 message EPInsertReq {
     int64 eventId = 1;
-    repeated participantMember participantMemberList = 2;
+    repeated ParticipantMember participantMemberList = 2;
 }
 
 message EPInsertRsp {
@@ -50,4 +124,8 @@ message ParticipantMessage {
 	int64 teamId = 4;
 	double credit = 5;
 	bool leader = 6;
+}
+
+message ParticipantMessageList {
+    repeated ParticipantMessage PEList = 1;
 }

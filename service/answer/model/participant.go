@@ -29,7 +29,7 @@ func GetParticipantListByUserId(user_id int64) ([]Participant) {
 	return p
 }
 
-func GetCorrectAnswerByParticipantId(participant_id int) (map[string]interface{}) {
+func GetCorrectAnswerByParticipantId(participant_id int64) (map[string]interface{}) {
 	var waited_answer map[string]interface{}
 	waited_answer = make(map[string]interface{})
 	var p Participant
@@ -44,11 +44,12 @@ func GetCorrectAnswerByParticipantId(participant_id int) (map[string]interface{}
 	return waited_answer
 }
 
-func GetAnswerTimeByParticipantId(participant_id int) (time.Time) {
+func GetAnswerTimeByParticipantId(participant_id int64) (string) {
 	var waited_answer map[string]interface{}
 	waited_answer = make(map[string]interface{})
 	var p Participant
 	var participant_time time.Time
+	var p_time string
 	participant_time = time.Time{}
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("Participant_id", participant_id).One(&p, "Waited_answer")
@@ -58,15 +59,15 @@ func GetAnswerTimeByParticipantId(participant_id int) (time.Time) {
 			beego.Info("======err======", err)
 		}
 		//获取时间
-		p_time := waited_answer["participant_time"].(string)
-		if (p_time != "") {
-			timeLayout := "2006-01-02 15:04:05"  //转化所需模板，go默认时间
-			loc, _ := time.LoadLocation("Local") //获取本地时区
-			participant_time, _ = time.ParseInLocation(timeLayout, p_time, loc)
-		}
+		p_time = waited_answer["participant_time"].(string)
+		//if (p_time != "") {
+		//	timeLayout := "2006-01-02 15:04:05"  //转化所需模板，go默认时间
+		//	loc, _ := time.LoadLocation("Local") //获取本地时区
+		//	participant_time, _ = time.ParseInLocation(timeLayout, p_time, loc)
+		//}
 	}
 	beego.Info("======participant_time======", participant_time)
-	return participant_time
+	return p_time
 }
 
 func GetParticipantById(user_id int64, event_id int64) Participant {
@@ -97,7 +98,7 @@ func UpdateParticipantCredit(participant_id int64, credit float64) float64 {
 	return new_credit
 }
 
-func GetMemberCreditByTeamId(team_id int, event_id int) []Participant {
+func GetMemberCreditByTeamId(team_id int64, event_id int64) []Participant {
 	var p []Participant
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("team_id", team_id).Filter("Refer_event_id", event_id).All(&p)
@@ -105,7 +106,7 @@ func GetMemberCreditByTeamId(team_id int, event_id int) []Participant {
 	return p
 }
 
-func UpdateParticipantWaitedAnswer(participant_id int64, answer string) {
+func UpdateParticipantWaitedAnswer(participant_id int64, answer string) string{
 	//待增加对answer格式的校验
 
 	participant := Participant{Participant_id: participant_id}
@@ -114,10 +115,13 @@ func UpdateParticipantWaitedAnswer(participant_id int64, answer string) {
 		participant.Waited_answer = answer
 		if num, err := o.Update(&participant, "Waited_answer"); err == nil {
 			beego.Info("======num=====", num)
+			return "success"
 		} else if err != nil {
 			beego.Info("======UpdateParticipantWaitAnswer's err=====", err)
+			return "faild"
 		}
 	}
+	return "faild"
 
 }
 

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+service UnionManage {
+    rpc GetProblemNoAnswer(GetProblemNoAnswerReq) returns (GetProblemNoAnswerRsp) {}
+}
+
+message GetProblemNoAnswerReq {
+    int64 userId = 1;
+    int64 eventId = 2;
+    int64 teamId = 3;
+    int64 paticipantId = 4;
+    ProblemNum problemNum = 5;
+}
+
+message ProblemNum {
+    int32 single = 1;
+    int32 multiple = 2;
+    int32 fill = 3;
+    int32 judge = 4;
+}
+
+message GetProblemNoAnswerRsp {
+    repeated ProblemItem single  = 1;
+    repeated ProblemItem multiple  = 2;
+    repeated ProblemItem fill  = 3;
+    repeated ProblemItem judge  = 4;
+    bool buildFlag = 5;
+    bool answerFlag = 6;
+}
+
+message ProblemItem {
+    int64 problemId = 1;
+    string problem = 2;
+    string option = 3;
+}

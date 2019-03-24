@@ -6,6 +6,7 @@ service EventManage {
     rpc GetEventByEventId(EventIdReq) returns (EventShowMesssage) {}
     rpc GetDetailEventByEventId(EventIdReq) returns (EventDetailMesssage) {}
     rpc GetCreditRuleByEventId(EventIdReq) returns (CreditRule) {}
+    rpc GetProblemNumByEventId(EventIdReq) returns (ProblemNum) {}
 }
 
 message EventIdReq {
@@ -46,6 +47,7 @@ message EventShowMesssage {
     string fill = 8;
     string judge = 9;
     string multiple = 10;
+    double answerTime = 11;
 }
 
 message GetEventListReq {

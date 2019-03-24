@@ -9,6 +9,7 @@ import (
 	"github.com/micro/go-micro"
 	"service/event/model"
 	proto "service/protoc/eventManage" //proto文件放置路径
+	"strconv"
 )
 
 type EventManage struct{}
@@ -58,6 +59,7 @@ func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.Event
 	rsp.Fill= event_num_map["fill"].(string)
 	rsp.Judge = event_num_map["judge"].(string)
 	rsp.Multiple = event_num_map["multiple"].(string)
+	rsp.AnswerTime,_ = strconv.ParseFloat(event.Answer_time,64)
 
 	beego.Info("======UserIndex rsp=====", rsp)
 
@@ -87,6 +89,51 @@ func (this *EventManage) GetCreditRuleByEventId(ctx context.Context, req *proto.
 	return nil
 }
 
+func (this *EventManage) GetProblemNumByEventId(ctx context.Context, req *proto.EventIdReq, rsp *proto.ProblemNum) error {
+	eventId := req.EventId
+
+	event := model.GetEventByEventId(eventId)
+	event_num := event.Event_num
+	var event_num_map map[string]interface{}
+	//使用 json.Unmarshal(data []byte, v interface{})进行转换,返回 error 信息
+	if err := json.Unmarshal([]byte(event_num), &event_num_map); err != nil {
+		return err
+	}
+	var val int32
+	StrToInt(event_num_map["single"].(string), &val)
+	rsp.Single =  val
+	StrToInt(event_num_map["fill"].(string), &val)
+	rsp.Fill =  val
+	StrToInt(event_num_map["judge"].(string), &val)
+	rsp.Judge =  val
+	StrToInt(event_num_map["multiple"].(string), &val)
+	rsp.Multiple =  val
+
+	beego.Info("======GetProblemNumByEventId rsp=====", rsp)
+
+	return nil
+}
+
+func StrToInt(strNumber string, value interface{}) (err error) {
+	var number interface{}
+	number, err = strconv.ParseInt(strNumber, 10, 64)
+	switch v := number.(type) {
+	case int64:
+		switch d := value.(type) {
+		case *int64:
+			*d = v
+		case *int:
+			*d = int(v)
+		case *int16:
+			*d = int16(v)
+		case *int32:
+			*d = int32(v)
+		case *int8:
+			*d = int8(v)
+		}
+	}
+	return
+}
 
 func (this *EventManage) GetDetailEventByEventId(ctx context.Context, req *proto.EventIdReq, rsp *proto.EventDetailMesssage) error{
 	eventId := req.EventId
