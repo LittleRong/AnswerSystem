@@ -391,6 +391,7 @@
             data: post_data,
             async: false,
             success: function (data) {
+
                 //获取返回总页数和当前页数,并添加到页面上
                 var page_num = data['page_num'];
                 $("#now_page").val(new_offset);

@@ -88,6 +88,31 @@ func (this *UserManage) GetUserById(ctx context.Context, req *proto.GetUserByIdR
 	return nil
 }
 
+func (this *UserManage) UpdateUserPwd(ctx context.Context, req *proto.UpdatePwdReq, rsp *proto.UpdatePwdRsp) error{
+	var userId = req.UserId
+	var oldPwd = req.OldPwd
+	var newPwd = req.NewPwd
+
+	result := model.UpdateUserPwd(userId,oldPwd,newPwd)
+
+	rsp.Message = result
+
+	return nil
+}
+
+func (this *UserManage) Login(ctx context.Context, req *proto.LoginReq, rsp *proto.LoginRsp) error{
+	var userName = req.Username
+	var pwd = req.Pwd
+	user,flag := model.Login(userName,pwd)
+
+	//类型转换
+	rsp.UserId = user.Id
+	rsp.LoginFlag = flag
+	rsp.Permission = int32(user.Permission)
+
+	return nil
+}
+
 func main(){
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
@@ -112,5 +137,5 @@ func main(){
 
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", "root:ganxiaorong0703@tcp(localhost:3306)/problem?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", "root:password123@tcp(localhost:3306)/problem?charset=utf8")
 }

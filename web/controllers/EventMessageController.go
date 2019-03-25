@@ -52,9 +52,9 @@ func (this *EventMessageController) GetEventMessage() {
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
-	user_id := userSession.(int)
+	user_id := userSession.(int64)
 	pManage := this.initParticipantManage()
-	pReq := participantProto.PUserEventIdReq{EventId:int64(event_id),UserId:int64(user_id)}
+	pReq := participantProto.PUserEventIdReq{EventId:int64(event_id),UserId:user_id}
 	participant,pErr := pManage.GetParticipantByUserAndEvent(context.TODO(),&pReq)
 	if pErr!=nil{
 		beego.Info("-------pErr--------",pErr)

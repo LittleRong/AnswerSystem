@@ -40,11 +40,11 @@ func (this *ProblemManageController) ProblemManage() {
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
-	userId := userSession.(int)
+	userId := userSession.(int64)
 
 	//call the userManage method
 	problemManage := this.initProblemManage()
-	req := proto.GetProblemListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
+	req := proto.GetProblemListReq{Offset:offset,Limit:limit,ManageId:userId}
 	rsp, err := problemManage.GetProblemListByOffstAndLimit(context.TODO(),&req)
 	if err!=nil{
 		beego.Info("======ProblemManage=====", rsp.ProblemList,"-------err--------",err)

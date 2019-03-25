@@ -2,62 +2,51 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"web/models/user"
+	"context"
+	"github.com/micro/go-micro"
+	userProto "service/protoc/userManage"
 )
 
 type LoginController struct {
 	beego.Controller
 }
 
-func (this *LoginController) Index() {
-	/*
-	user_id := this.GetSession("user_id")
-	if user_id != nil {//用户已经登陆，直接进入用户中心
-		user_id = user_id.(int)
-		user,permission := models.IsManager(1)
-		if permission == true {
-			this.TplName = "index.html"
-		} else {
-			this.Data["json"] = &user
-			this.ServeJSON()
-			this.TplName = "welcome.html"
-		}
+func (this *LoginController) initUserManage() userProto.UserManageService{
+	//调用服务
+	service := micro.NewService(micro.Name("UserManage.client"))
+	service.Init()
 
-	} else {//用户未登录，进入登陆界面
-		this.TplName = "bad.html"
-	}
-	*/
+	//create new client
+	return userProto.NewUserManageService("UserManage",service.Client())
+}
+
+func (this *LoginController) Index() {
 	this.TplName = "index.html"
 }
 
 func (this *LoginController) Check() {
-	//判断是否为POST方法
-
 	username := this.GetString("username") // login.html中传过来的数据，这个GetInt返回两个值
 	password := this.GetString("password")
 
-	//校验
-	//valid := validation.Validation{}
-	//valid.Required(password, "password")
-	// valid.MaxSize(id, 20, "id")
-	//if valid.HasErrors() {
-	//	fmt.Println(valid.Errors[0].Key + valid.Errors[0].Message)
-	//	c.TplName = "bad.html"
-	//	return
-	//}
 	var result map[string]interface{}
-	user, loginFlag := user.Login(username, password)
-	if loginFlag == false { //登录失败
+	userManage := this.initUserManage()
+	req := userProto.LoginReq{Username:username,Pwd:password}
+	LoginRsp,err := userManage.Login(context.TODO(),&req)
+	if err==nil{
+		beego.Info("-------err--------",err)
+	}
+
+	if LoginRsp.LoginFlag == false { //登录失败
 		result = map[string]interface{}{"result": "faild", "message": "登陆失败,用户名或密码错误"}
 	} else {
 		//设置session
-		user_id := user.Id
-		this.SetSession("user_id", user_id)
-		this.SetSession("permission", user.Permission)
+		this.SetSession("user_id", LoginRsp.UserId)
+		this.SetSession("permission", LoginRsp.Permission)
 
 		//判断用户权限
-		beego.Info("========Check======",user.Permission)
-		if user.Permission == 1 || user.Permission == 2 { //管理员
+		beego.Info("========Check======",LoginRsp.Permission)
+		beego.Info("========Check user_id======",LoginRsp.UserId)
+		if LoginRsp.Permission == 1 || LoginRsp.Permission == 2 { //管理员
 			result = map[string]interface{}{"result": "admin"}
 		} else { //普通用户
 			result = map[string]interface{}{"result": "user"}
@@ -81,11 +70,17 @@ func (this *LoginController) ChangePwd() {
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
-	user_id := userSession.(int)
-	flag := user.UpdateUserPwd(user_id, old_pwd, new_pwd)
+	user_id := userSession.(int64)
+	userManage := this.initUserManage()
+	req := userProto.UpdatePwdReq{UserId:user_id,OldPwd:old_pwd,NewPwd:new_pwd}
+	rsp,err := userManage.UpdateUserPwd(context.TODO(),&req)
+	if err==nil{
+		beego.Info("-------err--------",err)
+	}
+
 	var result map[string]interface{}
 	result = make(map[string]interface{})
-	result["result"] = flag
+	result["result"] = rsp.Message
 	beego.Info("========result======", result)
 	this.Data["json"] = result
 	this.ServeJSON()

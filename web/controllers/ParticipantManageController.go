@@ -32,7 +32,7 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
-	userId := userSession.(int)
+	userId := userSession.(int64)
 
 	//调用服务
 	service := micro.NewService(micro.Name("UserManage.client"))
@@ -40,7 +40,7 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 	//create new client
 	userManage := userProto.NewUserManageService("UserManage",service.Client())
 	//call the userManage method
-	req := userProto.GetUserListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
+	req := userProto.GetUserListReq{Offset:offset,Limit:limit,ManageId:userId}
 	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
 	if err!=nil{
 		beego.Info("======ParticipantGetUser=====", rsp.UserList,"-------err--------",err)

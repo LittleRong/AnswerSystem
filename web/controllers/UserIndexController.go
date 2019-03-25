@@ -44,22 +44,21 @@ func (this *UserIndexController) initEventManage() eventProto.EventManageService
 	return eventProto.NewEventManageService("EventManage",service.Client())
 }
 
-
 func (this *UserIndexController) UserIndex() {
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	//获取用户信息
 	var user_message *userProto.UserMesssage
 	userSession := this.GetSession("user_id")
-	var userId int
+	var userId int64
 	if userSession == nil { //未登陆
 		this.Ctx.Redirect(304, "/index")
 		return
 	} else {
-		userId = userSession.(int)
+		userId = userSession.(int64)
 		//call the userManage method
 		userManage := this.initUserManage()
-		req := userProto.GetUserByIdReq{UserId:int64(userId)}
+		req := userProto.GetUserByIdReq{UserId:userId}
 		var err error
 		user_message,err = userManage.GetUserById(context.TODO(),&req)
 		if err==nil{
@@ -71,12 +70,12 @@ func (this *UserIndexController) UserIndex() {
 	var event_message_array []*eventProto.EventShowMesssage
 	//call the participantManage method
 	participantManage := this.initParticipantManage()
-	req := participantProto.GetPListByUserIdReq{UserId:int64(userId)}
+	req := participantProto.GetPListByUserIdReq{UserId:userId}
 	var err error
 	rsp,err := participantManage.GetParticipantListByUserId(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("======UserIndex user_event_list=====", rsp.PEList,"-------err--------",err)
-	}
+
+		beego.Info("======UserIndex user_event_list=====",userId, rsp.PEList,"-------err--------",err)
+
 
 	for _, value := range rsp.PEList {
 		//call the participantManage method

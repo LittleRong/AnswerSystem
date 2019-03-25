@@ -107,3 +107,34 @@ func GetUserById(id int64) (User) {
 		return u
 	}
 }
+
+func Login(username string, password string) (*User, bool) {
+	u := User{Login_name: username, Pwd: password}
+	o := orm.NewOrm()
+	err := o.Read(&u, "Login_name", "Pwd")
+	if err != nil {
+		return nil, false
+	} else {
+		return &u, true
+	}
+}
+
+func UpdateUserPwd(user_id int64, old_pwd string, pwd string) string {
+	u := User{Id: user_id}
+	o := orm.NewOrm()
+	if o.Read(&u) == nil {
+		if (u.Pwd == old_pwd) {
+			u.Pwd = pwd
+			if num, err := o.Update(&u, "Pwd"); err == nil {
+				beego.Info("======UpdateUserPwd's num=====", num)
+				return "success"
+			} else if err != nil {
+				beego.Info("======UpdateUserPwd's err=====", err)
+				return "update faild"
+			}
+		} else {
+			return "old password error"
+		}
+	}
+	return "faild"
+}

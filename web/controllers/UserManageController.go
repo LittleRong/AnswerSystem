@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/astaxie/beego"
 	"github.com/micro/go-micro"
-	proto "service/protoc/userManage" //proto文件放置路径
+	proto "service/protoc/userManage"
 )
 
 type UserManageController struct {
@@ -24,7 +24,7 @@ func (this *UserManageController) UserManage() {
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
-	userId := userSession.(int)
+	userId := userSession.(int64)
 
 	//调用服务
 	service := micro.NewService(micro.Name("UserManage.client"))

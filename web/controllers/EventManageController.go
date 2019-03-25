@@ -34,11 +34,11 @@ func (this *EventManageController) EventManage() {
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
-	userId := userSession.(int)
+	userId := userSession.(int64)
 
 	//call the userManage method
 	eventManage := this.initEventManage()
-	req := proto.GetEventListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
+	req := proto.GetEventListReq{Offset:offset,Limit:limit,ManageId:userId}
 	rsp, err := eventManage.GetEventListByManageIdAndOffst(context.TODO(),&req)
 	if err!=nil{
 		beego.Info("======ProblemManage=====", rsp.EventList,"-------err--------",err)
@@ -64,7 +64,7 @@ func (this *EventManageController) EventInsert() {
 		beego.Info("========未登录======")
 		return
 	}
-	manage_id := userSession.(int)
+	manage_id := userSession.(int64)
 	etitle := this.GetString("etitle")
 	message := this.GetString("message")
 	ekind := this.GetString("ekind")

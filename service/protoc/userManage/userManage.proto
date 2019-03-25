@@ -6,6 +6,29 @@ service UserManage {
     rpc AddUser(AddUserReq) returns (AddUserRsp) {}
     rpc DeleteUserById(DeleteUserReq) returns (DeleteUserRsp) {}
     rpc GetUserById(GetUserByIdReq) returns (UserMesssage) {}
+    rpc Login(LoginReq) returns (LoginRsp) {}
+    rpc UpdateUserPwd(UpdatePwdReq) returns (UpdatePwdRsp) {}
+}
+
+message UpdatePwdReq {
+    int64 userId = 1;
+    string oldPwd = 2;
+    string newPwd = 3;
+}
+
+message UpdatePwdRsp {
+    string message = 1;
+}
+
+message LoginReq {
+    string  username = 1;
+    string  pwd = 2;
+}
+
+message LoginRsp {
+    bool loginFlag = 1;
+    int64 userId = 2;
+    int32 permission = 3;
 }
 
 message GetUserListReq {
