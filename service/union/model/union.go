@@ -3,12 +3,14 @@ package model
 import (
 	"context"
 	"encoding/json"
+	"strconv"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/micro/go-micro"
+
 	participantProto "service/protoc/answerManage"
-	"strconv"
-	"time"
 )
 
 type ProblemNum struct {
@@ -31,19 +33,19 @@ func init() {
 	orm.RegisterModel(new(Problem)) // 注册模型，建立User类型对象，注册模型时，需要引入包
 }
 
-func initParticipantManage() participantProto.ParticipantManageService{
+func initParticipantManage() participantProto.ParticipantManageService {
 	//调用服务
 	service := micro.NewService(micro.Name("ParticipantManage.client"))
 	service.Init()
 
 	//create new client
-	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
+	return participantProto.NewParticipantManageService("ParticipantManage", service.Client())
 }
 
-func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participant_id int64, problemNum ProblemNum) ([]Problem, bool,bool) {
+func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participant_id int64, problemNum ProblemNum) ([]Problem, bool, bool) {
 	var problems []Problem
-	buildFlag := false //是否已经生成过题目
-	answerFlag := false//是否已经答题
+	buildFlag := false  //是否已经生成过题目
+	answerFlag := false //是否已经答题
 	o := orm.NewOrm()
 	now_time := time.Now()
 	unix_time := now_time.Unix()
@@ -52,10 +54,10 @@ func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participan
 
 	//*****************************1.检查是否已完成答题*************************************************
 	pManage := initParticipantManage()
-	judgeReq := participantProto.JudgeReq{ParticipantId:participant_id}
-	judgeRsp,judgeErr := pManage.JudgeIfHaveAnswer(context.TODO(),&judgeReq)
-	if judgeErr!=nil{
-		beego.Info("-------judgeErr--------",judgeErr)
+	judgeReq := participantProto.JudgeReq{ParticipantId: participant_id}
+	judgeRsp, judgeErr := pManage.JudgeIfHaveAnswer(context.TODO(), &judgeReq)
+	if judgeErr != nil {
+		beego.Info("-------judgeErr--------", judgeErr)
 	}
 	answerFlag = judgeRsp.AnswerFlag
 	beego.Info("**************JudgeIfHaveAnswer*****************", answerFlag)
@@ -93,18 +95,18 @@ func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participan
 		var waited_answer map[string]interface{}
 		waited_answer = GeneratingWaitedAnswer(problems, answer_date)
 		str, _ := json.Marshal(waited_answer)
-		pReq := participantProto.UpdateWaitedAnswerReq{ParticipantId:participant_id,WaitedAnswer:string(str)}
-		_,pErr := pManage.UpdateParticipantWaitedAnswer(context.TODO(),&pReq)
-		if pErr!=nil{
-			beego.Info("-------pErr--------",pErr)
+		pReq := participantProto.UpdateWaitedAnswerReq{ParticipantId: participant_id, WaitedAnswer: string(str)}
+		_, pErr := pManage.UpdateParticipantWaitedAnswer(context.TODO(), &pReq)
+		if pErr != nil {
+			beego.Info("-------pErr--------", pErr)
 		}
 
 		//*****************************5.将新题目拆入participant_haved_answer表*********
 		for _, v := range problems {
-			addProReq := participantProto.AddProblemHavedAnswerReq{ParticipantId:participant_id,ProblemId:v.Problem_id,TeamId:team_id,AnswerDate:answer_date}
-			_,addProErr := pManage.AddProblemHavedAnswer(context.TODO(),&addProReq)
-			if addProErr!=nil{
-				beego.Info("-------addProErr--------",addProErr)
+			addProReq := participantProto.AddProblemHavedAnswerReq{ParticipantId: participant_id, ProblemId: v.Problem_id, TeamId: team_id, AnswerDate: answer_date}
+			_, addProErr := pManage.AddProblemHavedAnswer(context.TODO(), &addProReq)
+			if addProErr != nil {
+				beego.Info("-------addProErr--------", addProErr)
 			}
 
 		}
@@ -139,8 +141,6 @@ func GeneratingProblems(event_id int64, participant_id int64, problem_type int, 
 	}
 
 }
-
-
 
 func GeneratingWaitedAnswer(problems []Problem, answer_date string) map[string]interface{} {
 	var waited_answer map[string]interface{}

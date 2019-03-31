@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
@@ -92,7 +93,7 @@ func GetProblemNumByEventId(event_id int) ProblemNum {
 	return problemNum
 }
 
-func GetEventListByManageIdAndOffst(manage_id int64,offset int, limit int) []Event {
+func GetEventListByManageIdAndOffst(manage_id int64, offset int, limit int) []Event {
 	var e []Event
 	o := orm.NewOrm()
 	offset = offset - 1

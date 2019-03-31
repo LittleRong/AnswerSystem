@@ -3,8 +3,10 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/astaxie/beego"
-	proto "service/protoc/eventManage" //proto文件放置路径
+
+	proto "service/protoc/eventManage"
 	"web/common"
 )
 
@@ -17,8 +19,8 @@ func (this *EventManageController) EventManageInit() {
 }
 
 func (this *EventManageController) EventManage() {
-	offset,_ := this.GetInt32("offset")
-	limit,_ := this.GetInt32("limit")
+	offset, _ := this.GetInt32("offset")
+	limit, _ := this.GetInt32("limit")
 	//获取用户信息
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
@@ -29,10 +31,10 @@ func (this *EventManageController) EventManage() {
 
 	//call the userManage method
 	eventManage := common.InitEventManage()
-	req := proto.GetEventListReq{Offset:offset,Limit:limit,ManageId:userId}
-	rsp, err := eventManage.GetEventListByManageIdAndOffst(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("======ProblemManage=====", rsp.EventList,"-------err--------",err)
+	req := proto.GetEventListReq{Offset: offset, Limit: limit, ManageId: userId}
+	rsp, err := eventManage.GetEventListByManageIdAndOffst(context.TODO(), &req)
+	if err != nil {
+		beego.Info("======ProblemManage=====", rsp.EventList, "-------err--------", err)
 	}
 
 	var result map[string]interface{}
@@ -105,9 +107,9 @@ func (this *EventManageController) EventInsert() {
 		AnswerTime:       answer_time,
 		CreditRule:       string(credit_rule),
 		ParticipantNum:   int32(participant_num)}
-	rsp, err := eventManage.AddNewEvent(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("-------err--------",err)
+	rsp, err := eventManage.AddNewEvent(context.TODO(), &req)
+	if err != nil {
+		beego.Info("-------err--------", err)
 	}
 
 	var result map[string]interface{}

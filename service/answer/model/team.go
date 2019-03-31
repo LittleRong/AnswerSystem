@@ -7,9 +7,9 @@ import (
 
 type Team struct {
 	Team_id        int64 `orm:"pk"` //组id
-	Team_name      string         //组名
+	Team_name      string           //组名
 	Refer_event_id int64            //参见的事件id,关联的事件的id
-	Team_credit    float64        //本组在事件中的积分
+	Team_credit    float64          //本组在事件中的积分
 }
 
 func init() {

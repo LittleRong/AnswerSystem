@@ -22,7 +22,6 @@ func init() {
 	orm.RegisterModel(new(User)) // 注册模型，建立User类型对象，注册模型时，需要引入包
 }
 
-
 func GetUserListByOffstAndLimit(offset int, limit int) []User {
 	var u []User
 	o := orm.NewOrm()
@@ -32,7 +31,7 @@ func GetUserListByOffstAndLimit(offset int, limit int) []User {
 	return u
 }
 
-func UpdateUserById(change_id int64, user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string,int64) {
+func UpdateUserById(change_id int64, user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string, int64) {
 	u := User{Id: change_id}
 	o := orm.NewOrm()
 	if o.Read(&u) == nil {
@@ -43,22 +42,22 @@ func UpdateUserById(change_id int64, user_name string, login_name string, user_p
 		u.Gender = user_gender
 		if num, err := o.Update(&u); err == nil {
 			beego.Info("======UpdateUserById's num=====", num)
-			return "success",u.Id
+			return "success", u.Id
 		} else if err != nil {
 			beego.Info("======UpdateUserById's err=====", err)
-			return "update faild",-1
+			return "update faild", -1
 		}
 	}
-	return " user doesn't exist ",-1
+	return " user doesn't exist ", -1
 }
 
-func AddUser(user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string,int64) {
+func AddUser(user_name string, login_name string, user_phone_number string, user_job_number string, user_gender int) (string, int64) {
 	//login_name不能重复
 	var u User
 	o := orm.NewOrm()
 	o.QueryTable("user").Filter("login_name", login_name).All(&u)
 	if (u != User{}) {
-		return "login name have exit,please change another",-1
+		return "login name have exit,please change another", -1
 	}
 
 	//user_gender只能是0或1
@@ -74,27 +73,27 @@ func AddUser(user_name string, login_name string, user_phone_number string, user
 	id, err := o.Insert(&u)
 	if err == nil {
 		beego.Info("======AddUser's id=====", id)
-		return "success",u.Id
+		return "success", u.Id
 	} else {
 		beego.Info("======AddUser's err=====", err)
-		return "insert faild",-1
+		return "insert faild", -1
 	}
 }
 
-func DeleteUserById(delete_id int64) (string,int64) {
+func DeleteUserById(delete_id int64) (string, int64) {
 	u := User{Id: delete_id}
 	o := orm.NewOrm()
 	if o.Read(&u) == nil {
 		u.Deleted = true
 		if num, err := o.Update(&u); err == nil {
 			beego.Info("======DeleteUserById's num=====", num)
-			return "success",u.Id
+			return "success", u.Id
 		} else if err != nil {
 			beego.Info("======DeleteUserById's err=====", err)
-			return "delete faild",-1
+			return "delete faild", -1
 		}
 	}
-	return " user doesn't exist ",-1
+	return " user doesn't exist ", -1
 }
 
 func GetUserById(id int64) (User) {

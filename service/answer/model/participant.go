@@ -2,9 +2,10 @@ package model
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 // 完成User类型定义
@@ -106,7 +107,7 @@ func GetMemberCreditByTeamId(team_id int64, event_id int64) []Participant {
 	return p
 }
 
-func UpdateParticipantWaitedAnswer(participant_id int64, answer string) string{
+func UpdateParticipantWaitedAnswer(participant_id int64, answer string) string {
 	//待增加对answer格式的校验
 
 	participant := Participant{Participant_id: participant_id}

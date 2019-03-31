@@ -4,35 +4,37 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/micro/go-micro/registry/consul"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/micro/go-micro"
-	proto "service/protoc/unionManage" //proto文件放置路径
+	"github.com/micro/go-micro/registry/consul"
+
+	proto "service/protoc/unionManage"
 	"service/union/model"
 )
 
 type UnionManage struct{}
 
-func (this *UnionManage) GetProblemNoAnswer(ctx context.Context, req *proto.GetProblemNoAnswerReq, rsp *proto.GetProblemNoAnswerRsp) error{
+func (this *UnionManage) GetProblemNoAnswer(ctx context.Context, req *proto.GetProblemNoAnswerReq, rsp *proto.GetProblemNoAnswerRsp) error {
 	eventId := req.EventId
 	teamId := req.TeamId
 	paticipantId := req.PaticipantId
 	problemNumRsp := req.ProblemNum
 	userId := req.UserId
 
-	problemNum := model.ProblemNum{Single:problemNumRsp.Single,Multiple:problemNumRsp.Multiple,Judge:problemNumRsp.Judge,Fill:problemNumRsp.Fill}
-	result, buildFlag, answerFlag := model.GetProblemNoAnswer(userId,eventId,teamId,paticipantId,problemNum)
+	problemNum := model.ProblemNum{Single: problemNumRsp.Single, Multiple: problemNumRsp.Multiple, Judge: problemNumRsp.Judge, Fill: problemNumRsp.Fill}
+	result, buildFlag, answerFlag := model.GetProblemNoAnswer(userId, eventId, teamId, paticipantId, problemNum)
 
 	rsp.AnswerFlag = answerFlag
 	rsp.BuildFlag = buildFlag
-	GeneratingFrontProblems(result,rsp)
+	GeneratingFrontProblems(result, rsp)
 
 	return nil
 }
 
-func GeneratingFrontProblems(problems []model.Problem,rsp *proto.GetProblemNoAnswerRsp) {
+func GeneratingFrontProblems(problems []model.Problem, rsp *proto.GetProblemNoAnswerRsp) {
 	var single []*proto.ProblemItem
 	var mutiple []*proto.ProblemItem
 	var fill []*proto.ProblemItem
@@ -90,7 +92,7 @@ func GeneratingFrontProblems(problems []model.Problem,rsp *proto.GetProblemNoAns
 
 }
 
-func main(){
+func main() {
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
 	orm.Debug = true
@@ -98,7 +100,7 @@ func main(){
 	orm.RunSyncdb("default", false, true)
 
 	//create service
-	service := micro.NewService(micro.Name("UnionManage"),micro.Registry(consul.NewRegistry()))
+	service := micro.NewService(micro.Name("UnionManage"), micro.Registry(consul.NewRegistry()))
 
 	//init
 	service.Init()
@@ -107,8 +109,8 @@ func main(){
 	proto.RegisterUnionManageHandler(service.Server(), new(UnionManage))
 
 	//run the server
-	if err:=service.Run();err != nil {
-		beego.Info("========ProblemManage's err===========",err)
+	if err := service.Run(); err != nil {
+		beego.Info("========ProblemManage's err===========", err)
 	}
 }
 

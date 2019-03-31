@@ -10,25 +10,25 @@ type Credit_log struct {
 	Refer_event_id       int64            //关联的事件的id
 	Refer_participant_id int64            //参赛者id
 	Refer_team_id        int64            //进行操作的组id
-	Change_time          string         //操作时间
-	Change_value         float32        //操作值,更改的值,正为加分，负为减分
+	Change_time          string           //操作时间
+	Change_value         float32          //操作值,更改的值,正为加分，负为减分
 	Change_type          int32            //分数操作类型：1答题加分，2当日全部答对额外加分，3当日小组全部答对额外加分
-	Change_reason        string         //更改原因
+	Change_reason        string           //更改原因
 }
 
 func init() {
 	orm.RegisterModel(new(Credit_log))
 }
 
-func AddCreditLog(log Credit_log) (string,int64){
+func AddCreditLog(log Credit_log) (string, int64) {
 	o := orm.NewOrm()
 	id, err := o.Insert(&log)
 	if err != nil {
 		beego.Info("======AddCreditLog's err=====", err)
-		return "faild",-1
+		return "faild", -1
 	} else {
 		beego.Info("======AddCreditLog's id=====", id)
-		return "success",id
+		return "success", id
 	}
 }
 

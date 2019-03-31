@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"context"
+
 	"github.com/astaxie/beego"
 	"github.com/micro/go-micro"
+
 	proto "service/protoc/userManage"
 	"web/common"
 )
@@ -31,13 +33,13 @@ func (this *UserManageController) UserManage() {
 	service := micro.NewService(micro.Name("UserManage.client"))
 	service.Init()
 	//create new client
-	userManage := proto.NewUserManageService("UserManage",service.Client())
+	userManage := proto.NewUserManageService("UserManage", service.Client())
 	//call the userManage method
-	req := proto.GetUserListReq{Offset:offset,Limit:limit,ManageId:int64(userId)}
-	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
+	req := proto.GetUserListReq{Offset: offset, Limit: limit, ManageId: int64(userId)}
+	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(), &req)
 
 	//user_data,page_num
-	beego.Info("======user_list=====", rsp.UserList,"-----------------",err)
+	beego.Info("======user_list=====", rsp.UserList, "-----------------", err)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["user_data"] = rsp.UserList
@@ -57,10 +59,10 @@ func (this *UserManageController) ChangeUser() {
 
 	//call the userManage method
 	userManage := common.InitUserManage()
-	req := proto.ChangeUserReq{ChangeId:changeId,Name:userName,LoginName:loginName,PhoneNumber:userPhoneNumber,JobNumber:userJobNumber,Gender:userGender}
-	rsp, err := userManage.UpdateUserById(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("======ChangeUser=====", rsp.UserId,"-------err--------",err)
+	req := proto.ChangeUserReq{ChangeId: changeId, Name: userName, LoginName: loginName, PhoneNumber: userPhoneNumber, JobNumber: userJobNumber, Gender: userGender}
+	rsp, err := userManage.UpdateUserById(context.TODO(), &req)
+	if err != nil {
+		beego.Info("======ChangeUser=====", rsp.UserId, "-------err--------", err)
 	}
 
 	var result map[string]interface{}
@@ -80,10 +82,10 @@ func (this *UserManageController) AddUser() {
 
 	//call the userManage method
 	userManage := common.InitUserManage()
-	req := proto.AddUserReq{Name:userName,LoginName:loginName,PhoneNumber:userPhoneNumber,JobNumber:userJobNumber,Gender:userGender}
-	rsp, err := userManage.AddUser(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("======AddUser=====", rsp.UserId,"-------err--------",err)
+	req := proto.AddUserReq{Name: userName, LoginName: loginName, PhoneNumber: userPhoneNumber, JobNumber: userJobNumber, Gender: userGender}
+	rsp, err := userManage.AddUser(context.TODO(), &req)
+	if err != nil {
+		beego.Info("======AddUser=====", rsp.UserId, "-------err--------", err)
 	}
 
 	var result map[string]interface{}
@@ -100,10 +102,10 @@ func (this *UserManageController) DeleteUserById() {
 
 	//call the userManage method
 	userManage := common.InitUserManage()
-	req := proto.DeleteUserReq{DeleteId:deleteId}
-	rsp, err := userManage.DeleteUserById(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("======DeleteUserById=====", rsp.UserId,"-------err--------",err)
+	req := proto.DeleteUserReq{DeleteId: deleteId}
+	rsp, err := userManage.DeleteUserById(context.TODO(), &req)
+	if err != nil {
+		beego.Info("======DeleteUserById=====", rsp.UserId, "-------err--------", err)
 	}
 
 	var result map[string]interface{}

@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"context"
+
 	"github.com/astaxie/beego"
-	participantProto "service/protoc/answerManage" //proto文件放置路径
+
+	participantProto "service/protoc/answerManage"
 	eventProto "service/protoc/eventManage"
-	userProto "service/protoc/userManage" //proto文件放置路径
+	userProto "service/protoc/userManage"
 	"web/common"
 )
 
@@ -31,11 +33,11 @@ func (this *UserIndexController) UserIndex() {
 		userId = userSession.(int64)
 		//call the userManage method
 		userManage := common.InitUserManage()
-		req := userProto.GetUserByIdReq{UserId:userId}
+		req := userProto.GetUserByIdReq{UserId: userId}
 		var err error
-		user_message,err = userManage.GetUserById(context.TODO(),&req)
-		if err==nil{
-			beego.Info("-------err--------",err)
+		user_message, err = userManage.GetUserById(context.TODO(), &req)
+		if err == nil {
+			beego.Info("-------err--------", err)
 		}
 	}
 
@@ -43,21 +45,20 @@ func (this *UserIndexController) UserIndex() {
 	var event_message_array []*eventProto.EventShowMesssage
 	//call the participantManage method
 	participantManage := common.InitParticipantManage()
-	req := participantProto.GetPListByUserIdReq{UserId:userId}
+	req := participantProto.GetPListByUserIdReq{UserId: userId}
 	var err error
-	rsp,err := participantManage.GetParticipantListByUserId(context.TODO(),&req)
+	rsp, err := participantManage.GetParticipantListByUserId(context.TODO(), &req)
 
-		beego.Info("======UserIndex user_event_list=====",userId, rsp.PEList,"-------err--------",err)
-
+	beego.Info("======UserIndex user_event_list=====", userId, rsp.PEList, "-------err--------", err)
 
 	for _, value := range rsp.PEList {
 		//call the participantManage method
 		eventManage := common.InitEventManage()
-		req := eventProto.EventIdReq{EventId:value.ReferEventId}
+		req := eventProto.EventIdReq{EventId: value.ReferEventId}
 		var err error
-		rsp,err := eventManage.GetEventByEventId(context.TODO(),&req)
-		if err!=nil{
-			beego.Info("-------err--------",err)
+		rsp, err := eventManage.GetEventByEventId(context.TODO(), &req)
+		if err != nil {
+			beego.Info("-------err--------", err)
 		}
 		//增加
 		event_message_array = append(event_message_array, rsp)

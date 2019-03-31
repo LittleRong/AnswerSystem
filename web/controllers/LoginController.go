@@ -1,8 +1,10 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
 	"context"
+
+	"github.com/astaxie/beego"
+
 	userProto "service/protoc/userManage"
 	"web/common"
 )
@@ -21,10 +23,10 @@ func (this *LoginController) Check() {
 
 	var result map[string]interface{}
 	userManage := common.InitUserManage()
-	req := userProto.LoginReq{Username:username,Pwd:password}
-	LoginRsp,err := userManage.Login(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("-------err--------",err)
+	req := userProto.LoginReq{Username: username, Pwd: password}
+	LoginRsp, err := userManage.Login(context.TODO(), &req)
+	if err != nil {
+		beego.Info("-------err--------", err)
 	}
 
 	if LoginRsp.LoginFlag == false { //登录失败
@@ -35,8 +37,8 @@ func (this *LoginController) Check() {
 		this.SetSession("permission", LoginRsp.Permission)
 
 		//判断用户权限
-		beego.Info("========Check======",LoginRsp.Permission)
-		beego.Info("========Check user_id======",LoginRsp.UserId)
+		beego.Info("========Check======", LoginRsp.Permission)
+		beego.Info("========Check user_id======", LoginRsp.UserId)
 		if LoginRsp.Permission == 1 || LoginRsp.Permission == 2 { //管理员
 			result = map[string]interface{}{"result": "admin"}
 		} else { //普通用户
@@ -63,10 +65,10 @@ func (this *LoginController) ChangePwd() {
 	}
 	user_id := userSession.(int64)
 	userManage := common.InitUserManage()
-	req := userProto.UpdatePwdReq{UserId:user_id,OldPwd:old_pwd,NewPwd:new_pwd}
-	rsp,err := userManage.UpdateUserPwd(context.TODO(),&req)
-	if err==nil{
-		beego.Info("-------err--------",err)
+	req := userProto.UpdatePwdReq{UserId: user_id, OldPwd: old_pwd, NewPwd: new_pwd}
+	rsp, err := userManage.UpdateUserPwd(context.TODO(), &req)
+	if err == nil {
+		beego.Info("-------err--------", err)
 	}
 
 	var result map[string]interface{}

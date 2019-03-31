@@ -5,7 +5,6 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// 完成User类型定义
 type Problem struct {
 	Problem_id      int `orm:"pk"`
 	Problem_content string

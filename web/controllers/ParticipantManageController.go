@@ -1,13 +1,16 @@
 package controllers
 
 import (
-	"encoding/json"
-	"github.com/astaxie/beego"
 	"context"
-	micro "github.com/micro/go-micro"
-	userProto "service/protoc/userManage"
-	participantProto "service/protoc/answerManage"
+	"encoding/json"
 	"strconv"
+
+	"github.com/astaxie/beego"
+	"github.com/micro/go-micro"
+
+	participantProto "service/protoc/answerManage"
+	userProto "service/protoc/userManage"
+	"web/common"
 )
 
 type ParticipantManageController struct {
@@ -38,12 +41,12 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 	service := micro.NewService(micro.Name("UserManage.client"))
 	service.Init()
 	//create new client
-	userManage := userProto.NewUserManageService("UserManage",service.Client())
+	userManage := userProto.NewUserManageService("UserManage", service.Client())
 	//call the userManage method
-	req := userProto.GetUserListReq{Offset:offset,Limit:limit,ManageId:userId}
-	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("======ParticipantGetUser=====", rsp.UserList,"-------err--------",err)
+	req := userProto.GetUserListReq{Offset: offset, Limit: limit, ManageId: userId}
+	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(), &req)
+	if err != nil {
+		beego.Info("======ParticipantGetUser=====", rsp.UserList, "-------err--------", err)
 	}
 
 	var result map[string]interface{}
@@ -79,24 +82,20 @@ func (this *ParticipantManageController) EventParticipantInsert() {
 		var m []int64
 		for _, member := range member_array {
 			member_id, _ := strconv.Atoi(member.(string))
-			m = append(m,int64(member_id))
+			m = append(m, int64(member_id))
 
 		}
 		member.MemberId = m
-		memberList = append(memberList,&member)
+		memberList = append(memberList, &member)
 
 	}
 
 	//调用服务
-	service := micro.NewService(micro.Name("ParticipantManage.client"))
-	service.Init()
-	//create new client
-	participantManage := participantProto.NewParticipantManageService("ParticipantManage",service.Client())
-	//call the userManage method
-	req := participantProto.EPInsertReq{EventId:int64(event_id),ParticipantMemberList:memberList}
-	rsp, err := participantManage.EventParticipantInsert(context.TODO(),&req)
-	if err!=nil{
-		beego.Info("-------err--------",err)
+	participantManage := common.InitParticipantManage()
+	req := participantProto.EPInsertReq{EventId: int64(event_id), ParticipantMemberList: memberList}
+	rsp, err := participantManage.EventParticipantInsert(context.TODO(), &req)
+	if err != nil {
+		beego.Info("-------err--------", err)
 	}
 
 	var result map[string]interface{}
