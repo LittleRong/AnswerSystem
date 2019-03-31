@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/astaxie/beego"
-	"github.com/micro/go-micro"
 	creditProto "service/protoc/answerManage"
 	participantProto "service/protoc/answerManage"
 	eventProto "service/protoc/eventManage"
@@ -12,6 +11,7 @@ import (
 	userProto "service/protoc/userManage"
 	"strconv"
 	"time"
+	"web/common"
 )
 
 type AnswerController struct {
@@ -37,52 +37,6 @@ func (this *AnswerController) ShowProblemsPage() {
 
 }
 
-func (this *AnswerController) initEventManage() eventProto.EventManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("EventManage.client"))
-	service.Init()
-
-	//create new client
-	return eventProto.NewEventManageService("EventManage",service.Client())
-}
-
-func (this *AnswerController) initUniontManage() unionProto.UnionManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("UnionManage.client"))
-	service.Init()
-
-	//create new client
-	return unionProto.NewUnionManageService("UnionManage",service.Client())
-}
-
-func (this *AnswerController) initUserManage() userProto.UserManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("UserManage.client"))
-	service.Init()
-
-	//create new client
-	return userProto.NewUserManageService("UserManage",service.Client())
-}
-
-
-func initParticipantManage() participantProto.ParticipantManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("ParticipantManage.client"))
-	service.Init()
-
-	//create new client
-	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
-}
-
-func (this *AnswerController) initCreditManage() creditProto.CreditManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("CreditManage.client"))
-	service.Init()
-
-	//create new client
-	return creditProto.NewCreditManageService("CreditManage",service.Client())
-}
-
 func (this *AnswerController) GetUserProblems() {
 	eventSession := this.GetSession("event_id")
 	if eventSession == nil { //未登陆
@@ -96,7 +50,7 @@ func (this *AnswerController) GetUserProblems() {
 		return
 	}
 	user_id := userSession.(int64)
-	pManage := initParticipantManage()
+	pManage := common.InitParticipantManage()
 	pReq := participantProto.PUserEventIdReq{EventId:int64(event_id),UserId:user_id}
 	p,pErr := pManage.GetParticipantByUserAndEvent(context.TODO(),&pReq)
 	if pErr!=nil{
@@ -106,14 +60,14 @@ func (this *AnswerController) GetUserProblems() {
 	team_id := p.TeamId
 
 	//*****************************1.获取用户题目*************************************************
-	eventManage := this.initEventManage()
+	eventManage := common.InitEventManage()
 	req := eventProto.EventIdReq{EventId:int64(event_id)}
 	problemNum,problemNumErr := eventManage.GetProblemNumByEventId(context.TODO(),&req)
 	if problemNumErr!=nil{
 		beego.Info("-------err--------",problemNumErr)
 	}
 
-	uniontManage := this.initUniontManage()
+	uniontManage := common.InitUniontManage()
 	problemNumsReq := unionProto.ProblemNum{Single:problemNum.Single,Multiple:problemNum.Multiple,Fill:problemNum.Fill,Judge:problemNum.Judge}
 	unionReq := unionProto.GetProblemNoAnswerReq{EventId:int64(event_id),UserId:int64(user_id),TeamId:int64(team_id),PaticipantId:paticipant_id,ProblemNum:&problemNumsReq}
 	unionRsp,unionErr := uniontManage.GetProblemNoAnswer(context.TODO(),&unionReq)
@@ -196,7 +150,7 @@ func (this *AnswerController) GetUserAnswers() {
 		return
 	}
 	user_id := userSession.(int64)
-	pManage := initParticipantManage()
+	pManage := common.InitParticipantManage()
 	pReq := participantProto.PUserEventIdReq{EventId:int64(event_id),UserId:user_id}
 	p,pErr := pManage.GetParticipantByUserAndEvent(context.TODO(),&pReq)
 	if pErr!=nil{
@@ -206,7 +160,7 @@ func (this *AnswerController) GetUserAnswers() {
 	team_id := p.TeamId
 
 	//*****************************1.获取该事件评分标准*************************************************
-	eventManage := this.initEventManage()
+	eventManage := common.InitEventManage()
 	eventReq := eventProto.EventIdReq{EventId:int64(event_id)}
 	creditRule,creditRuleErr := eventManage.GetCreditRuleByEventId(context.TODO(),&eventReq)
 	if creditRuleErr!=nil{
@@ -264,7 +218,7 @@ func (this *AnswerController) GetUserAnswers() {
 
 	//*****************************6.更新积分*****************************************
 	//1.更新个人积分
-	creditManage := this.initCreditManage()
+	creditManage := common.InitCreditManage()
 	pCreditReq := creditProto.UpdatePCreditReq{PaticipantId:int64(paticipant_id),ChangeCredit:user_score}
 	pCreditRsp,_ := creditManage.UpdateParticipantCredit(context.TODO(),&pCreditReq)
 	user_total_credit := pCreditRsp.Credit
@@ -322,7 +276,7 @@ func (this *AnswerController) GetUserAnswers() {
 	var member_credit []map[string]string
 	for _, v := range member {
 		userId := v.UserId
-		userManage := this.initUserManage()
+		userManage := common.InitUserManage()
 		req := userProto.GetUserByIdReq{UserId:int64(userId)}
 		user_message,err := userManage.GetUserById(context.TODO(),&req)
 		if err==nil{
@@ -399,7 +353,7 @@ func JudgeUserInputAnswer(input_array []interface{}, correct_answer []*participa
 			beego.Info("problem_id=", problem_id, "user_answer=", user_answer, " right_answer=", right_answer)
 
 			//将用户答案写入participant_haved_answer表
-			pManage := initParticipantManage()
+			pManage := common.InitParticipantManage()
 			problemIdStr, _ := strconv.ParseInt(problem_id, 10, 64)
 			pReq := participantProto.UpdateUserAnswerReq{ParticipantId:paticipant_id,ProblemId:problemIdStr,UserAnswer:user_answer,TrueOrFalse:true_or_false}
 			_,pErr := pManage.UpdateUserAnswer(context.TODO(),&pReq)
@@ -459,7 +413,7 @@ func JudgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*part
 			beego.Info("problem_id=", problem_id, "user_answer=", user_answer, " right_answer=", right_answer)
 
 			//将用户答案写入participant_haved_answer表
-			pManage := initParticipantManage()
+			pManage := common.InitParticipantManage()
 			problemIdStr, _ := strconv.ParseInt(problem_id, 10, 64)
 			pReq := participantProto.UpdateUserAnswerReq{ParticipantId:paticipant_id,ProblemId:problemIdStr,UserAnswer:user_answer,TrueOrFalse:true_or_false}
 			_,pErr := pManage.UpdateUserAnswer(context.TODO(),&pReq)

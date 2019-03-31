@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/micro/go-micro"
-	userProto "service/protoc/userManage" //proto文件放置路径
 	"context"
+	"github.com/astaxie/beego"
 	participantProto "service/protoc/answerManage" //proto文件放置路径
 	eventProto "service/protoc/eventManage"
+	userProto "service/protoc/userManage" //proto文件放置路径
+	"web/common"
 )
 
 type UserIndexController struct {
@@ -15,33 +15,6 @@ type UserIndexController struct {
 
 func (this *UserIndexController) UserIndexInit() {
 	this.TplName = "index/user_index.html"
-}
-
-func (this *UserIndexController) initUserManage() userProto.UserManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("UserManage.client"))
-	service.Init()
-
-	//create new client
-	return userProto.NewUserManageService("UserManage",service.Client())
-}
-
-func (this *UserIndexController) initParticipantManage() participantProto.ParticipantManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("ParticipantManage.client"))
-	service.Init()
-
-	//create new client
-	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
-}
-
-func (this *UserIndexController) initEventManage() eventProto.EventManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("EventManage.client"))
-	service.Init()
-
-	//create new client
-	return eventProto.NewEventManageService("EventManage",service.Client())
 }
 
 func (this *UserIndexController) UserIndex() {
@@ -57,7 +30,7 @@ func (this *UserIndexController) UserIndex() {
 	} else {
 		userId = userSession.(int64)
 		//call the userManage method
-		userManage := this.initUserManage()
+		userManage := common.InitUserManage()
 		req := userProto.GetUserByIdReq{UserId:userId}
 		var err error
 		user_message,err = userManage.GetUserById(context.TODO(),&req)
@@ -69,7 +42,7 @@ func (this *UserIndexController) UserIndex() {
 	//获取用户参与的事件，并获取事件信息
 	var event_message_array []*eventProto.EventShowMesssage
 	//call the participantManage method
-	participantManage := this.initParticipantManage()
+	participantManage := common.InitParticipantManage()
 	req := participantProto.GetPListByUserIdReq{UserId:userId}
 	var err error
 	rsp,err := participantManage.GetParticipantListByUserId(context.TODO(),&req)
@@ -79,7 +52,7 @@ func (this *UserIndexController) UserIndex() {
 
 	for _, value := range rsp.PEList {
 		//call the participantManage method
-		eventManage := this.initEventManage()
+		eventManage := common.InitEventManage()
 		req := eventProto.EventIdReq{EventId:value.ReferEventId}
 		var err error
 		rsp,err := eventManage.GetEventByEventId(context.TODO(),&req)

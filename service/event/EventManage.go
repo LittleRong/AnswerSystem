@@ -10,6 +10,7 @@ import (
 	"service/event/model"
 	proto "service/protoc/eventManage" //proto文件放置路径
 	"strconv"
+	"github.com/micro/go-micro/registry/consul"
 )
 
 type EventManage struct{}
@@ -215,7 +216,7 @@ func main(){
 	orm.RunSyncdb("default", false, true)
 
 	//create service
-	service := micro.NewService(micro.Name("EventManage"))
+	service := micro.NewService(micro.Name("EventManage"),micro.Registry(consul.NewRegistry()))
 
 	//init
 	service.Init()

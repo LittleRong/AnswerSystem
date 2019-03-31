@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/micro/go-micro/registry/consul"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/micro/go-micro"
 	proto "service/protoc/unionManage" //proto文件放置路径
@@ -97,7 +98,7 @@ func main(){
 	orm.RunSyncdb("default", false, true)
 
 	//create service
-	service := micro.NewService(micro.Name("UnionManage"))
+	service := micro.NewService(micro.Name("UnionManage"),micro.Registry(consul.NewRegistry()))
 
 	//init
 	service.Init()

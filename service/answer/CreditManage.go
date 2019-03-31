@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro"
 	"service/answer/model"
 	proto "service/protoc/answerManage" //proto文件放置路径
+	"github.com/micro/go-micro/registry/consul"
 )
 
 type CreditManage struct{}
@@ -98,7 +99,7 @@ func main(){
 	orm.RunSyncdb("default", false, true)
 
 	//create service
-	service := micro.NewService(micro.Name("CreditManage"))
+	service := micro.NewService(micro.Name("CreditManage"),micro.Registry(consul.NewRegistry()))
 
 	//init
 	service.Init()

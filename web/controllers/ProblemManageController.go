@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"
-	"github.com/micro/go-micro"
 	"github.com/tealeg/xlsx"
 	"log"
 	"reflect"
@@ -13,15 +12,9 @@ import (
 	"strings"
 	"web/models/event"
 	"web/models/problem"
+	"web/common"
 )
-func (this *ProblemManageController) initProblemManage() proto.ProblemManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("ProblemManage.client"))
-	service.Init()
 
-	//create new client
-	return proto.NewProblemManageService("ProblemManage",service.Client())
-}
 
 type ProblemManageController struct {
 	beego.Controller
@@ -43,7 +36,7 @@ func (this *ProblemManageController) ProblemManage() {
 	userId := userSession.(int64)
 
 	//call the userManage method
-	problemManage := this.initProblemManage()
+	problemManage := common.InitProblemManage()
 	req := proto.GetProblemListReq{Offset:offset,Limit:limit,ManageId:userId}
 	rsp, err := problemManage.GetProblemListByOffstAndLimit(context.TODO(),&req)
 	if err!=nil{

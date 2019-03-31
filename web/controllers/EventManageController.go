@@ -4,21 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/astaxie/beego"
-	"github.com/micro/go-micro"
 	proto "service/protoc/eventManage" //proto文件放置路径
+	"web/common"
 )
 
 type EventManageController struct {
 	beego.Controller
-}
-
-func (this *EventManageController) initEventManage() proto.EventManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("EventManage.client"))
-	service.Init()
-
-	//create new client
-	return proto.NewEventManageService("EventManage",service.Client())
 }
 
 func (this *EventManageController) EventManageInit() {
@@ -37,7 +28,7 @@ func (this *EventManageController) EventManage() {
 	userId := userSession.(int64)
 
 	//call the userManage method
-	eventManage := this.initEventManage()
+	eventManage := common.InitEventManage()
 	req := proto.GetEventListReq{Offset:offset,Limit:limit,ManageId:userId}
 	rsp, err := eventManage.GetEventListByManageIdAndOffst(context.TODO(),&req)
 	if err!=nil{
@@ -102,7 +93,7 @@ func (this *EventManageController) EventInsert() {
 	credit_rule, _ := json.Marshal(crule)
 
 	//call the userManage method
-	eventManage := this.initEventManage()
+	eventManage := common.InitEventManage()
 	req := proto.AddEventReq{ManageId: int64(manage_id),
 		EventTitle:       etitle,
 		EventDescription: message,

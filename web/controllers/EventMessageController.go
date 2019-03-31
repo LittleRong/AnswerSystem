@@ -3,10 +3,10 @@ package controllers
 import (
 	"context"
 	"github.com/astaxie/beego"
-	"github.com/micro/go-micro"
 	creditProto "service/protoc/answerManage"
 	participantProto "service/protoc/answerManage"
 	eventProto "service/protoc/eventManage"
+	"web/common"
 )
 
 type EventMessageController struct {
@@ -17,34 +17,6 @@ func (this *EventMessageController) EventMessageInit() {
 	this.TplName = "answer/event_message.html"
 }
 
-
-func (this *EventMessageController) initEventManage() eventProto.EventManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("EventManage.client"))
-	service.Init()
-
-	//create new client
-	return eventProto.NewEventManageService("EventManage",service.Client())
-}
-
-func (this *EventMessageController) initParticipantManage() participantProto.ParticipantManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("ParticipantManage.client"))
-	service.Init()
-
-	//create new client
-	return participantProto.NewParticipantManageService("ParticipantManage",service.Client())
-}
-
-func (this *EventMessageController) initCreditManage() creditProto.CreditManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("CreditManage.client"))
-	service.Init()
-
-	//create new client
-	return creditProto.NewCreditManageService("CreditManage",service.Client())
-}
-
 func (this *EventMessageController) GetEventMessage() {
 	event_id, _ := this.GetInt("event_id")
 	userSession := this.GetSession("user_id")
@@ -53,7 +25,7 @@ func (this *EventMessageController) GetEventMessage() {
 		return
 	}
 	user_id := userSession.(int64)
-	pManage := this.initParticipantManage()
+	pManage := common.InitParticipantManage()
 	pReq := participantProto.PUserEventIdReq{EventId:int64(event_id),UserId:user_id}
 	participant,pErr := pManage.GetParticipantByUserAndEvent(context.TODO(),&pReq)
 	if pErr!=nil{
@@ -62,7 +34,7 @@ func (this *EventMessageController) GetEventMessage() {
 	team_id := participant.TeamId
 
 	//*****************************1.获取事件信息event_message*************************************************
-	eventManage := this.initEventManage()
+	eventManage := common.InitEventManage()
 	req := eventProto.EventIdReq{EventId:int64(event_id)}
 	var err error
 	event_message,err := eventManage.GetDetailEventByEventId(context.TODO(),&req)
@@ -71,7 +43,7 @@ func (this *EventMessageController) GetEventMessage() {
 	}
 
 	//*****************************2.获取积分信息credit_message************************************************
-	creditManage := this.initCreditManage()
+	creditManage := common.InitCreditManage()
 	userCreditReq := creditProto.UserEventIdReq{EventId:int64(event_id),UserId:int64(user_id)}
 	personCredit,personErr := creditManage.GetPersonCredit(context.TODO(),&userCreditReq)
 	if personErr!=nil{

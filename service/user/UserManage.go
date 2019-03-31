@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/micro/go-micro/registry/consul"
 	"service/user/model"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -121,7 +122,7 @@ func main(){
 	orm.RunSyncdb("default", false, true)
 
 	//create service
-	service := micro.NewService(micro.Name("UserManage"))
+	service := micro.NewService(micro.Name("UserManage"),micro.Registry(consul.NewRegistry()))
 
 	//init
 	service.Init()

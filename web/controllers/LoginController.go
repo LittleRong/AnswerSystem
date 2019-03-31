@@ -3,21 +3,12 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"context"
-	"github.com/micro/go-micro"
 	userProto "service/protoc/userManage"
+	"web/common"
 )
 
 type LoginController struct {
 	beego.Controller
-}
-
-func (this *LoginController) initUserManage() userProto.UserManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("UserManage.client"))
-	service.Init()
-
-	//create new client
-	return userProto.NewUserManageService("UserManage",service.Client())
 }
 
 func (this *LoginController) Index() {
@@ -29,10 +20,10 @@ func (this *LoginController) Check() {
 	password := this.GetString("password")
 
 	var result map[string]interface{}
-	userManage := this.initUserManage()
+	userManage := common.InitUserManage()
 	req := userProto.LoginReq{Username:username,Pwd:password}
 	LoginRsp,err := userManage.Login(context.TODO(),&req)
-	if err==nil{
+	if err!=nil{
 		beego.Info("-------err--------",err)
 	}
 
@@ -71,7 +62,7 @@ func (this *LoginController) ChangePwd() {
 		return
 	}
 	user_id := userSession.(int64)
-	userManage := this.initUserManage()
+	userManage := common.InitUserManage()
 	req := userProto.UpdatePwdReq{UserId:user_id,OldPwd:old_pwd,NewPwd:new_pwd}
 	rsp,err := userManage.UpdateUserPwd(context.TODO(),&req)
 	if err==nil{

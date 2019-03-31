@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/micro/go-micro"
 	proto "service/protoc/userManage"
+	"web/common"
 )
 
 type UserManageController struct {
@@ -55,7 +56,7 @@ func (this *UserManageController) ChangeUser() {
 	userGender, _ := this.GetInt32("user_gender")
 
 	//call the userManage method
-	userManage := this.initUserManage()
+	userManage := common.InitUserManage()
 	req := proto.ChangeUserReq{ChangeId:changeId,Name:userName,LoginName:loginName,PhoneNumber:userPhoneNumber,JobNumber:userJobNumber,Gender:userGender}
 	rsp, err := userManage.UpdateUserById(context.TODO(),&req)
 	if err!=nil{
@@ -78,7 +79,7 @@ func (this *UserManageController) AddUser() {
 	userGender, _ := this.GetInt32("user_gender")
 
 	//call the userManage method
-	userManage := this.initUserManage()
+	userManage := common.InitUserManage()
 	req := proto.AddUserReq{Name:userName,LoginName:loginName,PhoneNumber:userPhoneNumber,JobNumber:userJobNumber,Gender:userGender}
 	rsp, err := userManage.AddUser(context.TODO(),&req)
 	if err!=nil{
@@ -98,7 +99,7 @@ func (this *UserManageController) DeleteUserById() {
 	deleteId, _ := this.GetInt64("delete_id")
 
 	//call the userManage method
-	userManage := this.initUserManage()
+	userManage := common.InitUserManage()
 	req := proto.DeleteUserReq{DeleteId:deleteId}
 	rsp, err := userManage.DeleteUserById(context.TODO(),&req)
 	if err!=nil{
@@ -111,13 +112,4 @@ func (this *UserManageController) DeleteUserById() {
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
-}
-
-func (this *UserManageController) initUserManage() proto.UserManageService{
-	//调用服务
-	service := micro.NewService(micro.Name("UserManage.client"))
-	service.Init()
-
-	//create new client
-	return proto.NewUserManageService("UserManage",service.Client())
 }
