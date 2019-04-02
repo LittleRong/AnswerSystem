@@ -2,6 +2,17 @@ syntax = "proto3";
 
 service ProblemManage {
     rpc GetProblemListByOffstAndLimit(GetProblemListReq) returns (ProblemListRsp) {}
+    rpc AddProblem(ProblemMesssage) returns (AddProblemRsp) {}
+    rpc GetNewProblemByType(GetNewProblemByTypeReq) returns (ProblemListRsp) {}
+    rpc GetEndProblemId(GetEndProblemIdReq) returns (GetEndProblemIdRsp) {}
+}
+
+message GetEndProblemIdReq {
+
+}
+
+message GetEndProblemIdRsp {
+    int64 endId = 1;
 }
 
 message GetProblemListReq {
@@ -21,4 +32,14 @@ message ProblemMesssage {
 
 message ProblemListRsp {
     repeated ProblemMesssage problemList= 1;
+}
+
+message GetNewProblemByTypeReq {
+    int64 firstProblemId = 1;
+    int32 problemType = 2;
+}
+
+message AddProblemRsp {
+    int64 problemId = 1;
+    string message = 2;
 }

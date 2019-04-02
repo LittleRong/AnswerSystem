@@ -134,7 +134,13 @@ func (this *ProblemManageController) ProblemFileInsert() {
 	}
 
 	//获取最大problem_id,这里还有问题
-	max_problem_id := problem.GetEndProblemId()
+	problemManage := common.InitProblemManage()
+	req := proto.GetEndProblemIdReq{}
+	rsp, err := problemManage.GetEndProblemId(context.TODO(), &req)
+	if err != nil {
+		beego.Info( "-------err--------", err)
+	}
+	max_problem_id := int(rsp.EndId)
 	first_problem_id := 1
 	for _, sheet := range xlFile.Sheets {
 		for i, row := range sheet.Rows {
@@ -207,9 +213,15 @@ func (this *ProblemManageController) ProblemFileInsert() {
 			} else {
 				problem_answer = row.Cells[3].String()
 			}
-			p := problem.Problem{Problem_content: problem_content, Problem_type: problem_type, Problem_class: problem_class, Problem_answer: problem_answer, Problem_option: problem_option}
+
 			//插入problem表
-			max_problem_id = problem.AddProblem(p)
+			req := proto.ProblemMesssage{ProblemContent: problem_content, ProblemType: int32(problem_type), ProblemClass: problem_class, ProblemAnswer: problem_answer, ProblemOption: problem_option}
+			rsp, err := problemManage.AddProblem(context.TODO(), &req)
+			if err != nil {
+				beego.Info( "-------err--------", err)
+			}
+
+			max_problem_id = int(rsp.ProblemId)
 			//插入event_problem表
 			ep := event.EventProblem{Refer_event_id: event_id, Problem_id: max_problem_id}
 			event.AddEventProblem(ep)
