@@ -6,11 +6,11 @@ import (
 )
 
 type EventProblem struct {
-	Refer_event_id int
-	Problem_id     int
+	Refer_event_id int64
+	Problem_id     int64
 }
 
-func AddEventProblem(p EventProblem) {
+func AddEventProblem(p EventProblem) (string){
 	beego.Info("======AddProblems's problems=====", p)
 	o := orm.NewOrm()
 	_, err := o.Raw("INSERT INTO event_problem "+
@@ -18,5 +18,7 @@ func AddEventProblem(p EventProblem) {
 		"VALUES (?,?) ", p.Refer_event_id, p.Problem_id).Exec();
 	if err != nil {
 		beego.Info("======AddProblems's err!!!=====", err)
+		return "faild"
 	}
+	return "success"
 }

@@ -182,14 +182,15 @@
 
                 var single_show = ""
                 if (data["single"] != "") {
+                    alert(data["single"])
                     single_show += "<input type=\"button\" class=\"pui-btn pui-btn-default\"  onclick=\"ac('cbox_1');\" value=\"全选\">&nbsp;&nbsp;"
                         + "<input type=\"button\" class=\"pui-btn pui-btn-default\" onclick=\"dc('cbox_1');\" value=\"取消全选\">"
                         + "<table id='t_1' class='pui-table pui-table-bordered'>";
 
                     $.each(data["single"], function (i, item) {
-                        single_show += "<tr><td><input type='checkbox' class='cbox_1' name='cbox' value='" + "&nbsp;&nbsp;" + item.Problem_id + "'>" + item.Problem_content + "</td>"
-                            + "<td>" + item.Problem_answer + "</td>"
-                            + "<td>" + item.Problem_option + "</td>";
+                        single_show += "<tr><td><input type='checkbox' class='cbox_1' name='cbox' value='" + "&nbsp;&nbsp;" + item.problemId + "'>" + item.problemContent + "</td>"
+                            + "<td>" + item.problemAnswer + "</td>"
+                            + "<td>" + item.problemOption + "</td>";
                     });
                     single_show += "</table>";
                 } else {
@@ -204,9 +205,9 @@
                         + "<table id='t_2' class='pui-table pui-table-bordered'>";
 
                     $.each(data["multiple"], function (i, item) {
-                        multiple_show += "<tr><td><input type='checkbox' class='cbox_2' name='cbox' value='" + "&nbsp;&nbsp;" + item.Problem_id + "'>" + item.Problem_content + "</td>"
-                            + "<td>" + item.Problem_answer + "</td>"
-                            + "<td>" + item.Problem_option + "</td>";
+                        multiple_show += "<tr><td><input type='checkbox' class='cbox_2' name='cbox' value='" + "&nbsp;&nbsp;" + item.problemId + "'>" + item.problemContent + "</td>"
+                            + "<td>" + item.problemAnswer + "</td>"
+                            + "<td>" + item.problemOption + "</td>";
                     });
                     multiple_show += "</table>";
                 } else {
@@ -222,9 +223,9 @@
 
                     $.each(data["fill"], function (i, item) {
 
-                        fill_show += "<tr><td><input type='checkbox' class='cbox_0' name='cbox' value='" + "&nbsp;&nbsp;" + item.Problem_id + "'>" + item.Problem_content + "</td>"
-                            + "<td>" + item.Problem_answer + "</td>"
-                            + "<td>" + item.Problem_option + "</td>";
+                        fill_show += "<tr><td><input type='checkbox' class='cbox_0' name='cbox' value='" + "&nbsp;&nbsp;" + item.problemId + "'>" + item.problemContent + "</td>"
+                            + "<td>" + item.problemAnswer + "</td>"
+                            + "<td></td>";
                     });
                     fill_show += "</table>";
 
@@ -241,9 +242,9 @@
 
                     $.each(data["judge"], function (i, item) {
 
-                        judge_show += "<tr><td><input type='checkbox' class='cbox_3' name='cbox' value='" + "&nbsp;&nbsp;" + item.Problem_id + "'>" + item.Problem_content + "</td>"
-                            + "<td>" + item.Problem_answer + "</td>"
-                            + "<td>" + item.Problem_option + "</td>";
+                        judge_show += "<tr><td><input type='checkbox' class='cbox_3' name='cbox' value='" + "&nbsp;&nbsp;" + item.problemId + "'>" + item.problemContent + "</td>"
+                            + "<td>" + item.problemAnswer + "</td>"
+                            + "<td></td>";
                     });
                     judge_show += "</table>";
 

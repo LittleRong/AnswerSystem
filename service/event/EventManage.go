@@ -204,7 +204,19 @@ func (this *EventManage) AddNewEvent(ctx context.Context, req *proto.AddEventReq
 	result, id := model.AddNewEvent(e)
 
 	rsp.Message = result
-	rsp.EventId = int64(id)
+	rsp.EventId = id
+
+	return nil
+}
+
+func (this *EventManage) AddEventProblem(ctx context.Context, req *proto.AddEventProblemReq, rsp *proto.AddEventProblemRsp) error {
+	var e model.EventProblem
+	e.Refer_event_id = req.EventId
+	e.Problem_id = req.ProblemId
+
+	result := model.AddEventProblem(e)
+
+	rsp.Message = result
 
 	return nil
 }

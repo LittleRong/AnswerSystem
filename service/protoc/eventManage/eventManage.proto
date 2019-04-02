@@ -7,6 +7,17 @@ service EventManage {
     rpc GetDetailEventByEventId(EventIdReq) returns (EventDetailMesssage) {}
     rpc GetCreditRuleByEventId(EventIdReq) returns (CreditRule) {}
     rpc GetProblemNumByEventId(EventIdReq) returns (ProblemNum) {}
+    rpc AddEventProblem(AddEventProblemReq) returns (AddEventProblemRsp) {}
+}
+
+message AddEventProblemReq {
+    int64 eventId = 1;
+    int64 problemId = 2;
+}
+
+message AddEventProblemRsp {
+    int64 eventProblemId = 1;
+    string message = 2;
 }
 
 message EventIdReq {

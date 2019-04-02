@@ -4,17 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"reflect"
 	"strconv"
 	"strings"
 
 	"github.com/astaxie/beego"
 	"github.com/tealeg/xlsx"
 
-	proto "service/protoc/problemManage"
 	"web/common"
-	"web/models/event"
-	"web/models/problem"
+	eventProto "service/protoc/eventManage"
+	proto "service/protoc/problemManage"
 )
 
 type ProblemManageController struct {
@@ -140,8 +138,9 @@ func (this *ProblemManageController) ProblemFileInsert() {
 	if err != nil {
 		beego.Info( "-------err--------", err)
 	}
-	max_problem_id := int(rsp.EndId)
-	first_problem_id := 1
+	max_problem_id := rsp.EndId
+	var first_problem_id int64
+	first_problem_id = 1
 	for _, sheet := range xlFile.Sheets {
 		for i, row := range sheet.Rows {
 			if (i == 0) {
@@ -163,12 +162,14 @@ func (this *ProblemManageController) ProblemFileInsert() {
 				for i := 4; i < col_num; i++ {
 					var option map[string]string
 					option = make(map[string]string)
-					option["q_id"] = strconv.Itoa(max_problem_id*20 + i)
+					tmp := max_problem_id*20 + int64(i)
+					option["q_id"] = strconv.FormatInt(tmp,10)
 					option["content"] = row.Cells[i].String()
 					abcd := string(95 - 4 + i)
 					answer := strings.ToLower(row.Cells[3].String())
 					if (answer == abcd) {
-						problem_answer_map["q_id"] = strconv.Itoa(max_problem_id*20 + i)
+						tmp := max_problem_id*20 + int64(i)
+						problem_answer_map["q_id"] = strconv.FormatInt(tmp,10)
 						problem_answer_map["content"] = row.Cells[i].String()
 					}
 					problem_option_array = append(problem_option_array, option)
@@ -185,14 +186,16 @@ func (this *ProblemManageController) ProblemFileInsert() {
 				for i := 4; i < col_num; i++ {
 					var option map[string]string
 					option = make(map[string]string)
-					option["q_id"] = strconv.Itoa(max_problem_id*20 + i)
+					tmp := max_problem_id*20 + int64(i)
+					option["q_id"] = strconv.FormatInt(tmp,10)
 					option["content"] = row.Cells[i].String()
 					abcd := string(95 - 4 + i)
 					answer := strings.ToLower(row.Cells[3].String())
 					if (strings.Contains(answer, abcd)) {
 						var problem_answer_map map[string]string
 						problem_answer_map = make(map[string]string)
-						problem_answer_map["q_id"] = strconv.Itoa(max_problem_id*20 + i)
+						tmp := max_problem_id*20 + int64(i)
+						problem_answer_map["q_id"] = strconv.FormatInt(tmp,10)
 						problem_answer_map["content"] = row.Cells[i].String()
 						problem_answer_array = append(problem_answer_array, problem_answer_map)
 					}
@@ -221,10 +224,14 @@ func (this *ProblemManageController) ProblemFileInsert() {
 				beego.Info( "-------err--------", err)
 			}
 
-			max_problem_id = int(rsp.ProblemId)
+			max_problem_id = rsp.ProblemId
 			//插入event_problem表
-			ep := event.EventProblem{Refer_event_id: event_id, Problem_id: max_problem_id}
-			event.AddEventProblem(ep)
+			eventManage := common.InitEventManage()
+			eventReq := eventProto.AddEventProblemReq{EventId: int64(event_id),ProblemId:max_problem_id}
+			ep,err := eventManage.AddEventProblem(context.TODO(), &eventReq)
+			if err != nil {
+				beego.Info("-------err--------", err,ep)
+			}
 
 			if (i == 1) {
 				first_problem_id = max_problem_id
@@ -233,22 +240,30 @@ func (this *ProblemManageController) ProblemFileInsert() {
 		}
 
 		//接着进行查询
-		single_arr := problem.GetNewProblemByType(first_problem_id, 1)
-		multi_arr := problem.GetNewProblemByType(first_problem_id, 2)
-		judge_arr := problem.GetNewProblemByType(first_problem_id, 3)
-		fill_arr := problem.GetNewProblemByType(first_problem_id, 0)
-
-		single_json := Struct2Map(single_arr)
-		mutil_json := Struct2Map(multi_arr)
-		judge_json := Struct2Map(judge_arr)
-		fill_json := Struct2Map(fill_arr)
+		req := proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:1}
+		single_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:2}
+		multi_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:3}
+		judge_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:0}
+		fill_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		beego.Info("************single_arr**************", single_arr)
+		beego.Info("************multi_arr**************", multi_arr)
+		beego.Info("************judge_arr**************", judge_arr)
+		beego.Info("************fill_arr**************", fill_arr)
+		//
+		//single_json := Struct2Map(single_arr)
+		//mutil_json := Struct2Map(multi_arr)
+		//judge_json := Struct2Map(judge_arr)
+		//fill_json := Struct2Map(fill_arr)
 
 		var result map[string]interface{}
 		result = make(map[string]interface{})
-		result["single"] = single_json
-		result["multiple"] = mutil_json
-		result["judge"] = judge_json
-		result["fill"] = fill_json
+		result["single"] = single_arr.ProblemList
+		result["multiple"] = multi_arr.ProblemList
+		result["judge"] = judge_arr.ProblemList
+		result["fill"] = fill_arr.ProblemList
 		beego.Info("======AddProblem's id=====", result)
 		this.Data["json"] = result
 		this.ServeJSON()
@@ -258,18 +273,18 @@ func (this *ProblemManageController) ProblemFileInsert() {
 
 }
 
-func Struct2Map(in []problem.Problem) []map[string]interface{} {
-	var result []map[string]interface{}
-	for _, obj := range in {
-		t := reflect.TypeOf(obj)
-		v := reflect.ValueOf(obj)
-
-		var data = make(map[string]interface{})
-		for i := 0; i < t.NumField(); i++ {
-			data[t.Field(i).Name] = v.Field(i).Interface()
-		}
-		result = append(result, data)
-	}
-
-	return result
-}
+//func Struct2Map(in []problem.Problem) []map[string]interface{} {
+//	var result []map[string]interface{}
+//	for _, obj := range in {
+//		t := reflect.TypeOf(obj)
+//		v := reflect.ValueOf(obj)
+//
+//		var data = make(map[string]interface{})
+//		for i := 0; i < t.NumField(); i++ {
+//			data[t.Field(i).Name] = v.Field(i).Interface()
+//		}
+//		result = append(result, data)
+//	}
+//
+//	return result
+//}

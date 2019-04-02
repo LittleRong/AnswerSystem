@@ -101,7 +101,7 @@ func GetEventListByManageIdAndOffst(manage_id int64, offset int, limit int) []Ev
 	return e
 }
 
-func AddNewEvent(e Event) (string, int) {
+func AddNewEvent(e Event) (string, int64) {
 	o := orm.NewOrm()
 	id, err := o.Insert(&e)
 	if err != nil {
@@ -109,6 +109,6 @@ func AddNewEvent(e Event) (string, int) {
 		return "faild", 0
 	} else {
 		beego.Info("======AddNewEvent's id=====", id)
-		return "success", int(id)
+		return "success", id
 	}
 }
