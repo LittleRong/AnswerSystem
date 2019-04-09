@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry/consul"
+	"service/common"
 
 	"service/answer/model"
 	proto "service/protoc/answerManage"
@@ -94,6 +93,8 @@ func (this *CreditManage) AddCreditLog(ctx context.Context, req *proto.CreditLog
 }
 
 func main() {
+	//数据库初始化
+	common.DatabaseInit()
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
 	orm.Debug = true
@@ -113,9 +114,4 @@ func main() {
 	if err := service.Run(); err != nil {
 		beego.Info("========CreditManage's err===========", err)
 	}
-}
-
-func init() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", "root:password123@tcp(localhost:3306)/problem?charset=utf8")
 }

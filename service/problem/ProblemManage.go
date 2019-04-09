@@ -9,6 +9,7 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry/consul"
 
+	"service/common"
 	"service/problem/model"
 	proto "service/protoc/problemManage"
 )
@@ -39,7 +40,7 @@ func (this *ProblemManage) AddProblem(ctx context.Context, req *proto.ProblemMes
 	p.Problem_answer = req.ProblemAnswer
 	p.Problem_content = req.ProblemContent
 
-	id,result := model.AddProblem(p)
+	id, result := model.AddProblem(p)
 	rsp.Message = result
 	rsp.ProblemId = id
 
@@ -50,7 +51,7 @@ func (this *ProblemManage) GetNewProblemByType(ctx context.Context, req *proto.G
 	firstProblemId := req.FirstProblemId
 	problemType := req.ProblemType
 
-	problemList := model.GetNewProblemByType(firstProblemId,problemType)
+	problemList := model.GetNewProblemByType(firstProblemId, problemType)
 	beego.Info("========GetProblemListByOffstAndLimit000===========", problemList)
 	//类型转换
 	var problemMessage []*proto.ProblemMesssage
@@ -69,8 +70,9 @@ func (this *ProblemManage) GetEndProblemId(ctx context.Context, req *proto.GetEn
 	return nil
 }
 
-
 func main() {
+	//数据库初始化
+	common.DatabaseInit()
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
 	orm.Debug = true
@@ -90,9 +92,4 @@ func main() {
 	if err := service.Run(); err != nil {
 		beego.Info("========ProblemManage's err===========", err)
 	}
-}
-
-func init() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", "root:password123@tcp(localhost:3306)/problem?charset=utf8")
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"github.com/spf13/viper"
 	"log"
 	"strconv"
 	"strings"
@@ -153,7 +154,7 @@ func (this *ProblemManageController) ProblemFileInsert() {
 
 			var problem_answer string
 			var problem_option string
-			if (problem_type == 1) {
+			if (problem_type == viper.GetInt("enum.problemType.singleType")) {
 				//单选题
 				col_num := len(row.Cells)
 				var problem_option_array []map[string]string
@@ -178,7 +179,7 @@ func (this *ProblemManageController) ProblemFileInsert() {
 				problem_option_byte, _ := json.Marshal(problem_option_array)
 				problem_answer = string(problem_answer_byte)
 				problem_option = string(problem_option_byte)
-			} else if (problem_type == 2) {
+			} else if (problem_type == viper.GetInt("enum.problemType.multipleType")) {
 				//单选题
 				col_num := len(row.Cells)
 				var problem_option_array []map[string]string
@@ -240,13 +241,13 @@ func (this *ProblemManageController) ProblemFileInsert() {
 		}
 
 		//接着进行查询
-		req := proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:1}
+		req := proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.singleType")}
 		single_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
-		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:2}
+		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.multipleType")}
 		multi_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
-		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:3}
+		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.judgeType")}
 		judge_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
-		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:0}
+		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.fillType")}
 		fill_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
 		beego.Info("************single_arr**************", single_arr)
 		beego.Info("************multi_arr**************", multi_arr)

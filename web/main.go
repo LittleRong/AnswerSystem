@@ -3,8 +3,11 @@ package main
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
+	"github.com/spf13/pflag"
+
 	_ "web/models"
 	_ "web/routers"
+	"web/conf"
 )
 
 var FilterUser = func(ctx *context.Context) {
@@ -23,7 +26,17 @@ var FilterPermission = func(ctx *context.Context) {
 	}
 }
 
+
+var (
+	cfg = pflag.StringP("config","c","","web config file path")
+)
+
 func main() {
+	pflag.Parse()
+	if err:= conf.Init(*cfg);err != nil {
+		panic(err)
+	}
+
 	beego.InsertFilter("/*", beego.BeforeRouter, FilterUser)
 	beego.InsertFilter("/manage/*", beego.BeforeRouter, FilterPermission)
 	//打开session

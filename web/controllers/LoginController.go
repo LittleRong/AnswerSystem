@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"context"
-
 	"github.com/astaxie/beego"
-
+	"github.com/spf13/viper"
 	userProto "service/protoc/userManage"
 	"web/common"
 )
@@ -39,7 +38,7 @@ func (this *LoginController) Check() {
 		//判断用户权限
 		beego.Info("========Check======", LoginRsp.Permission)
 		beego.Info("========Check user_id======", LoginRsp.UserId)
-		if LoginRsp.Permission == 1 || LoginRsp.Permission == 2 { //管理员
+		if LoginRsp.Permission == viper.GetInt32("enum.permission.admin") || LoginRsp.Permission == viper.GetInt32("enum.permission.administrators") { //管理员
 			result = map[string]interface{}{"result": "admin"}
 		} else { //普通用户
 			result = map[string]interface{}{"result": "user"}

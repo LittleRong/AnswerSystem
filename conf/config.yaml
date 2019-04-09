@@ -1,0 +1,36 @@
+#环境设置
+env:
+  runmode: debug               # 开发模式
+  port: :8080                  # HTTP绑定端口
+  name: web
+  url: http://127.0.0.1:8080   # pingServer函数请求的API服务器的ip:port
+  max_ping_count: 10           # pingServer函数尝试的次数
+
+#数据库连接
+database:
+  name: problem
+  host: localhost
+  pwd: password123
+  user: root
+  port: 3306
+  charset: utf8
+  protol: tcp
+
+#枚举值
+enum:
+  problemType:
+    fillType: 0
+    singleType: 1
+    multipleType: 2
+    judgeType: 3
+  creditChangeType:
+    dailyAnswer: 1 #答题加分
+    personAllRight: 2 #当日全部答对额外加分
+    teamAllRight: 3 #当日小组全部答对额外加分
+  sex:
+    man: 0
+    woman: 1
+  permission:
+    user: 0
+    admin: 1
+    administrators: 2

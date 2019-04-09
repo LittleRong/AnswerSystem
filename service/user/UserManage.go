@@ -9,6 +9,7 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry/consul"
 
+	"service/common"
 	proto "service/protoc/userManage"
 	"service/user/model"
 )
@@ -116,6 +117,8 @@ func (this *UserManage) Login(ctx context.Context, req *proto.LoginReq, rsp *pro
 }
 
 func main() {
+	//数据库初始化
+	common.DatabaseInit()
 
 	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
 	orm.Debug = true
@@ -135,9 +138,4 @@ func main() {
 	if err := service.Run(); err != nil {
 		beego.Info("========UserManage's err===========", err)
 	}
-}
-
-func init() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", "root:password123@tcp(localhost:3306)/problem?charset=utf8")
 }

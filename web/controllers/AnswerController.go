@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"github.com/spf13/viper"
 	"strconv"
 	"time"
 
@@ -196,10 +197,10 @@ func (this *AnswerController) GetUserAnswers() {
 	fill_array := f.([]interface{})
 
 	//*****************************4.计算分数,并将用户答案写入participant_haved_answer表***********************
-	single_user_score, single_right_num, singleFront := JudgeUserInputAnswer(single_array, correct_answer.SingleAnswerList, paticipant_id, creditRule.SingleScore, 1)
-	judge_score, judge_right_num, judgeFront := JudgeUserInputAnswer(judge_array, correct_answer.JudgeAnswerList, paticipant_id, creditRule.JudgeScore, 3)
-	fill_score, fill_right_num, fillFront := JudgeUserInputAnswer(fill_array, correct_answer.FillAnswerList, paticipant_id, creditRule.FillScore, 0)
-	multi_score, multi_right_num, multiFront := JudgeUserMultiInputAnswer(multi_array, correct_answer.MultiAnswerList, paticipant_id, creditRule.MultipleScore, 2)
+	single_user_score, single_right_num, singleFront := JudgeUserInputAnswer(single_array, correct_answer.SingleAnswerList, paticipant_id, creditRule.SingleScore, viper.GetInt("enum.problemType.singleType"))
+	judge_score, judge_right_num, judgeFront := JudgeUserInputAnswer(judge_array, correct_answer.JudgeAnswerList, paticipant_id, creditRule.JudgeScore, viper.GetInt("enum.problemType.judgeType"))
+	fill_score, fill_right_num, fillFront := JudgeUserInputAnswer(fill_array, correct_answer.FillAnswerList, paticipant_id, creditRule.FillScore, viper.GetInt("enum.problemType.fillType"))
+	multi_score, multi_right_num, multiFront := JudgeUserMultiInputAnswer(multi_array, correct_answer.MultiAnswerList, paticipant_id, creditRule.MultipleScore, viper.GetInt("enum.problemType.multipleType"))
 
 	user_score := single_user_score + judge_score + fill_score + multi_score
 	right_num := single_right_num + judge_right_num + fill_right_num + multi_right_num
@@ -233,13 +234,13 @@ func (this *AnswerController) GetUserAnswers() {
 	if (user_all_right) {
 		reason = "当日全部答对额外加分"
 		log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
-			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.PersonScore), ChangeType: 2, ChangeReason: reason}
+			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.PersonScore), ChangeType: viper.GetInt32("enum.creditChangeType.personAllRight"), ChangeReason: reason}
 		creditManage.AddCreditLog(context.TODO(), &log)
 		user_score_log = user_score - creditRule.PersonScore
 	}
 	reason = "答题得分"
 	log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
-		TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(user_score_log), ChangeType: 1, ChangeReason: reason}
+		TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(user_score_log), ChangeType: viper.GetInt32("enum.creditChangeType.dailyAnswer"), ChangeReason: reason}
 	creditManage.AddCreditLog(context.TODO(), &log)
 
 	//2.更新组积分
@@ -258,7 +259,7 @@ func (this *AnswerController) GetUserAnswers() {
 		//写积分表
 		reason = "当日全组全部答对额外加分"
 		log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
-			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.TeamScore), ChangeType: 3, ChangeReason: reason}
+			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.TeamScore), ChangeType: viper.GetInt32("enum.creditChangeType.teamAllRight"), ChangeReason: reason}
 		creditManage.AddCreditLog(context.TODO(), &log)
 		team_score += creditRule.TeamScore
 	}
@@ -397,7 +398,7 @@ func JudgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*part
 		user_answer := ""
 		right_answer := ""
 		true_or_false := false
-		if (problem_type == 2) {
+		if (problem_type == viper.GetInt("enum.problemType.multipleType")) {
 			user_answer_i := s["answer"].([]interface{})
 			str, _ := json.Marshal(user_answer_i)
 			user_answer = string(str)
