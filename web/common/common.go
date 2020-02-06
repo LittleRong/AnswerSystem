@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
@@ -13,47 +14,49 @@ import (
 	userProto "service/protoc/userManage"
 )
 
-func InitUserManage() userProto.UserManageService {
-	// 修改consul地址，如果是本机，这段代码和后面的那行使用代码都是可以不用的
-	reg := consul.NewRegistry(func(op *registry.Options){
-		//add := os.Getenv("CONSUL_PORT_8500_TCP_ADDR")+":8500"
-		add := "127.0.0.1:8500"
-		op.Addrs = []string{
-			add,
+
+func ServiceRegistryInit(serviceName string) micro.Service{
+
+	//create service
+	service := micro.NewService(micro.Name(serviceName), micro.Registry(consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			beego.AppConfig.String("consulhost")+":"+beego.AppConfig.String("consulport"),
 		}
-		fmt.Println("sjdsghjadgsahjdg"+add)
-	})
-	service := micro.NewService(micro.Name("UserManage.client"), micro.Registry(reg))
+	})))
+
+	//init
 	service.Init()
+	return service
+}
+
+func InitUserManage() userProto.UserManageService {
+	service := ServiceRegistryInit("UserManage.client")
+	fmt.Println(service)
+	fmt.Println("aaaaaaaaaaa")
 	return userProto.NewUserManageService("UserManage", service.Client())
 }
 
 func InitEventManage() eventProto.EventManageService {
-	service := micro.NewService(micro.Name("EventManage.client"), micro.Registry(consul.NewRegistry()))
-	service.Init()
+	service := ServiceRegistryInit("EventManage.client")
 	return eventProto.NewEventManageService("EventManage", service.Client())
 }
 
 func InitUniontManage() unionProto.UnionManageService {
-	service := micro.NewService(micro.Name("UnionManage.client"), micro.Registry(consul.NewRegistry()))
-	service.Init()
+	service := ServiceRegistryInit("UnionManage.client")
 	return unionProto.NewUnionManageService("UnionManage", service.Client())
 }
 
 func InitParticipantManage() participantProto.ParticipantManageService {
-	service := micro.NewService(micro.Name("ParticipantManage.client"), micro.Registry(consul.NewRegistry()))
-	service.Init()
+	service := ServiceRegistryInit("ParticipantManage.client")
 	return participantProto.NewParticipantManageService("ParticipantManage", service.Client())
 }
 
 func InitCreditManage() creditProto.CreditManageService {
-	service := micro.NewService(micro.Name("CreditManage.client"), micro.Registry(consul.NewRegistry()))
-	service.Init()
+	service := ServiceRegistryInit("CreditManage.client")
 	return creditProto.NewCreditManageService("CreditManage", service.Client())
 }
 
 func InitProblemManage() problemProto.ProblemManageService {
-	service := micro.NewService(micro.Name("ProblemManage.client"), micro.Registry(consul.NewRegistry()))
-	service.Init()
+	service := ServiceRegistryInit("ProblemManage.client")
 	return problemProto.NewProblemManageService("ProblemManage", service.Client())
 }

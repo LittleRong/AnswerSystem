@@ -1,3 +1,4 @@
 web/models/db.go
 gitHub.com
 web/static/upload/
+.DS_Store
