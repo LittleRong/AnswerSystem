@@ -1,0 +1,104 @@
+version: '3.3'
+services:
+  base_image:
+    build: .
+    container_name: base_service
+  web_image:
+    build: ./web/
+    container_name: web_service
+    networks:
+      - answer_net
+    ports:
+      - 8081:8081
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/web:/go/src/web"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+  user_image:
+    build: ./service/user/
+    container_name: user_service
+    networks:
+      - answer_net
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/service/user:/go/src/service/user"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+  union_image:
+    build: ./service/union/
+    container_name: union_service
+    networks:
+      - answer_net
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/service/union:/go/src/service/union"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+  problem_image:
+    build: ./service/problem/
+    container_name: problem_service
+    networks:
+      - answer_net
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/service/problem:/go/src/service/problem"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+  event_image:
+    build: ./service/event/
+    container_name: event_service
+    networks:
+      - answer_net
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/service/event:/go/src/service/event"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+  credit_image:
+    build:
+      context: ./service/answer/
+      dockerfile: Dockerfile_credit
+    container_name: credit_service
+    networks:
+      - answer_net
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/service/answer:/go/src/service/answer"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+  participant_image:
+    build:
+      context: ./service/answer/
+      dockerfile: Dockerfile_participant
+    container_name: participant_service
+    networks:
+      - answer_net
+    volumes:
+      - "/Users/gan/Documents/GitHub/AnswerSystem_go/src/service/answer:/go/src/service/answer"
+      - conf_volume:/go/src/conf
+      - protoc_volume:/go/src/service/protoc
+      - common_volume:/go/src/service/common
+
+networks:
+  answer_net:
+
+volumes:
+  conf_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/conf
+      o: bind
+  protoc_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/service/protoc
+      o: bind
+  common_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/service/common
+      o: bind

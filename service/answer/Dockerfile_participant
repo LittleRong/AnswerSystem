@@ -1,4 +1,4 @@
 FROM src_base_image:latest
 
 RUN mkdir -p /go/src/service/answer
-CMD cd /go/src/service/answer && go run CreditManage.go && go run ParticipantManage.go
+CMD cd /go/src/service/answer && go run ParticipantManage.go

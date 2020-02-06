@@ -9,8 +9,8 @@ env:
 #数据库连接
 database:
   name: problem
-  host: 127.0.0.1
-  #host: host.docker.internal
+  #host: 127.0.0.1
+  host: host.docker.internal
   pwd: password123
   user: root
   port: 3306
@@ -19,8 +19,8 @@ database:
 
 #consul连接
 consul:
-  host: 127.0.0.1
-  #host: host.docker.internal
+  #host: 127.0.0.1
+  host: host.docker.internal
   port: 8500
 
 #枚举值
