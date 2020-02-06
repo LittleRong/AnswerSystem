@@ -197,7 +197,7 @@
                 question_answer: question_answer
             };
             $.ajax({
-                url: "http://localhost:8080/manage/add_problem",
+                url: "http://localhost:8081/manage/add_problem",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
@@ -223,7 +223,7 @@
     $(document).ready(function () {
         var post_data = {limit: 10, offset: 1};
         $.ajax({
-            url: "http://localhost:8080/manage/problem_manage",
+            url: "http://localhost:8081/manage/problem_manage",
             dataType: "json",
             type: 'GET',
             data: post_data,
@@ -286,7 +286,7 @@
             var post_data = {delete_id: delete_id};
 
             $.ajax({
-                url: "http://localhost:8080/manage/delete_problem",
+                url: "http://localhost:8081/manage/delete_problem",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,

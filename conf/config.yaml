@@ -9,12 +9,19 @@ env:
 #数据库连接
 database:
   name: problem
-  host: localhost
+  host: 127.0.0.1
+  #host: host.docker.internal
   pwd: password123
   user: root
   port: 3306
   charset: utf8
   protol: tcp
+
+#consul连接
+consul:
+  host: 127.0.0.1
+  #host: host.docker.internal
+  port: 8500
 
 #枚举值
 enum:

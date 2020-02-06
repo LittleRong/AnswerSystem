@@ -1,9 +1,10 @@
 package common
 
 import (
+	"fmt"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
-
 	creditProto "service/protoc/answerManage"
 	participantProto "service/protoc/answerManage"
 	eventProto "service/protoc/eventManage"
@@ -13,7 +14,16 @@ import (
 )
 
 func InitUserManage() userProto.UserManageService {
-	service := micro.NewService(micro.Name("UserManage.client"), micro.Registry(consul.NewRegistry()))
+	// 修改consul地址，如果是本机，这段代码和后面的那行使用代码都是可以不用的
+	reg := consul.NewRegistry(func(op *registry.Options){
+		//add := os.Getenv("CONSUL_PORT_8500_TCP_ADDR")+":8500"
+		add := "127.0.0.1:8500"
+		op.Addrs = []string{
+			add,
+		}
+		fmt.Println("sjdsghjadgsahjdg"+add)
+	})
+	service := micro.NewService(micro.Name("UserManage.client"), micro.Registry(reg))
 	service.Init()
 	return userProto.NewUserManageService("UserManage", service.Client())
 }

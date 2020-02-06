@@ -4,8 +4,6 @@ import (
 	"context"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/registry/consul"
 	"service/common"
 
 	"service/answer/model"
@@ -101,11 +99,8 @@ func main() {
 	// 自动建表
 	orm.RunSyncdb("default", false, true)
 
-	//create service
-	service := micro.NewService(micro.Name("CreditManage"), micro.Registry(consul.NewRegistry()))
-
-	//init
-	service.Init()
+	//consul初始化
+	service := common.ServiceRegistryInit("CreditManage")
 
 	//register handler
 	proto.RegisterCreditManageHandler(service.Server(), new(CreditManage))

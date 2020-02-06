@@ -1,12 +1,16 @@
 package common
 
 import (
+	"os"
+	"strings"
+
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"os"
-	"strings"
+	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-micro/registry/consul"
 )
 
 type Config struct {
@@ -75,4 +79,23 @@ func (this *Config) Watch() {
 	//viper.OnConfigChange(func(e fsnotify.Event) {
 	//	log.Printf("Config file changed: %s", e.Name)
 	//})
+}
+
+func ServiceRegistryInit(serviceName string) micro.Service{
+	pflag.Parse()
+	if err := Init(*cfg); err != nil {
+		panic(err)
+	}
+
+	//create service
+	service := micro.NewService(micro.Name(serviceName), micro.Registry(consul.NewRegistry(func(options *registry.Options) {
+		options.Addrs = []string{
+			viper.GetString("consul.host")+":"+viper.GetString("consul.port"),
+		}
+	})))
+
+	//init
+	service.Init()
+
+	return service
 }

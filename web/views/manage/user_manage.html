@@ -222,7 +222,7 @@
                 user_gender: user_gender
             };
             $.ajax({
-                url: "http://localhost:8080/manage/change_user",
+                url: "http://localhost:8081/manage/change_user",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
@@ -265,7 +265,7 @@
                 user_gender: user_gender
             };
             $.ajax({
-                url: "http://localhost:8080/manage/add_user",
+                url: "http://localhost:8081/manage/add_user",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
@@ -295,7 +295,7 @@
     $(document).ready(function () {
         var limit = 10;
         var offset = 1;
-        var url = "http://localhost:8080/manage/user_manage?offset=" + offset + "&limit=" + limit;
+        var url = "http://localhost:8081/manage/user_manage?offset=" + offset + "&limit=" + limit;
         loadInit(url, offset);
         //删除用户
         $(".delete_btn").click(function () {
@@ -307,7 +307,7 @@
             var post_data = {delete_id: delete_id};
 
             $.ajax({
-                url: "http://localhost:8080/manage/delete_user",
+                url: "http://localhost:8081/manage/delete_user",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
@@ -359,7 +359,7 @@
             var offset = parseInt($("#now_page").val());//获取当前页数,默认为1
             var limit = 10;
             var pre_offset = offset - 1 > 1 ? offset - 1 : 1;
-            var pre_url = "http://localhost:8080/manage/user_manage?offset=" + pre_offset + "&limit=" + limit;
+            var pre_url = "http://localhost:8081/manage/user_manage?offset=" + pre_offset + "&limit=" + limit;
             loadInit(pre_url, pre_offset);
         });
         $("#next_page_btn").click(function () {
@@ -367,7 +367,7 @@
             var total_page = parseInt($("#total_page").val());
             var limit = 10;
             var next_offset = offset + 1 < total_page ? offset + 1 : total_page;
-            var next_url = "http://localhost:8080/manage/user_manage?offset=" + next_offset + "&limit=" + limit;
+            var next_url = "http://localhost:8081/manage/user_manage?offset=" + next_offset + "&limit=" + limit;
             loadInit(next_url, next_offset);
         });
         $("#turn_page_btn").click(function () {
@@ -376,7 +376,7 @@
             var limit = 10;
             var new_offset = offset > 1 ? offset : 1;
             var new_offset = offset < total_page ? offset : total_page;
-            var next_url = "http://localhost:8080/manage/user_manage?offset=" + new_offset + "&limit=" + limit;
+            var next_url = "http://localhost:8081/manage/user_manage?offset=" + new_offset + "&limit=" + limit;
             loadInit(next_url, new_offset);
         });
     });

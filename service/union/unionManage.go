@@ -8,9 +8,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/registry/consul"
-
 	"service/common"
 	proto "service/protoc/unionManage"
 	"service/union/model"
@@ -102,11 +99,8 @@ func main() {
 	// 自动建表
 	orm.RunSyncdb("default", false, true)
 
-	//create service
-	service := micro.NewService(micro.Name("UnionManage"), micro.Registry(consul.NewRegistry()))
-
-	//init
-	service.Init()
+	//consul初始化
+	service := common.ServiceRegistryInit("UnionManage")
 
 	//register handler
 	proto.RegisterUnionManageHandler(service.Server(), new(UnionManage))

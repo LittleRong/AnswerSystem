@@ -131,7 +131,7 @@
         var event = 1;
         var post_data = {event_id: event};
         $.ajax({
-            url: "http://localhost:8080/answer/get_user_problem",
+            url: "http://localhost:8081/answer/get_user_problem",
             dataType: "json",
             type: "GET",
             data: post_data,
@@ -388,7 +388,7 @@
             if (confirm("确认交卷吗？")) {
                 $.ajax({
                     type: "POST",
-                    url: "http://localhost:8080/answer/get_user_answer",
+                    url: "http://localhost:8081/answer/get_user_answer",
                     async: true, //同步
                     dataType: "json",
                     data: user_answer,

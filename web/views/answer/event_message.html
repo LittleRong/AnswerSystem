@@ -60,7 +60,7 @@
         var event_id = getUrlParam("event_id");
         var post_data = {event_id: event_id};
         $.ajax({
-            url: "http://localhost:8080/answer/get_event_message",
+            url: "http://localhost:8081/answer/get_event_message",
             dataType: "json",
             type: "GET",
             data: post_data,
