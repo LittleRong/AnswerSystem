@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	"github.com/lexkong/log"
 	"service/common"
-
 	"service/answer/model"
 	proto "service/protoc/answerManage"
 )
@@ -91,22 +89,17 @@ func (this *CreditManage) AddCreditLog(ctx context.Context, req *proto.CreditLog
 }
 
 func main() {
-	//数据库初始化
-	common.DatabaseInit()
+	//初始化
+	service,err := common.Init("CreditManage")
+	if err != nil {
+		panic(err)
+	}
 
-	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
-	orm.Debug = true
-	// 自动建表
-	orm.RunSyncdb("default", false, true)
-
-	//consul初始化
-	service := common.ServiceRegistryInit("CreditManage")
-
-	//register handler
+	//注册服务
 	proto.RegisterCreditManageHandler(service.Server(), new(CreditManage))
 
-	//run the server
+	//运行
 	if err := service.Run(); err != nil {
-		beego.Info("========CreditManage's err===========", err)
+		log.Error("failed-to-do-somthing", err)
 	}
 }

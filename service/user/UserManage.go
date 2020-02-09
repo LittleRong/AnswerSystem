@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/lexkong/log"
 	"service/common"
 	proto "service/protoc/userManage"
 	"service/user/model"
@@ -17,7 +14,6 @@ func (this *UserManage) GetUserListByOffstAndLimit(ctx context.Context, req *pro
 	offset := 0
 	limit := 10
 	userList := model.GetUserListByOffstAndLimit(offset, limit)
-	beego.Info("========GetUserListByOffstAndLimit000===========", userList)
 	//类型转换
 	var userMessage []*proto.UserMesssage
 	for _, v := range userList {
@@ -114,22 +110,16 @@ func (this *UserManage) Login(ctx context.Context, req *proto.LoginReq, rsp *pro
 }
 
 func main() {
-	//数据库初始化
-	common.DatabaseInit()
+	service,err := common.Init("UserManage")
+	if err != nil {
+		panic(err)
+	}
 
-	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
-	orm.Debug = true
-	// 自动建表
-	orm.RunSyncdb("default", false, true)
-
-	//consul初始化
-	service := common.ServiceRegistryInit("UserManage")
-
-	//register handler
+	//注册服务
 	proto.RegisterUserManageHandler(service.Server(), new(UserManage))
 
-	//run the server
+	//运行
 	if err := service.Run(); err != nil {
-		beego.Info("========UserManage's err===========", err)
+		log.Error("failed-to-do-somthing", err)
 	}
 }

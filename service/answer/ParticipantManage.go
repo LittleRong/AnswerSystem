@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	"github.com/lexkong/log"
 	_ "github.com/go-sql-driver/mysql"
 	"service/answer/model"
 	"service/common"
@@ -196,22 +195,17 @@ func (this *ParticipantManage) AddProblemHavedAnswer(ctx context.Context, req *p
 }
 
 func main() {
-	//数据库初始化
-	common.DatabaseInit()
+	//初始化
+	service,err := common.Init("ParticipantManage")
+	if err != nil {
+		panic(err)
+	}
 
-	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
-	orm.Debug = true
-	// 自动建表
-	orm.RunSyncdb("default", false, true)
-
-	//consul初始化
-	service := common.ServiceRegistryInit("ParticipantManage")
-
-	//register handler
+	//注册服务
 	proto.RegisterParticipantManageHandler(service.Server(), new(ParticipantManage))
 
-	//run the server
+	//运行
 	if err := service.Run(); err != nil {
-		beego.Info("========ParticipantManage's err===========", err)
+		log.Error("failed-to-do-somthing", err)
 	}
 }

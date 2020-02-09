@@ -1,9 +1,9 @@
 #环境设置
 env:
   runmode: debug               # 开发模式
-  port: :8080                  # HTTP绑定端口
+  port: :8081                  # HTTP绑定端口
   name: web
-  url: http://127.0.0.1:8080   # pingServer函数请求的API服务器的ip:port
+  url: http://127.0.0.1:8081   # pingServer函数请求的API服务器的ip:port
   max_ping_count: 10           # pingServer函数尝试的次数
 
 #数据库连接
@@ -16,12 +16,23 @@ database:
   port: 3306
   charset: utf8
   protol: tcp
+  debug: true
 
 #consul连接
 consul:
   #host: 127.0.0.1
   host: host.docker.internal
   port: 8500
+
+#日志管理
+log:
+  writers: file,stdout
+  logger_level: DEBUG
+  logger_file: logs/log.log
+  log_format_text: false
+  rollingPolicy: size
+  log_rotate_size: 3
+  log_backup_count: 7
 
 #枚举值
 enum:

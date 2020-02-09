@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/lexkong/log"
 	"service/common"
 	proto "service/protoc/unionManage"
 	"service/union/model"
@@ -42,7 +40,7 @@ func GeneratingFrontProblems(problems []model.Problem, rsp *proto.GetProblemNoAn
 		var a proto.ProblemItem
 		a.ProblemId = v.Problem_id
 		a.Problem = v.Problem_content
-		beego.Info("v=", v)
+
 		//生成option
 		if (v.Problem_type == 1 || v.Problem_type == 2) {
 			//乱序
@@ -79,34 +77,27 @@ func GeneratingFrontProblems(problems []model.Problem, rsp *proto.GetProblemNoAn
 		case 3:
 			judge = append(judge, &a)
 		}
-		beego.Info("=========GeneratingFrontProblems mutiple=========", mutiple)
 	}
 	//总题目
 	rsp.Fill = fill
 	rsp.Single = single
 	rsp.Multiple = mutiple
 	rsp.Judge = judge
-	beego.Info("=========GeneratingFrontProblems result=========", rsp)
 
 }
 
 func main() {
-	//数据库初始化
-	common.DatabaseInit()
+	//初始化
+	service,err := common.Init("UnionManage")
+	if err != nil {
+		panic(err)
+	}
 
-	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
-	orm.Debug = true
-	// 自动建表
-	orm.RunSyncdb("default", false, true)
-
-	//consul初始化
-	service := common.ServiceRegistryInit("UnionManage")
-
-	//register handler
+	//注册服务
 	proto.RegisterUnionManageHandler(service.Server(), new(UnionManage))
 
-	//run the server
+	//运行
 	if err := service.Run(); err != nil {
-		beego.Info("========ProblemManage's err===========", err)
+		log.Error("failed-to-do-somthing", err)
 	}
 }

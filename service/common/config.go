@@ -1,9 +1,13 @@
 package common
 
 import (
+
 	"os"
 	"strings"
+	"time"
 
+	"github.com/fsnotify/fsnotify"
+	"github.com/lexkong/log"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/pflag"
@@ -18,38 +22,36 @@ type Config struct {
 }
 
 var (
-	cfg = pflag.StringP("config", "c", "", "web config file path")
+	cfg = pflag.StringP("config", "c", "", "service's config")
 )
 
-func DatabaseInit() error {
+func Init(serviceName string) (micro.Service,error) {
+	//配置初始化
 	pflag.Parse()
-	if err := Init(*cfg); err != nil {
-		panic(err)
+	c := Config {
+		Name: *cfg,
 	}
-	//用户名:密码@数据库地址+名称?字符集,root:password123@tcp(localhost:3306)/problem?charset=utf8
-	dataSource := viper.GetString("database.user") + ":" + viper.GetString("database.pwd") + "@" + viper.GetString("database.protol") + "(" + viper.GetString("database.host") + ")" + "/" + viper.GetString("database.name") + "?charset=" + viper.GetString("database.charset")
-	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", dataSource)
 
-	return nil
-}
-
-func Init(cfg string) error {
-	c := Config{Name: cfg}
-
-	//读取配置文件
+	// 初始化配置文件
 	if err := c.initConfig(); err != nil {
-		return err
+		return nil,err
 	}
 
-	//监控及热加载
-	c.Watch()
+	c.initDatabase()//初始化数据库
+	service := c.initServiceRegistry(serviceName)//初始化consul
+	c.initLog()//初始化日志
 
-	return nil
+
+	// 监控配置文件变化并热加载程序
+	c.watchConfig()
+
+	return service,nil
 }
+
 
 //读取配置文件内容
 func (this *Config) initConfig() error {
+
 	if this.Name != "" {
 		//若配置文件不存在，抛出报错
 		if _, err := os.Stat(this.Name); os.IsNotExist(err) {
@@ -70,25 +72,39 @@ func (this *Config) initConfig() error {
 		return err
 	}
 
+	//监控及热加载
+	this.watchConfig()
+
 	return nil
 }
 
-//监控及热加载
-func (this *Config) Watch() {
+// 监控配置文件变化并热加载程序
+func (c *Config) watchConfig() {
 	viper.WatchConfig()
-	//viper.OnConfigChange(func(e fsnotify.Event) {
-	//	log.Printf("Config file changed: %s", e.Name)
-	//})
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		log.Info("Config file changed: %s")
+	})
 }
 
-func ServiceRegistryInit(serviceName string) micro.Service{
-	pflag.Parse()
-	if err := Init(*cfg); err != nil {
-		panic(err)
-	}
+func (this *Config)initDatabase() error {
 
+	//用户名:密码@数据库地址+名称?字符集,root:password123@tcp(localhost:3306)/problem?charset=utf8
+	dataSource := viper.GetString("database.user") + ":" + viper.GetString("database.pwd") + "@" + viper.GetString("database.protol") + "(" + viper.GetString("database.host") + ")" + "/" + viper.GetString("database.name") + "?charset=" + viper.GetString("database.charset")
+	orm.RegisterDriver("mysql", orm.DRMySQL)
+	orm.RegisterDataBase("default", "mysql", dataSource)
+
+	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
+	orm.Debug = viper.GetBool("database.debug")
+	// 自动建表
+	orm.RunSyncdb("default", false, true)
+
+	return nil
+}
+
+func (this *Config)initServiceRegistry(serviceName string) micro.Service{
 	//create service
-	service := micro.NewService(micro.Name(serviceName), micro.Registry(consul.NewRegistry(func(options *registry.Options) {
+	service := micro.NewService(micro.Name(serviceName), micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*20),micro.Registry(consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			viper.GetString("consul.host")+":"+viper.GetString("consul.port"),
 		}
@@ -98,4 +114,18 @@ func ServiceRegistryInit(serviceName string) micro.Service{
 	service.Init()
 
 	return service
+}
+
+func (this *Config) initLog() {
+	passLagerCfg := log.PassLagerCfg {
+		Writers:        viper.GetString("log.writers"),
+		LoggerLevel:    viper.GetString("log.logger_level"),
+		LoggerFile:     viper.GetString("log.logger_file"),
+		LogFormatText:  viper.GetBool("log.log_format_text"),
+		RollingPolicy:  viper.GetString("log.rollingPolicy"),
+		LogRotateSize:  viper.GetInt("log.log_rotate_size"),
+		LogBackupCount: viper.GetInt("log.log_backup_count"),
+	}
+
+	log.InitWithConfig(&passLagerCfg)
 }

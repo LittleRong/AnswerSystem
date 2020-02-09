@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/lexkong/log"
 	"service/common"
 	"service/problem/model"
 	proto "service/protoc/problemManage"
@@ -17,7 +15,7 @@ func (this *ProblemManage) GetProblemListByOffstAndLimit(ctx context.Context, re
 	offset := 0
 	limit := 10
 	problemList := model.GetProblemListByOffstAndLimit(offset, limit)
-	beego.Info("========GetProblemListByOffstAndLimit000===========", problemList)
+
 	//类型转换
 	var problemMessage []*proto.ProblemMesssage
 	for _, v := range problemList {
@@ -49,7 +47,6 @@ func (this *ProblemManage) GetNewProblemByType(ctx context.Context, req *proto.G
 	problemType := req.ProblemType
 
 	problemList := model.GetNewProblemByType(firstProblemId, problemType)
-	beego.Info("========GetProblemListByOffstAndLimit000===========", problemList)
 	//类型转换
 	var problemMessage []*proto.ProblemMesssage
 	for _, v := range problemList {
@@ -68,22 +65,17 @@ func (this *ProblemManage) GetEndProblemId(ctx context.Context, req *proto.GetEn
 }
 
 func main() {
-	//数据库初始化
-	common.DatabaseInit()
+	//初始化
+	service,err := common.Init("ProblemManage")
+	if err != nil {
+		panic(err)
+	}
 
-	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
-	orm.Debug = true
-	// 自动建表
-	orm.RunSyncdb("default", false, true)
-
-	//consul初始化
-	service := common.ServiceRegistryInit("ProblemManage")
-
-	//register handler
+	//注册服务
 	proto.RegisterProblemManageHandler(service.Server(), new(ProblemManage))
 
-	//run the server
+	//运行
 	if err := service.Run(); err != nil {
-		beego.Info("========ProblemManage's err===========", err)
+		log.Error("failed-to-do-somthing", err)
 	}
 }

@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/lexkong/log"
 	"service/common"
 	"service/event/model"
 	proto "service/protoc/eventManage"
@@ -20,7 +19,6 @@ func (this *EventManage) GetEventListByManageIdAndOffst(ctx context.Context, req
 	offset := int(req.Offset)
 	limit := int(req.Limit)
 	eventList := model.GetEventListByManageIdAndOffst(manageId, offset, limit)
-	beego.Info("========GetEventListByOffstAndLimit000===========", eventList)
 	//类型转换
 	var eventMessage []*proto.EventMesssage
 	for _, v := range eventList {
@@ -62,8 +60,6 @@ func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.Event
 	rsp.Multiple = event_num_map["multiple"].(string)
 	rsp.AnswerTime, _ = strconv.ParseFloat(event.Answer_time, 64)
 
-	beego.Info("======UserIndex rsp=====", rsp)
-
 	return nil
 }
 
@@ -84,8 +80,6 @@ func (this *EventManage) GetCreditRuleByEventId(ctx context.Context, req *proto.
 	rsp.TeamScoreUp = credit_rule.Team_score_up
 	rsp.PersonScore = credit_rule.Person_score
 	rsp.PersonScoreUp = credit_rule.Person_score_up
-
-	beego.Info("======GetCreditRuleByEventId rsp=====", rsp)
 
 	return nil
 }
@@ -109,8 +103,6 @@ func (this *EventManage) GetProblemNumByEventId(ctx context.Context, req *proto.
 	rsp.Judge = val
 	StrToInt(event_num_map["multiple"].(string), &val)
 	rsp.Multiple = val
-
-	beego.Info("======GetProblemNumByEventId rsp=====", rsp)
 
 	return nil
 }
@@ -180,8 +172,6 @@ func (this *EventManage) GetDetailEventByEventId(ctx context.Context, req *proto
 	rsp.Judge = event_num_map["judge"].(string)
 	rsp.Multiple = event_num_map["multiple"].(string)
 
-	beego.Info("======UserIndex rsp=====", rsp)
-
 	return nil
 }
 
@@ -220,22 +210,17 @@ func (this *EventManage) AddEventProblem(ctx context.Context, req *proto.AddEven
 }
 
 func main() {
-	//数据库初始化
-	common.DatabaseInit()
+	//初始化
+	service,err := common.Init("EventManage")
+	if err != nil {
+		panic(err)
+	}
 
-	// 开启 orm 调试模式：开发过程中建议打开，release时需要关闭
-	orm.Debug = true
-	// 自动建表
-	orm.RunSyncdb("default", false, true)
-
-	//consul初始化
-	service := common.ServiceRegistryInit("EventManage")
-
-	//register handler
+	//注册服务
 	proto.RegisterEventManageHandler(service.Server(), new(EventManage))
 
-	//run the server
+	//运行
 	if err := service.Run(); err != nil {
-		beego.Info("========EventManage's err===========", err)
+		log.Error("failed-to-do-somthing", err)
 	}
 }

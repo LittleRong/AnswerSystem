@@ -2,3 +2,8 @@ web/models/db.go
 gitHub.com
 web/static/upload/
 .DS_Store
+service/answer/logs/
+service/event/logs/
+service/problem/logs/
+service/union/logs/
+service/user/logs/
