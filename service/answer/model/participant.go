@@ -2,9 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"time"
-
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -39,7 +37,7 @@ func GetCorrectAnswerByParticipantId(participant_id int64) (map[string]interface
 	if p.Waited_answer != "" {
 		err := json.Unmarshal([]byte(p.Waited_answer), &waited_answer)
 		if err != nil {
-			beego.Info("======err======", err)
+			logs.Error("GetCorrectAnswerByParticipantId's err:", err)
 		}
 	}
 	return waited_answer
@@ -49,15 +47,14 @@ func GetAnswerTimeByParticipantId(participant_id int64) (string) {
 	var waited_answer map[string]interface{}
 	waited_answer = make(map[string]interface{})
 	var p Participant
-	var participant_time time.Time
 	var p_time string
-	participant_time = time.Time{}
+
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("Participant_id", participant_id).One(&p, "Waited_answer")
 	if p.Waited_answer != "" {
 		err := json.Unmarshal([]byte(p.Waited_answer), &waited_answer)
 		if err != nil {
-			beego.Info("======err======", err)
+			logs.Error("GetAnswerTimeByParticipantId's err:", err)
 		}
 		//获取时间
 		p_time = waited_answer["participant_time"].(string)
@@ -67,7 +64,6 @@ func GetAnswerTimeByParticipantId(participant_id int64) (string) {
 		//	participant_time, _ = time.ParseInLocation(timeLayout, p_time, loc)
 		//}
 	}
-	beego.Info("======participant_time======", participant_time)
 	return p_time
 }
 
@@ -75,7 +71,6 @@ func GetParticipantById(user_id int64, event_id int64) Participant {
 	var p Participant
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("user_id", user_id).Filter("Refer_event_id", event_id).One(&p)
-	beego.Info("======GetMemberCreditByTeamId=====", p)
 	return p
 }
 
@@ -88,12 +83,10 @@ func UpdateParticipantCredit(participant_id int64, credit float64) float64 {
 		old_credit := participant.Credit
 		new_credit = old_credit + credit
 		participant.Credit = new_credit
-		beego.Info("======UpdateParticipantCredit's old_credit=====", old_credit)
-		beego.Info("======UpdateParticipantCredit's new_credit=====", new_credit)
 		if num, err := o.Update(&participant, "Credit"); err == nil {
-			beego.Info("======num=====", num)
+			logs.Debug("UpdateParticipantCredit's num:", num)
 		} else if err != nil {
-			beego.Info("======UpdateUserAnswer's err=====", err)
+			logs.Error("UpdateParticipantCredit's err", err)
 		}
 	}
 	return new_credit
@@ -103,7 +96,6 @@ func GetMemberCreditByTeamId(team_id int64, event_id int64) []Participant {
 	var p []Participant
 	o := orm.NewOrm()
 	o.QueryTable("participant").Filter("team_id", team_id).Filter("Refer_event_id", event_id).All(&p)
-	beego.Info("======GetMemberCreditByTeamId=====", p)
 	return p
 }
 
@@ -115,10 +107,10 @@ func UpdateParticipantWaitedAnswer(participant_id int64, answer string) string {
 	if o.Read(&participant) == nil {
 		participant.Waited_answer = answer
 		if num, err := o.Update(&participant, "Waited_answer"); err == nil {
-			beego.Info("======num=====", num)
+			logs.Debug("UpdateParticipantWaitedAnswer's num", num)
 			return "success"
 		} else if err != nil {
-			beego.Info("======UpdateParticipantWaitAnswer's err=====", err)
+			logs.Error("UpdateParticipantWaitAnswer's err", err)
 			return "faild"
 		}
 	}
@@ -140,10 +132,10 @@ func AddParticipant(user_id int64, refer_event_id int64, team_id int64, leader b
 
 	id, err := o.Insert(&p)
 	if err == nil {
-		beego.Info("======AddParticipant's id=====", id)
+		logs.Debug("AddParticipant's id:", id)
 		return p.Participant_id
 	} else {
-		beego.Info("======AddParticipant's err=====", err)
+		logs.Error("AddParticipant's err:", err)
 		return -1
 	}
 }

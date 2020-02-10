@@ -3,10 +3,10 @@ package model
 import (
 	"context"
 	"encoding/json"
+	"github.com/astaxie/beego/logs"
 	"strconv"
 	"time"
 
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/micro/go-micro"
 
@@ -57,10 +57,10 @@ func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participan
 	judgeReq := participantProto.JudgeReq{ParticipantId: participant_id}
 	judgeRsp, judgeErr := pManage.JudgeIfHaveAnswer(context.TODO(), &judgeReq)
 	if judgeErr != nil {
-		beego.Info("-------judgeErr--------", judgeErr)
+		logs.Error("judgeErr:", judgeErr)
 	}
 	answerFlag = judgeRsp.AnswerFlag
-	beego.Info("**************JudgeIfHaveAnswer*****************", answerFlag)
+	logs.Debug("JudgeIfHaveAnswer:", answerFlag)
 	if answerFlag == true {
 		return nil, true, answerFlag
 	}
@@ -71,7 +71,6 @@ func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participan
 		"WHERE problem.problem_id = participant_haved_answer.refer_problem_id "+
 		"AND participant_haved_answer.refer_participant_id = ? "+
 		"AND participant_haved_answer.answer_date = ? ", participant_id, now).QueryRows(&problems)
-	beego.Info("problems", problems)
 	if problems == nil && err == nil {
 		//*****************************3.未生成题目，则新生成题目*************************
 		buildFlag = false
@@ -98,7 +97,7 @@ func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participan
 		pReq := participantProto.UpdateWaitedAnswerReq{ParticipantId: participant_id, WaitedAnswer: string(str)}
 		_, pErr := pManage.UpdateParticipantWaitedAnswer(context.TODO(), &pReq)
 		if pErr != nil {
-			beego.Info("-------pErr--------", pErr)
+			logs.Error("GetProblemNoAnswer:", pErr)
 		}
 
 		//*****************************5.将新题目拆入participant_haved_answer表*********
@@ -106,7 +105,7 @@ func GetProblemNoAnswer(user_id int64, event_id int64, team_id int64, participan
 			addProReq := participantProto.AddProblemHavedAnswerReq{ParticipantId: participant_id, ProblemId: v.Problem_id, TeamId: team_id, AnswerDate: answer_date}
 			_, addProErr := pManage.AddProblemHavedAnswer(context.TODO(), &addProReq)
 			if addProErr != nil {
-				beego.Info("-------addProErr--------", addProErr)
+				logs.Error("GetProblemNoAnswer:", addProErr)
 			}
 
 		}
@@ -133,10 +132,9 @@ func GeneratingProblems(event_id int64, participant_id int64, problem_type int, 
 		"(SELECT refer_problem_id FROM participant_haved_answer WHERE refer_participant_id = ?) LIMIT ?", event_id, problem_type, participant_id, problem_num).QueryRows(&problems)
 	//增加随机！！
 	if err == nil {
-		beego.Info("========GeneratingProblems's problems======", problems)
 		return problems
 	} else {
-		beego.Info("========GeneratingProblems's err======", err)
+		logs.Error("GeneratingProblems's err:", err)
 		return nil
 	}
 
@@ -186,7 +184,6 @@ func GeneratingWaitedAnswer(problems []Problem, answer_date string) map[string]i
 	waited_answer["judge"] = judge_answer
 	waited_answer["fill"] = fill_answer
 	waited_answer["participant_time"] = answer_date
-	beego.Info("========(((((((((((waited_answer))))))))======", waited_answer)
 
 	return waited_answer
 }

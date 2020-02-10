@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -27,7 +27,6 @@ func GetUserListByOffstAndLimit(offset int, limit int) []User {
 	o := orm.NewOrm()
 	offset = offset - 1
 	o.QueryTable("user").Filter("deleted", 0).Offset(offset * limit).Limit(limit).All(&u, "id", "login_name", "name", "phone_number", "job_number", "gender")
-	beego.Info("======GetUserListByOffstAndLimit=====", u)
 	return u
 }
 
@@ -41,10 +40,10 @@ func UpdateUserById(change_id int64, user_name string, login_name string, user_p
 		u.Job_number = user_job_number
 		u.Gender = user_gender
 		if num, err := o.Update(&u); err == nil {
-			beego.Info("======UpdateUserById's num=====", num)
+			logs.Debug("UpdateUserById's num:", num)
 			return "success", u.Id
 		} else if err != nil {
-			beego.Info("======UpdateUserById's err=====", err)
+			logs.Error("UpdateUserById's err:", err)
 			return "update faild", -1
 		}
 	}
@@ -72,10 +71,10 @@ func AddUser(user_name string, login_name string, user_phone_number string, user
 	u.Gender = user_gender
 	id, err := o.Insert(&u)
 	if err == nil {
-		beego.Info("======AddUser's id=====", id)
+		logs.Debug("AddUser's id:", id)
 		return "success", u.Id
 	} else {
-		beego.Info("======AddUser's err=====", err)
+		logs.Error("AddUser's err:", err)
 		return "insert faild", -1
 	}
 }
@@ -86,10 +85,10 @@ func DeleteUserById(delete_id int64) (string, int64) {
 	if o.Read(&u) == nil {
 		u.Deleted = true
 		if num, err := o.Update(&u); err == nil {
-			beego.Info("======DeleteUserById's num=====", num)
+			logs.Debug("DeleteUserById's num:", num)
 			return "success", u.Id
 		} else if err != nil {
-			beego.Info("======DeleteUserById's err=====", err)
+			logs.Error("DeleteUserById's err:", err)
 			return "delete faild", -1
 		}
 	}
@@ -125,10 +124,10 @@ func UpdateUserPwd(user_id int64, old_pwd string, pwd string) string {
 		if (u.Pwd == old_pwd) {
 			u.Pwd = pwd
 			if num, err := o.Update(&u, "Pwd"); err == nil {
-				beego.Info("======UpdateUserPwd's num=====", num)
+				logs.Debug("UpdateUserPwd's num:", num)
 				return "success"
 			} else if err != nil {
-				beego.Info("======UpdateUserPwd's err=====", err)
+				logs.Error("UpdateUserPwd's err:", err)
 				return "update faild"
 			}
 		} else {

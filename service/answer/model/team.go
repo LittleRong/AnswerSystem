@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -26,10 +26,10 @@ func AddTeam(team_name string, refer_event_id int64) int64 {
 	t.Team_credit = 0
 	id, err := o.Insert(&t)
 	if err == nil {
-		beego.Info("======AddTeam's id=====", id)
+		logs.Debug("AddTeam's id", id)
 		return id
 	} else {
-		beego.Info("======AddTeam's err=====", err)
+		logs.Error("AddTeam's err", err)
 		return -1
 	}
 }
@@ -38,7 +38,6 @@ func GetTeamById(team_id int64, event_id int64) Team {
 	var t Team
 	o := orm.NewOrm()
 	o.QueryTable("team").Filter("team_id", team_id).Filter("Refer_event_id", event_id).One(&t)
-	beego.Info("======GetTeamById=====", t)
 	return t
 }
 
@@ -51,12 +50,11 @@ func UpdateTeamCredit(team_id int64, team_credit float64) float64 {
 		old_credit := team.Team_credit
 		new_credit = old_credit + team_credit
 		team.Team_credit = new_credit
-		beego.Info("======UpdateTeamCredit's old_credit=====", old_credit)
-		beego.Info("======UpdateTeamCredit's new_credit=====", new_credit)
+
 		if num, err := o.Update(&team, "Team_credit"); err == nil {
-			beego.Info("======UpdateTeamCredit's num=====", num)
+			logs.Debug("UpdateTeamCredit's num", num)
 		} else if err != nil {
-			beego.Info("======UpdateTeamCredit's err=====", err)
+			logs.Error("UpdateTeamCredit's err", err)
 		}
 	}
 	return new_credit

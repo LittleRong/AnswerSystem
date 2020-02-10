@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/astaxie/beego/logs"
 
-	"github.com/lexkong/log"
 	_ "github.com/go-sql-driver/mysql"
 	"service/answer/model"
 	"service/common"
@@ -206,6 +206,6 @@ func main() {
 
 	//运行
 	if err := service.Run(); err != nil {
-		log.Error("failed-to-do-somthing", err)
+		logs.Error("failed-to-do-somthing", err)
 	}
 }

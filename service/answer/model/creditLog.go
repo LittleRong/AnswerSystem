@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -24,10 +24,10 @@ func AddCreditLog(log Credit_log) (string, int64) {
 	o := orm.NewOrm()
 	id, err := o.Insert(&log)
 	if err != nil {
-		beego.Info("======AddCreditLog's err=====", err)
+		logs.Error("AddCreditLog's err:", err)
 		return "faild", -1
 	} else {
-		beego.Info("======AddCreditLog's id=====", id)
+		logs.Debug("AddCreditLog's id:", id)
 		return "success", id
 	}
 }
@@ -43,9 +43,8 @@ func WhetherMemberAllRight(team_id int64, date string, team_num int) bool {
 		if (right_num == team_num) {
 			return true
 		}
-		beego.Info("======WhetherMemberAllRight's right_num=====", right_num)
 	} else {
-		beego.Info("======!!!@@WhetherMemberAllRight's err=====", err)
+		logs.Error("!WhetherMemberAllRight's err:", err)
 	}
 	return false
 }

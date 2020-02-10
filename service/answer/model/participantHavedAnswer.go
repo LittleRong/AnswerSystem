@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -30,23 +30,22 @@ func UpdateUserAnswer(participant_id int64, problem_id int64, user_answer string
 		"WHERE refer_participant_id=? AND refer_problem_id=?", answer_date, user_answer, true_or_false, participant_id, problem_id).Exec();
 	num, err := rawSetter.RowsAffected()
 	if err != nil {
-		beego.Info("======UpdateUserAnswer's err=====", err)
+		logs.Error("UpdateUserAnswer's err:", err)
 		return "faild"
 	} else {
-		beego.Info("======UpdateUserAnswer's num=====", num)
+		logs.Debug("UpdateUserAnswer's num:", num)
 		return "success"
 	}
 
 }
 
 func AddProblems(problems Participant_haved_answer) string {
-	beego.Info("======AddProblems's problems=====", problems)
 	o := orm.NewOrm()
 	_, err := o.Raw("INSERT INTO participant_haved_answer "+
 		"(refer_participant_id,refer_problem_id,refer_team_id,answer_date) "+
 		"VALUES (?,?,?,?) ", problems.Refer_participant_id, problems.Refer_problem_id, problems.Refer_team_id, problems.Answer_date).Exec();
 	if err != nil {
-		beego.Info("======AddProblems's err!!!=====", err)
+		logs.Error("AddProblems's err:", err)
 		return "falid"
 	}
 	return "success"
@@ -61,10 +60,12 @@ func JudgeIfHaveAnswer(participant_id int64) bool {
 	o := orm.NewOrm()
 	var p []Participant_haved_answer
 	num, err := o.Raw("SELECT * FROM participant_haved_answer WHERE refer_participant_id =? AND user_answer != ''  AND answer_date like ? ", participant_id, answer_date).QueryRows(&p);
-	beego.Info("**************JudgeIfHaveAnswer*****************", err)
+
 
 	if err == nil && num > 0 {
 		return true //已经提交了
+	}else{
+		logs.Error("JudgeIfHaveAnswer", err)
 	}
 	return false
 }

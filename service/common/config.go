@@ -1,22 +1,22 @@
 package common
 
 import (
+	"context"
+	"encoding/json"
 	"os"
 	"strings"
 	"time"
-	"context"
 
-	"github.com/fsnotify/fsnotify"
-	"github.com/lexkong/log"
-	"github.com/lexkong/log/lager"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
+	"github.com/fsnotify/fsnotify"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	micro "github.com/micro/go-micro"
-	"github.com/micro/go-micro/server"
+	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
+	"github.com/micro/go-micro/server"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -42,7 +42,6 @@ func Init(serviceName string) (micro.Service,error) {
 	c.initDatabase()//初始化数据库
 	service := c.initServiceRegistry(serviceName)//初始化consul
 	c.initLog()//初始化日志
-
 
 	// 监控配置文件变化并热加载程序
 	c.watchConfig()
@@ -84,7 +83,7 @@ func (this *Config) initConfig() error {
 func (c *Config) watchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		log.Info("Config file changed: %s")
+		logs.Info("Config file changed: %s")
 	})
 }
 
@@ -122,25 +121,22 @@ func (this *Config)initServiceRegistry(serviceName string) micro.Service{
 }
 
 func (this *Config) initLog() {
-	passLagerCfg := log.PassLagerCfg {
-		Writers:        viper.GetString("log.writers"),
-		LoggerLevel:    viper.GetString("log.logger_level"),
-		LoggerFile:     viper.GetString("log.logger_file"),
-		LogFormatText:  viper.GetBool("log.log_format_text"),
-		RollingPolicy:  viper.GetString("log.rollingPolicy"),
-		LogRotateSize:  viper.GetInt("log.log_rotate_size"),
-		LogBackupCount: viper.GetInt("log.log_backup_count"),
-	}
+	logs.SetLogger("console")
+	var jsonConfig map[string]interface{}
+	jsonConfig = make(map[string]interface{})
+	jsonConfig["filename"] = viper.GetString("log.logger_file")// 文件名
+	jsonConfig["maxlines"] = viper.GetInt("log.maxlines")// 最大行
+	jsonConfig["maxsize"] = viper.GetInt("log.maxsize")// 最大Size
 
-	log.InitWithConfig(&passLagerCfg)
+	jsonConfigstr,_ := json.Marshal(jsonConfig)
+	logs.SetLogger(logs.AdapterFile, string(jsonConfigstr))
+	logs.SetLevel(viper.GetInt("log.logger_level"))
 }
 
 // 实现server.HandlerWrapper接口
 func logWrapper(fn server.HandlerFunc) server.HandlerFunc {
 	return func(ctx context.Context, req server.Request, rsp interface{}) error {
-		log.Debug("server request", lager.Data{
-			req.Service():req.Endpoint(),
-		})
+		logs.Debug("server request", time.Now().Format("2006/1/2 15:04:05"),req.Endpoint())
 		return fn(ctx, req, rsp)
 	}
 }

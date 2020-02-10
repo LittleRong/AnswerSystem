@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/lexkong/log"
+	"github.com/astaxie/beego/logs"
+
 	"service/common"
 	proto "service/protoc/userManage"
 	"service/user/model"
@@ -120,6 +121,6 @@ func main() {
 
 	//运行
 	if err := service.Run(); err != nil {
-		log.Error("failed-to-do-somthing", err)
+		logs.Error("failed-to-do-somthing", err)
 	}
 }

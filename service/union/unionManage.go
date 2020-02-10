@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/lexkong/log"
 	"service/common"
 	proto "service/protoc/unionManage"
 	"service/union/model"
@@ -98,6 +98,6 @@ func main() {
 
 	//运行
 	if err := service.Run(); err != nil {
-		log.Error("failed-to-do-somthing", err)
+		logs.Error("failed-to-do-somthing", err)
 	}
 }

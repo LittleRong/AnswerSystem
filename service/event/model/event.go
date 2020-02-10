@@ -2,8 +2,7 @@ package model
 
 import (
 	"encoding/json"
-
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -62,7 +61,6 @@ func GetEventByEventId(event_id int64) (event *Event) {
 }
 
 func GetCreditRuleByEventId(event_id int) CreditRule {
-	beego.Info("========GetCreditRuleByEventId======")
 	var params Event
 	var creditRule CreditRule
 	o := orm.NewOrm()
@@ -70,15 +68,13 @@ func GetCreditRuleByEventId(event_id int) CreditRule {
 	if params.Credit_rule != "" {
 		err := json.Unmarshal([]byte(params.Credit_rule), &creditRule)
 		if err != nil {
-			beego.Info("========err======", err)
+			logs.Error("GetCreditRuleByEventId's err:", err)
 		}
 	}
-	beego.Info("========creditRule======", creditRule)
 	return creditRule
 }
 
 func GetProblemNumByEventId(event_id int) ProblemNum {
-	beego.Info("========GetProblemNumByEventId======")
 	var params Event
 	var problemNum ProblemNum
 	o := orm.NewOrm()
@@ -86,10 +82,9 @@ func GetProblemNumByEventId(event_id int) ProblemNum {
 	if params.Event_num != "" {
 		err := json.Unmarshal([]byte(params.Event_num), &problemNum)
 		if err != nil {
-			beego.Info("========err======", err)
+			logs.Error("GetProblemNumByEventId's err:", err)
 		}
 	}
-	beego.Info("========problemNum======", problemNum)
 	return problemNum
 }
 
@@ -105,10 +100,9 @@ func AddNewEvent(e Event) (string, int64) {
 	o := orm.NewOrm()
 	id, err := o.Insert(&e)
 	if err != nil {
-		beego.Info("======AddNewEvent's err=====", err)
+		logs.Error("AddNewEvent's err", err)
 		return "faild", 0
 	} else {
-		beego.Info("======AddNewEvent's id=====", id)
 		return "success", id
 	}
 }

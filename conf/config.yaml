@@ -26,13 +26,20 @@ consul:
 
 #日志管理
 log:
-  writers: file,stdout
-  logger_level: DEBUG
+  logger_level: 7
   logger_file: logs/log.log
-  log_format_text: false
-  rollingPolicy: size
-  log_rotate_size: 3
-  log_backup_count: 7
+  maxlines: 1000,       #最大行
+  maxsize: 10240       #最大Size
+#  const (
+#  LevelEmergency     = iota
+#  LevelAlert
+#  LevelCritical
+#  LevelError
+#  LevelWarning
+#  LevelNotice
+#  LevelInformational
+#  LevelDebug
+#  )
 
 #枚举值
 enum:

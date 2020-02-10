@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -22,10 +22,10 @@ func AddProblem(p Problem) (int64,string) {
 	o := orm.NewOrm()
 	id, err := o.Insert(&p)
 	if err != nil {
-		beego.Info("======AddProblem's err=====", err)
+		logs.Error("AddProblem's err:", err)
 		return -1,"falid"
 	} else {
-		beego.Info("======AddProblem's id=====", id)
+		logs.Debug("AddProblem's id:", id)
 		return id,"success"
 	}
 
@@ -50,6 +50,5 @@ func GetProblemListByOffstAndLimit(offset int, limit int) []Problem {
 	o := orm.NewOrm()
 	offset = offset - 1
 	o.QueryTable("problem").Offset(offset * limit).Limit(limit).All(&u)
-	beego.Info("======GetProblemListByOffstAndLimit=====", u)
 	return u
 }
