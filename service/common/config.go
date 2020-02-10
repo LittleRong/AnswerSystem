@@ -1,18 +1,20 @@
 package common
 
 import (
-
 	"os"
 	"strings"
 	"time"
+	"context"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/lexkong/log"
+	"github.com/lexkong/log/lager"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro/server"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
 )
@@ -103,8 +105,11 @@ func (this *Config)initDatabase() error {
 
 func (this *Config)initServiceRegistry(serviceName string) micro.Service{
 	//create service
-	service := micro.NewService(micro.Name(serviceName), micro.RegisterTTL(time.Second*30),
-		micro.RegisterInterval(time.Second*20),micro.Registry(consul.NewRegistry(func(options *registry.Options) {
+	service := micro.NewService(micro.Name(serviceName),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*20),
+		micro.WrapHandler(logWrapper),
+		micro.Registry(consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			viper.GetString("consul.host")+":"+viper.GetString("consul.port"),
 		}
@@ -128,4 +133,14 @@ func (this *Config) initLog() {
 	}
 
 	log.InitWithConfig(&passLagerCfg)
+}
+
+// 实现server.HandlerWrapper接口
+func logWrapper(fn server.HandlerFunc) server.HandlerFunc {
+	return func(ctx context.Context, req server.Request, rsp interface{}) error {
+		log.Debug("server request", lager.Data{
+			req.Service():req.Endpoint(),
+		})
+		return fn(ctx, req, rsp)
+	}
 }
