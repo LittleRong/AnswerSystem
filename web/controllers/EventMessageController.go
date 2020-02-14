@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"context"
-
 	"github.com/astaxie/beego"
 
 	creditProto "service/protoc/answerManage"
@@ -27,33 +25,33 @@ func (this *EventMessageController) GetEventMessage() {
 		return
 	}
 	user_id := userSession.(int64)
-	pManage := common.InitParticipantManage()
+	pManage,ctx := common.InitParticipantManage(this.CruSession)
 	pReq := participantProto.PUserEventIdReq{EventId: int64(event_id), UserId: user_id}
-	participant, pErr := pManage.GetParticipantByUserAndEvent(context.TODO(), &pReq)
+	participant, pErr := pManage.GetParticipantByUserAndEvent(ctx, &pReq)
 	if pErr != nil {
 		beego.Info("-------pErr--------", pErr)
 	}
 	team_id := participant.TeamId
 
 	//*****************************1.获取事件信息event_message*************************************************
-	eventManage := common.InitEventManage()
+	eventManage,ctx := common.InitEventManage(this.CruSession)
 	req := eventProto.EventIdReq{EventId: int64(event_id)}
 	var err error
-	event_message, err := eventManage.GetDetailEventByEventId(context.TODO(), &req)
+	event_message, err := eventManage.GetDetailEventByEventId(ctx, &req)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}
 
 	//*****************************2.获取积分信息credit_message************************************************
-	creditManage := common.InitCreditManage()
+	creditManage,ctx := common.InitCreditManage(this.CruSession)
 	userCreditReq := creditProto.UserEventIdReq{EventId: int64(event_id), UserId: int64(user_id)}
-	personCredit, personErr := creditManage.GetPersonCredit(context.TODO(), &userCreditReq)
+	personCredit, personErr := creditManage.GetPersonCredit(ctx, &userCreditReq)
 	if personErr != nil {
 		beego.Info("-------personErr--------", personErr)
 	}
 
 	teamCreditReq := creditProto.TeamEventIdReq{EventId: int64(event_id), TeamId: int64(team_id)}
-	teamCredit, teamErr := creditManage.GetTeamCredit(context.TODO(), &teamCreditReq)
+	teamCredit, teamErr := creditManage.GetTeamCredit(ctx, &teamCreditReq)
 	if teamErr != nil {
 		beego.Info("-------teamErr--------", teamErr)
 	}
@@ -65,7 +63,7 @@ func (this *EventMessageController) GetEventMessage() {
 
 	//*****************************3.获取积分日志************************************************
 	creditLogReq := creditProto.TeamIdReq{TeamId: int64(team_id)}
-	creditLogCredit, creditLogErr := creditManage.GetCreditLogByTeamId(context.TODO(), &creditLogReq)
+	creditLogCredit, creditLogErr := creditManage.GetCreditLogByTeamId(ctx, &creditLogReq)
 	if creditLogErr != nil {
 		beego.Info("-------creditLogErr--------", creditLogErr)
 	}

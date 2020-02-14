@@ -101,11 +101,25 @@ func (this *UserManage) Login(ctx context.Context, req *proto.LoginReq, rsp *pro
 	var userName = req.Username
 	var pwd = req.Pwd
 	user, flag := model.Login(userName, pwd)
+	if(flag== true){
+		//类型转换
+		rsp.UserId = user.Id
+		rsp.LoginFlag = flag
+		rsp.Permission = int32(user.Permission)
+		//生成JWT
+		token,err := common.SignJWT(common.Context{ID:user.Id,Username:user.Login_name},"")
+		if err!=nil{
+			logs.Error("failed-to-get-JWT token",err)
+			panic(err)
+		}
+		rsp.Token = token
 
-	//类型转换
-	rsp.UserId = user.Id
-	rsp.LoginFlag = flag
-	rsp.Permission = int32(user.Permission)
+	}else{
+		//类型转换
+		rsp.UserId = -1
+		rsp.LoginFlag = flag
+		rsp.Permission = 0
+	}
 
 	return nil
 }

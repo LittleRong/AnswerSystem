@@ -1,13 +1,10 @@
 package controllers
 
 import (
-	"context"
 	"encoding/json"
 	"strconv"
 
 	"github.com/astaxie/beego"
-	"github.com/micro/go-micro"
-
 	participantProto "service/protoc/answerManage"
 	userProto "service/protoc/userManage"
 	"web/common"
@@ -38,13 +35,9 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 	userId := userSession.(int64)
 
 	//调用服务
-	service := micro.NewService(micro.Name("UserManage.client"))
-	service.Init()
-	//create new client
-	userManage := userProto.NewUserManageService("UserManage", service.Client())
-	//call the userManage method
+	userManage,ctx := common.InitUserManage(this.CruSession)
 	req := userProto.GetUserListReq{Offset: offset, Limit: limit, ManageId: userId}
-	rsp, err := userManage.GetUserListByOffstAndLimit(context.TODO(), &req)
+	rsp, err := userManage.GetUserListByOffstAndLimit(ctx, &req)
 	if err != nil {
 		beego.Info("======ParticipantGetUser=====", rsp.UserList, "-------err--------", err)
 	}
@@ -91,9 +84,9 @@ func (this *ParticipantManageController) EventParticipantInsert() {
 	}
 
 	//调用服务
-	participantManage := common.InitParticipantManage()
+	participantManage,ctx := common.InitParticipantManage(this.CruSession)
 	req := participantProto.EPInsertReq{EventId: int64(event_id), ParticipantMemberList: memberList}
-	rsp, err := participantManage.EventParticipantInsert(context.TODO(), &req)
+	rsp, err := participantManage.EventParticipantInsert(ctx, &req)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}

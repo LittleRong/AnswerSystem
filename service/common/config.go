@@ -1,7 +1,6 @@
 package common
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"strings"
@@ -14,7 +13,6 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
-	"github.com/micro/go-micro/server"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -108,6 +106,7 @@ func (this *Config)initServiceRegistry(serviceName string) micro.Service{
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*20),
 		micro.WrapHandler(logWrapper),
+		micro.WrapHandler(authWrapper),
 		micro.Registry(consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			viper.GetString("consul.host")+":"+viper.GetString("consul.port"),
@@ -133,10 +132,3 @@ func (this *Config) initLog() {
 	logs.SetLevel(viper.GetInt("log.logger_level"))
 }
 
-// 实现server.HandlerWrapper接口
-func logWrapper(fn server.HandlerFunc) server.HandlerFunc {
-	return func(ctx context.Context, req server.Request, rsp interface{}) error {
-		logs.Debug("server request", time.Now().Format("2006/1/2 15:04:05"),req.Endpoint())
-		return fn(ctx, req, rsp)
-	}
-}

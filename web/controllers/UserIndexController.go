@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"context"
-
 	"github.com/astaxie/beego"
 
 	participantProto "service/protoc/answerManage"
@@ -32,10 +30,10 @@ func (this *UserIndexController) UserIndex() {
 	} else {
 		userId = userSession.(int64)
 		//call the userManage method
-		userManage := common.InitUserManage()
+		userManage,ctx := common.InitUserManage(this.CruSession)
 		req := userProto.GetUserByIdReq{UserId: userId}
 		var err error
-		user_message, err = userManage.GetUserById(context.TODO(), &req)
+		user_message, err = userManage.GetUserById(ctx, &req)
 		if err == nil {
 			beego.Info("-------err--------", err)
 		}
@@ -44,19 +42,19 @@ func (this *UserIndexController) UserIndex() {
 	//获取用户参与的事件，并获取事件信息
 	var event_message_array []*eventProto.EventShowMesssage
 	//call the participantManage method
-	participantManage := common.InitParticipantManage()
+	participantManage,ctx := common.InitParticipantManage(this.CruSession)
 	req := participantProto.GetPListByUserIdReq{UserId: userId}
 	var err error
-	rsp, err := participantManage.GetParticipantListByUserId(context.TODO(), &req)
+	rsp, err := participantManage.GetParticipantListByUserId(ctx, &req)
 
 	beego.Info("======UserIndex user_event_list=====", userId, rsp.PEList, "-------err--------", err)
 
 	for _, value := range rsp.PEList {
 		//call the participantManage method
-		eventManage := common.InitEventManage()
+		eventManage,ctx := common.InitEventManage(this.CruSession)
 		req := eventProto.EventIdReq{EventId: value.ReferEventId}
 		var err error
-		rsp, err := eventManage.GetEventByEventId(context.TODO(), &req)
+		rsp, err := eventManage.GetEventByEventId(ctx, &req)
 		if err != nil {
 			beego.Info("-------err--------", err)
 		}

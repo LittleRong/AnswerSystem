@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"encoding/json"
 	"github.com/spf13/viper"
 	"log"
@@ -11,9 +10,9 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/tealeg/xlsx"
 
-	"web/common"
 	eventProto "service/protoc/eventManage"
 	proto "service/protoc/problemManage"
+	"web/common"
 )
 
 type ProblemManageController struct {
@@ -36,9 +35,9 @@ func (this *ProblemManageController) ProblemManage() {
 	userId := userSession.(int64)
 
 	//call the userManage method
-	problemManage := common.InitProblemManage()
+	problemManage,ctx := common.InitProblemManage(this.CruSession)
 	req := proto.GetProblemListReq{Offset: offset, Limit: limit, ManageId: userId}
-	rsp, err := problemManage.GetProblemListByOffstAndLimit(context.TODO(), &req)
+	rsp, err := problemManage.GetProblemListByOffstAndLimit(ctx, &req)
 	if err != nil {
 		beego.Info("======ProblemManage=====", rsp.ProblemList, "-------err--------", err)
 	}
@@ -133,9 +132,9 @@ func (this *ProblemManageController) ProblemFileInsert() {
 	}
 
 	//获取最大problem_id,这里还有问题
-	problemManage := common.InitProblemManage()
+	problemManage,ctx := common.InitProblemManage(this.CruSession)
 	req := proto.GetEndProblemIdReq{}
-	rsp, err := problemManage.GetEndProblemId(context.TODO(), &req)
+	rsp, err := problemManage.GetEndProblemId(ctx, &req)
 	if err != nil {
 		beego.Info( "-------err--------", err)
 	}
@@ -220,16 +219,16 @@ func (this *ProblemManageController) ProblemFileInsert() {
 
 			//插入problem表
 			req := proto.ProblemMesssage{ProblemContent: problem_content, ProblemType: int32(problem_type), ProblemClass: problem_class, ProblemAnswer: problem_answer, ProblemOption: problem_option}
-			rsp, err := problemManage.AddProblem(context.TODO(), &req)
+			rsp, err := problemManage.AddProblem(ctx, &req)
 			if err != nil {
 				beego.Info( "-------err--------", err)
 			}
 
 			max_problem_id = rsp.ProblemId
 			//插入event_problem表
-			eventManage := common.InitEventManage()
+			eventManage,ctx := common.InitEventManage(this.CruSession)
 			eventReq := eventProto.AddEventProblemReq{EventId: int64(event_id),ProblemId:max_problem_id}
-			ep,err := eventManage.AddEventProblem(context.TODO(), &eventReq)
+			ep,err := eventManage.AddEventProblem(ctx, &eventReq)
 			if err != nil {
 				beego.Info("-------err--------", err,ep)
 			}
@@ -242,13 +241,13 @@ func (this *ProblemManageController) ProblemFileInsert() {
 
 		//接着进行查询
 		req := proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.singleType")}
-		single_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		single_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
 		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.multipleType")}
-		multi_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		multi_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
 		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.judgeType")}
-		judge_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		judge_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
 		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.fillType")}
-		fill_arr, _ := problemManage.GetNewProblemByType(context.TODO(), &req)
+		fill_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
 		beego.Info("************single_arr**************", single_arr)
 		beego.Info("************multi_arr**************", multi_arr)
 		beego.Info("************judge_arr**************", judge_arr)

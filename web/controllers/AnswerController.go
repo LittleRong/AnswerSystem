@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"encoding/json"
 	"github.com/spf13/viper"
 	"strconv"
@@ -53,9 +52,9 @@ func (this *AnswerController) GetUserProblems() {
 		return
 	}
 	user_id := userSession.(int64)
-	pManage := common.InitParticipantManage()
+	pManage,ctx := common.InitParticipantManage(this.CruSession)
 	pReq := participantProto.PUserEventIdReq{EventId: int64(event_id), UserId: user_id}
-	p, pErr := pManage.GetParticipantByUserAndEvent(context.TODO(), &pReq)
+	p, pErr := pManage.GetParticipantByUserAndEvent(ctx, &pReq)
 	if pErr != nil {
 		beego.Info("-------pErr--------", pErr)
 	}
@@ -63,17 +62,17 @@ func (this *AnswerController) GetUserProblems() {
 	team_id := p.TeamId
 
 	//*****************************1.获取用户题目*************************************************
-	eventManage := common.InitEventManage()
+	eventManage,ctx := common.InitEventManage(this.CruSession)
 	req := eventProto.EventIdReq{EventId: int64(event_id)}
-	problemNum, problemNumErr := eventManage.GetProblemNumByEventId(context.TODO(), &req)
+	problemNum, problemNumErr := eventManage.GetProblemNumByEventId(ctx, &req)
 	if problemNumErr != nil {
 		beego.Info("-------err--------", problemNumErr)
 	}
 
-	uniontManage := common.InitUniontManage()
+	uniontManage,ctx := common.InitUniontManage(this.CruSession)
 	problemNumsReq := unionProto.ProblemNum{Single: problemNum.Single, Multiple: problemNum.Multiple, Fill: problemNum.Fill, Judge: problemNum.Judge}
 	unionReq := unionProto.GetProblemNoAnswerReq{EventId: int64(event_id), UserId: int64(user_id), TeamId: int64(team_id), PaticipantId: paticipant_id, ProblemNum: &problemNumsReq}
-	unionRsp, unionErr := uniontManage.GetProblemNoAnswer(context.TODO(), &unionReq)
+	unionRsp, unionErr := uniontManage.GetProblemNoAnswer(ctx, &unionReq)
 	if unionErr != nil {
 		beego.Info("-------unionErr--------", unionErr)
 	}
@@ -99,7 +98,7 @@ func (this *AnswerController) GetUserProblems() {
 	//*****************************2.获取剩余答题时间*************************************************
 	var answer_time float64
 	var err error
-	event_message, err := eventManage.GetEventByEventId(context.TODO(), &req)
+	event_message, err := eventManage.GetEventByEventId(ctx, &req)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}
@@ -108,7 +107,7 @@ func (this *AnswerController) GetUserProblems() {
 	if (buildFlag) {
 		//获取到生成题目的时间
 		pAnswerTimeReq := participantProto.ParticipantIdReq{ParticipantId: paticipant_id}
-		pAnswerTimeRsp, pAnswerTimeErr := pManage.GetAnswerTimeByParticipantId(context.TODO(), &pAnswerTimeReq)
+		pAnswerTimeRsp, pAnswerTimeErr := pManage.GetAnswerTimeByParticipantId(ctx, &pAnswerTimeReq)
 		if pAnswerTimeErr != nil {
 			beego.Info("-------pErr--------", pAnswerTimeErr)
 		}
@@ -153,9 +152,9 @@ func (this *AnswerController) GetUserAnswers() {
 		return
 	}
 	user_id := userSession.(int64)
-	pManage := common.InitParticipantManage()
+	pManage,ctx := common.InitParticipantManage(this.CruSession)
 	pReq := participantProto.PUserEventIdReq{EventId: int64(event_id), UserId: user_id}
-	p, pErr := pManage.GetParticipantByUserAndEvent(context.TODO(), &pReq)
+	p, pErr := pManage.GetParticipantByUserAndEvent(ctx, &pReq)
 	if pErr != nil {
 		beego.Info("-------pErr--------", pErr)
 	}
@@ -163,16 +162,16 @@ func (this *AnswerController) GetUserAnswers() {
 	team_id := p.TeamId
 
 	//*****************************1.获取该事件评分标准*************************************************
-	eventManage := common.InitEventManage()
+	eventManage,ctx := common.InitEventManage(this.CruSession)
 	eventReq := eventProto.EventIdReq{EventId: int64(event_id)}
-	creditRule, creditRuleErr := eventManage.GetCreditRuleByEventId(context.TODO(), &eventReq)
+	creditRule, creditRuleErr := eventManage.GetCreditRuleByEventId(ctx, &eventReq)
 	if creditRuleErr != nil {
 		beego.Info("-------creditRuleErr--------", creditRuleErr)
 	}
 
 	//*****************************2.获取正确答案*******************************************************
 	pIdReq := participantProto.ParticipantIdReq{ParticipantId: int64(paticipant_id)}
-	correct_answer, pIdErr := pManage.GetCorrectAnswerByParticipantId(context.TODO(), &pIdReq)
+	correct_answer, pIdErr := pManage.GetCorrectAnswerByParticipantId(ctx, &pIdReq)
 	if pIdErr != nil {
 		beego.Info("-------pIdErr--------", pIdErr)
 	}
@@ -197,17 +196,17 @@ func (this *AnswerController) GetUserAnswers() {
 	fill_array := f.([]interface{})
 
 	//*****************************4.计算分数,并将用户答案写入participant_haved_answer表***********************
-	single_user_score, single_right_num, singleFront := JudgeUserInputAnswer(single_array, correct_answer.SingleAnswerList, paticipant_id, creditRule.SingleScore, viper.GetInt("enum.problemType.singleType"))
-	judge_score, judge_right_num, judgeFront := JudgeUserInputAnswer(judge_array, correct_answer.JudgeAnswerList, paticipant_id, creditRule.JudgeScore, viper.GetInt("enum.problemType.judgeType"))
-	fill_score, fill_right_num, fillFront := JudgeUserInputAnswer(fill_array, correct_answer.FillAnswerList, paticipant_id, creditRule.FillScore, viper.GetInt("enum.problemType.fillType"))
-	multi_score, multi_right_num, multiFront := JudgeUserMultiInputAnswer(multi_array, correct_answer.MultiAnswerList, paticipant_id, creditRule.MultipleScore, viper.GetInt("enum.problemType.multipleType"))
+	single_user_score, single_right_num, singleFront := this.JudgeUserInputAnswer(single_array, correct_answer.SingleAnswerList, paticipant_id, creditRule.SingleScore, viper.GetInt("enum.problemType.singleType"))
+	judge_score, judge_right_num, judgeFront := this.JudgeUserInputAnswer(judge_array, correct_answer.JudgeAnswerList, paticipant_id, creditRule.JudgeScore, viper.GetInt("enum.problemType.judgeType"))
+	fill_score, fill_right_num, fillFront := this.JudgeUserInputAnswer(fill_array, correct_answer.FillAnswerList, paticipant_id, creditRule.FillScore, viper.GetInt("enum.problemType.fillType"))
+	multi_score, multi_right_num, multiFront := this.JudgeUserMultiInputAnswer(multi_array, correct_answer.MultiAnswerList, paticipant_id, creditRule.MultipleScore, viper.GetInt("enum.problemType.multipleType"))
 
 	user_score := single_user_score + judge_score + fill_score + multi_score
 	right_num := single_right_num + judge_right_num + fill_right_num + multi_right_num
 
 	//*****************************5.判断是否全对*****************************************
 	user_all_right := false
-	problemNum, problemNumErr := eventManage.GetProblemNumByEventId(context.TODO(), &eventReq)
+	problemNum, problemNumErr := eventManage.GetProblemNumByEventId(ctx, &eventReq)
 	if problemNumErr != nil {
 		beego.Info("-------problemNumErr--------", problemNumErr)
 	}
@@ -221,9 +220,9 @@ func (this *AnswerController) GetUserAnswers() {
 
 	//*****************************6.更新积分*****************************************
 	//1.更新个人积分
-	creditManage := common.InitCreditManage()
+	creditManage,ctx := common.InitCreditManage(this.CruSession)
 	pCreditReq := creditProto.UpdatePCreditReq{PaticipantId: int64(paticipant_id), ChangeCredit: user_score}
-	pCreditRsp, _ := creditManage.UpdateParticipantCredit(context.TODO(), &pCreditReq)
+	pCreditRsp, _ := creditManage.UpdateParticipantCredit(ctx, &pCreditReq)
 	user_total_credit := pCreditRsp.Credit
 	now_time := time.Now()
 	UnixTime := now_time.Unix()
@@ -235,16 +234,16 @@ func (this *AnswerController) GetUserAnswers() {
 		reason = "当日全部答对额外加分"
 		log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
 			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.PersonScore), ChangeType: viper.GetInt32("enum.creditChangeType.personAllRight"), ChangeReason: reason}
-		creditManage.AddCreditLog(context.TODO(), &log)
+		creditManage.AddCreditLog(ctx, &log)
 		user_score_log = user_score - creditRule.PersonScore
 	}
 	reason = "答题得分"
 	log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
 		TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(user_score_log), ChangeType: viper.GetInt32("enum.creditChangeType.dailyAnswer"), ChangeReason: reason}
-	creditManage.AddCreditLog(context.TODO(), &log)
+	creditManage.AddCreditLog(ctx, &log)
 
 	//2.更新组积分
-	event, err := eventManage.GetEventByEventId(context.TODO(), &eventReq)
+	event, err := eventManage.GetEventByEventId(ctx, &eventReq)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}
@@ -253,24 +252,24 @@ func (this *AnswerController) GetUserAnswers() {
 	//判断是否当日全部答对，若组员全部答对额外加分
 	now_date := time.Unix(UnixTime, 0).Format("2006-01-02")
 	allRightReq := creditProto.AllRightReq{TeamId: int64(team_id), NowDate: now_date, ParticipantNum: int32(event.ParticipantNum)}
-	allRightRsp, _ := creditManage.WhetherMemberAllRight(context.TODO(), &allRightReq)
+	allRightRsp, _ := creditManage.WhetherMemberAllRight(ctx, &allRightReq)
 	team_allright_flag := allRightRsp.AllRightFlag
 	if (team_allright_flag == true) {
 		//写积分表
 		reason = "当日全组全部答对额外加分"
 		log := creditProto.CreditLog{EventId: int64(event_id), ParticipantId: int64(paticipant_id),
 			TeamId: int64(team_id), ChangeTime: now, ChangeValue: float32(creditRule.TeamScore), ChangeType: viper.GetInt32("enum.creditChangeType.teamAllRight"), ChangeReason: reason}
-		creditManage.AddCreditLog(context.TODO(), &log)
+		creditManage.AddCreditLog(ctx, &log)
 		team_score += creditRule.TeamScore
 	}
 
 	teamCreditReq := creditProto.UpdateTeamCreditReq{TeamId: int64(team_id), ChangeCredit: team_score}
-	teamCreditRsp, _ := creditManage.UpdateTeamCredit(context.TODO(), &teamCreditReq)
+	teamCreditRsp, _ := creditManage.UpdateTeamCredit(ctx, &teamCreditReq)
 	team_score = teamCreditRsp.Credit
 
 	//*****************************7.获取队友分数*****************************************
 	memberReq := participantProto.PTeamEventIdReq{EventId: int64(event_id), TeamId: int64(team_id)}
-	memberRsp, memberErr := pManage.GetMemberCreditByTeamId(context.TODO(), &memberReq)
+	memberRsp, memberErr := pManage.GetMemberCreditByTeamId(ctx, &memberReq)
 	if memberErr != nil {
 		beego.Info("-------memberErr--------", memberErr)
 	}
@@ -279,9 +278,9 @@ func (this *AnswerController) GetUserAnswers() {
 	var member_credit []map[string]string
 	for _, v := range member {
 		userId := v.UserId
-		userManage := common.InitUserManage()
+		userManage,ctx := common.InitUserManage(this.CruSession)
 		req := userProto.GetUserByIdReq{UserId: int64(userId)}
-		user_message, err := userManage.GetUserById(context.TODO(), &req)
+		user_message, err := userManage.GetUserById(ctx, &req)
 		if err == nil {
 			beego.Info("-------err--------", err)
 		}
@@ -319,7 +318,7 @@ func (this *AnswerController) GetUserAnswers() {
 }
 
 //user_score用户答题总分,single_right_num答对的数目
-func JudgeUserInputAnswer(input_array []interface{}, correct_answer []*participantProto.NolAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string]string) {
+func (this *AnswerController)JudgeUserInputAnswer(input_array []interface{}, correct_answer []*participantProto.NolAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string]string) {
 	var right_num int
 	var user_score float64
 	var frontAnswer map[string]string
@@ -356,10 +355,10 @@ func JudgeUserInputAnswer(input_array []interface{}, correct_answer []*participa
 		beego.Info("problem_id=", problem_id, "user_answer=", user_answer, " right_answer=", right_answer)
 
 		//将用户答案写入participant_haved_answer表
-		pManage := common.InitParticipantManage()
+		pManage,ctx := common.InitParticipantManage(this.CruSession)
 		problemIdStr, _ := strconv.ParseInt(problem_id, 10, 64)
 		pReq := participantProto.UpdateUserAnswerReq{ParticipantId: paticipant_id, ProblemId: problemIdStr, UserAnswer: user_answer, TrueOrFalse: true_or_false}
-		_, pErr := pManage.UpdateUserAnswer(context.TODO(), &pReq)
+		_, pErr := pManage.UpdateUserAnswer(ctx, &pReq)
 		if pErr != nil {
 			beego.Info("-------pErr--------", pErr)
 		}
@@ -374,7 +373,7 @@ func JudgeUserInputAnswer(input_array []interface{}, correct_answer []*participa
 }
 
 //user_score用户答题总分,single_right_num答对的数目
-func JudgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*participantProto.MultiAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string][]float64) {
+func (this *AnswerController)JudgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*participantProto.MultiAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string][]float64) {
 	var right_num int
 	var user_score float64
 	var frontAnswer map[string][]float64
@@ -415,10 +414,10 @@ func JudgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*part
 		beego.Info("problem_id=", problem_id, "user_answer=", user_answer, " right_answer=", right_answer)
 
 		//将用户答案写入participant_haved_answer表
-		pManage := common.InitParticipantManage()
+		pManage,ctx := common.InitParticipantManage(this.CruSession)
 		problemIdStr, _ := strconv.ParseInt(problem_id, 10, 64)
 		pReq := participantProto.UpdateUserAnswerReq{ParticipantId: paticipant_id, ProblemId: problemIdStr, UserAnswer: user_answer, TrueOrFalse: true_or_false}
-		_, pErr := pManage.UpdateUserAnswer(context.TODO(), &pReq)
+		_, pErr := pManage.UpdateUserAnswer(ctx, &pReq)
 		if pErr != nil {
 			beego.Info("-------pErr--------", pErr)
 		}

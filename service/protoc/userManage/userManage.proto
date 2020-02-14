@@ -29,6 +29,7 @@ message LoginRsp {
     bool loginFlag = 1;
     int64 userId = 2;
     int32 permission = 3;
+    string  token = 4;
 }
 
 message GetUserListReq {

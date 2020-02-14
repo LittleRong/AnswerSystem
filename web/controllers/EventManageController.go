@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/astaxie/beego"
@@ -30,9 +29,9 @@ func (this *EventManageController) EventManage() {
 	userId := userSession.(int64)
 
 	//call the userManage method
-	eventManage := common.InitEventManage()
+	eventManage,ctx := common.InitEventManage(this.CruSession)
 	req := proto.GetEventListReq{Offset: offset, Limit: limit, ManageId: userId}
-	rsp, err := eventManage.GetEventListByManageIdAndOffst(context.TODO(), &req)
+	rsp, err := eventManage.GetEventListByManageIdAndOffst(ctx, &req)
 	if err != nil {
 		beego.Info("======ProblemManage=====", rsp.EventList, "-------err--------", err)
 	}
@@ -95,7 +94,7 @@ func (this *EventManageController) EventInsert() {
 	credit_rule, _ := json.Marshal(crule)
 
 	//call the userManage method
-	eventManage := common.InitEventManage()
+	eventManage,ctx := common.InitEventManage(this.CruSession)
 	req := proto.AddEventReq{ManageId: int64(manage_id),
 		EventTitle:       etitle,
 		EventDescription: message,
@@ -107,7 +106,7 @@ func (this *EventManageController) EventInsert() {
 		AnswerTime:       answer_time,
 		CreditRule:       string(credit_rule),
 		ParticipantNum:   int32(participant_num)}
-	rsp, err := eventManage.AddNewEvent(context.TODO(), &req)
+	rsp, err := eventManage.AddNewEvent(ctx, &req)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}

@@ -107,13 +107,20 @@ func GetUserById(id int64) (User) {
 }
 
 func Login(username string, password string) (*User, bool) {
-	u := User{Login_name: username, Pwd: password}
+	u := User{Login_name: username}
 	o := orm.NewOrm()
-	err := o.Read(&u, "Login_name", "Pwd")
+	err := o.Read(&u, "Login_name", )
 	if err != nil {
 		return nil, false
 	} else {
-		return &u, true
+		if(u.Pwd == password){
+			return &u, true
+		}else{
+			return nil,false
+		}
+
+
+
 	}
 }
 

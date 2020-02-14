@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"github.com/astaxie/beego"
 	"github.com/spf13/viper"
 	userProto "service/protoc/userManage"
@@ -21,13 +20,14 @@ func (this *LoginController) Check() {
 	password := this.GetString("password")
 
 	var result map[string]interface{}
-	userManage := common.InitUserManage()
+	userManage,ctx := common.InitUserManage(this.CruSession)
 	req := userProto.LoginReq{Username: username, Pwd: password}
-	LoginRsp, err := userManage.Login(context.TODO(), &req)
+
+	LoginRsp, err := userManage.Login(ctx, &req)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}
-
+	beego.Info("========LoginRsp.Token======", LoginRsp.Token)
 	if LoginRsp.LoginFlag == false { //登录失败
 		result = map[string]interface{}{"result": "faild", "message": "登陆失败,用户名或密码错误"}
 	} else {
@@ -43,6 +43,16 @@ func (this *LoginController) Check() {
 		} else { //普通用户
 			result = map[string]interface{}{"result": "user"}
 		}
+
+		//存放token
+		if(LoginRsp.Token!=""){
+			this.SetSession("token", LoginRsp.Token)
+			this.Ctx.SetCookie("token","123321")
+
+		}else{
+			beego.Error("获取token失败")
+		}
+
 	}
 
 	this.Data["json"] = result
@@ -63,10 +73,10 @@ func (this *LoginController) ChangePwd() {
 		return
 	}
 	user_id := userSession.(int64)
-	userManage := common.InitUserManage()
+	userManage,ctx := common.InitUserManage(this.CruSession)
 	req := userProto.UpdatePwdReq{UserId: user_id, OldPwd: old_pwd, NewPwd: new_pwd}
-	rsp, err := userManage.UpdateUserPwd(context.TODO(), &req)
-	if err == nil {
+	rsp, err := userManage.UpdateUserPwd(ctx, &req)
+	if err != nil {
 		beego.Info("-------err--------", err)
 	}
 
