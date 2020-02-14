@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/spf13/viper"
 	"strconv"
 	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/spf13/viper"
 
 	creditProto "service/protoc/answerManage"
 	participantProto "service/protoc/answerManage"

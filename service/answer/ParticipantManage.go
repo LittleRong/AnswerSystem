@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+
 	"github.com/astaxie/beego/logs"
 
-	_ "github.com/go-sql-driver/mysql"
 	"service/answer/model"
 	"service/common"
 	proto "service/protoc/answerManage"

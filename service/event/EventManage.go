@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego/logs"
-	_ "github.com/go-sql-driver/mysql"
 	"service/common"
 	"service/event/model"
 	proto "service/protoc/eventManage"

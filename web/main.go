@@ -11,16 +11,14 @@ import (
 )
 
 var FilterUser = func(ctx *context.Context) {
-	v, ok := ctx.Input.Session("user_id").(int64)
-	beego.Info("user_id=",v, "++", ok)
-	//if (ctx.Request.RequestURI != "/check" && ctx.Request.RequestURI != "/index") && !ok {
-	//	ctx.Redirect(302, "/index")
-	//}
+	_, ok := ctx.Input.Session("user_id").(int64)
+	if (ctx.Request.RequestURI != "/check" && ctx.Request.RequestURI != "/index") && !ok {
+		ctx.Redirect(302, "/index")
+	}
 }
 
 var FilterPermission = func(ctx *context.Context) {
 	v, ok := ctx.Input.Session("permission").(int32)
-	beego.Info("permission=",v, "++", ok)
 	if (ok && v < 1){
 		ctx.Redirect(302, "/404")
 	}

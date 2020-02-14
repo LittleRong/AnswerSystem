@@ -3,12 +3,12 @@ package model
 import (
 	"context"
 	"encoding/json"
-	"github.com/astaxie/beego/logs"
 	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/orm"
 	"github.com/micro/go-micro"
+	"github.com/astaxie/beego/logs"
 
 	participantProto "service/protoc/answerManage"
 )

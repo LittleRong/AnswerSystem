@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/spf13/viper"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/spf13/viper"
 	"github.com/tealeg/xlsx"
 
 	eventProto "service/protoc/eventManage"

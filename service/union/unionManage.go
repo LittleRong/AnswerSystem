@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/astaxie/beego/logs"
-	_ "github.com/go-sql-driver/mysql"
+
 	"service/common"
 	proto "service/protoc/unionManage"
 	"service/union/model"

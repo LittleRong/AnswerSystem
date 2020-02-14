@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
+
 	participantProto "service/protoc/answerManage"
 	userProto "service/protoc/userManage"
 	"web/common"

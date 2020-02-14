@@ -1,9 +1,9 @@
 package common
 
 import (
+	"time"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/spf13/viper"
-	"time"
 )
 
 type Context struct{
@@ -12,7 +12,7 @@ type Context struct{
 }
 
 func SignJWT(c Context,secret string) (tokenstring string,err error){
-	//Load the jwt secret from  config if the secret isn't specified.
+
 	if(secret==""){
 		secret = viper.GetString("jwt.secret")
 	}
@@ -27,5 +27,3 @@ func SignJWT(c Context,secret string) (tokenstring string,err error){
 
 	return tokenstring,err
 }
-
-//JWT鉴权

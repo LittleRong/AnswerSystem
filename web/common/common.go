@@ -1,15 +1,15 @@
 package common
 
 import (
-	"fmt"
 	"context"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/session"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/metadata"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/registry/consul"
-	"github.com/micro/go-micro/metadata"
 	creditProto "service/protoc/answerManage"
 	participantProto "service/protoc/answerManage"
 	eventProto "service/protoc/eventManage"
@@ -27,7 +27,7 @@ type tokenWrapper struct {
 }
 
 func (l *tokenWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
-	fmt.Printf("[wrapper] client request to service: %s method: %s\n", req.Service(), req.Endpoint())
+	logs.Debug("[wrapper] client request to service: %s method: %s\n", req.Service(), req.Endpoint())
 	return l.Client.Call(ctx, req, rsp)
 }
 
@@ -37,25 +37,21 @@ func tokenWrap(c client.Client) client.Client {
 }
 
 func ServiceRegistryInit(s session.Store,serviceName string) (micro.Service,context.Context){
-
 	//create service
 	service := micro.NewService(micro.Name(serviceName),
-		micro.Metadata(map[string]string{"type": "hello world"}),
 		micro.Registry(consul.NewRegistry(func(options *registry.Options) {
 		options.Addrs = []string{
 			beego.AppConfig.String("consulhost")+":"+beego.AppConfig.String("consulport"),
 		}
 	})))
-
-	//init
 	service.Init()
 
 	//设置JWT token
 	token := ""
-	//设置JWT token
 	if s != nil {
+		//从session获取token
 		tokenSession := s.Get("token")
-		if tokenSession != nil { //还没有token
+		if tokenSession != nil {
 			token = tokenSession.(string)
 		}
 	}
