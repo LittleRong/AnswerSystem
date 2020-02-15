@@ -88,3 +88,6 @@ CREATE TABLE problem(
     `problem_answer` VARCHAR(100) NOT NULL COMMENT '题目的答案',
     `problem_option` VARCHAR(500) NOT NULL COMMENT '题目的选项'
 )ENGINE = Innodb default charset utf8 comment '题目表,包含所有题目';
+
+INSERT INTO user (login_name,pwd,name,phone_number,job_number,permission,gender,deleted) VALUES ("admin","123321","admin","13808771234","1",1,0,0);
+INSERT INTO user (login_name,pwd,name,phone_number,job_number,permission,gender,deleted) VALUES ("user","123321","user","13808771234","2",0,0,0);
