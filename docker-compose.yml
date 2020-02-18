@@ -55,6 +55,9 @@ services:
       - conf_volume:/go/src/conf
       - protoc_volume:/go/src/service/protoc
       - common_volume:/go/src/service/common
+    deploy:
+      mode: replicated
+      replicas: 3
   credit_image:
     build:
       context: ./service/answer/

@@ -1,0 +1,213 @@
+.
+├── .DS_Store
+├── .gitattributes
+├── .gitignore
+├── Dockerfile
+├── build.sh
+├── conf
+│   └── config.yaml
+├── docker-compose.yml
+├── service
+│   ├── answer
+│   │   ├── CreditManage.go
+│   │   ├── Dockerfile_credit
+│   │   ├── Dockerfile_participant
+│   │   ├── ParticipantManage.go
+│   │   ├── logs
+│   │   │   ├── log.2020-02-11.001.log
+│   │   │   ├── log.2020-02-13.001.log
+│   │   │   ├── log.2020-02-13.002.log
+│   │   │   ├── log.2020-02-14.001.log
+│   │   │   ├── log.2020-02-14.002.log
+│   │   │   ├── log.2020-02-14.003.log
+│   │   │   ├── log.2020-02-14.004.log
+│   │   │   ├── log.2020-02-14.005.log
+│   │   │   ├── log.2020-02-15.001.log
+│   │   │   ├── log.2020-02-15.002.log
+│   │   │   ├── log.2020-02-15.003.log
+│   │   │   └── log.log
+│   │   └── model
+│   │       ├── creditLog.go
+│   │       ├── participant.go
+│   │       ├── participantHavedAnswer.go
+│   │       └── team.go
+│   ├── common
+│   │   ├── config.go
+│   │   ├── service.go
+│   │   ├── token.go
+│   │   └── wapper.go
+│   ├── event
+│   │   ├── Dockerfile
+│   │   ├── EventManage.go
+│   │   ├── logs
+│   │   │   ├── log.2020-02-11.001.log
+│   │   │   ├── log.2020-02-13.001.log
+│   │   │   ├── log.2020-02-13.002.log
+│   │   │   ├── log.2020-02-13.003.log
+│   │   │   ├── log.2020-02-13.004.log
+│   │   │   ├── log.2020-02-14.001.log
+│   │   │   ├── log.2020-02-14.002.log
+│   │   │   ├── log.2020-02-14.003.log
+│   │   │   ├── log.2020-02-14.004.log
+│   │   │   ├── log.2020-02-14.005.log
+│   │   │   ├── log.2020-02-15.001.log
+│   │   │   ├── log.2020-02-15.002.log
+│   │   │   ├── log.2020-02-15.003.log
+│   │   │   └── log.log
+│   │   └── model
+│   │       ├── event.go
+│   │       └── eventProblem.go
+│   ├── problem
+│   │   ├── Dockerfile
+│   │   ├── ProblemManage.go
+│   │   ├── logs
+│   │   │   ├── log.2020-02-11.001.log
+│   │   │   ├── log.2020-02-14.001.log
+│   │   │   ├── log.2020-02-15.001.log
+│   │   │   └── log.log
+│   │   └── model
+│   │       └── problem.go
+│   ├── protoc
+│   │   ├── answerManage
+│   │   │   ├── creditManage.micro.go
+│   │   │   ├── creditManage.pb.go
+│   │   │   ├── creditManage.proto
+│   │   │   ├── participantManage.micro.go
+│   │   │   ├── participantManage.pb.go
+│   │   │   └── participantManage.proto
+│   │   ├── eventManage
+│   │   │   ├── eventManage.micro.go
+│   │   │   ├── eventManage.pb.go
+│   │   │   └── eventManage.proto
+│   │   ├── problemManage
+│   │   │   ├── problemManage.micro.go
+│   │   │   ├── problemManage.pb.go
+│   │   │   └── problemManage.proto
+│   │   ├── unionManage
+│   │   │   ├── unionManage.micro.go
+│   │   │   ├── unionManage.pb.go
+│   │   │   └── unionManage.proto
+│   │   └── userManage
+│   │       ├── userManage.micro.go
+│   │       ├── userManage.pb.go
+│   │       └── userManage.proto
+│   ├── union
+│   │   ├── Dockerfile
+│   │   ├── logs
+│   │   │   ├── log.2020-02-11.001.log
+│   │   │   ├── log.2020-02-14.001.log
+│   │   │   └── log.log
+│   │   ├── model
+│   │   │   └── union.go
+│   │   └── unionManage.go
+│   └── user
+│       ├── .DS_Store
+│       ├── Dockerfile
+│       ├── UserManage.go
+│       ├── logs
+│       │   ├── log.2020-02-11.001.log
+│       │   ├── log.2020-02-12.001.log
+│       │   ├── log.2020-02-13.001.log
+│       │   ├── log.2020-02-13.002.log
+│       │   ├── log.2020-02-13.003.log
+│       │   ├── log.2020-02-13.004.log
+│       │   ├── log.2020-02-13.005.log
+│       │   ├── log.2020-02-13.006.log
+│       │   ├── log.2020-02-13.007.log
+│       │   ├── log.2020-02-14.001.log
+│       │   ├── log.2020-02-14.002.log
+│       │   ├── log.2020-02-14.003.log
+│       │   ├── log.2020-02-14.004.log
+│       │   ├── log.2020-02-15.001.log
+│       │   ├── log.2020-02-15.002.log
+│       │   └── log.log
+│       └── model
+│           └── user.go
+├── tree.txt
+└── web
+    ├── Dockerfile
+    ├── common
+    │   └── common.go
+    ├── conf
+    │   ├── app.conf
+    │   └── config.go
+    ├── controllers
+    │   ├── AnswerController.go
+    │   ├── EventManageController.go
+    │   ├── EventMessageController.go
+    │   ├── LoginController.go
+    │   ├── ParticipantManageController.go
+    │   ├── ProblemManageController.go
+    │   ├── UserIndexController.go
+    │   └── UserManageController.go
+    ├── main.go
+    ├── models
+    │   └── db.go
+    ├── routers
+    │   └── router.go
+    ├── sql
+    │   └── problem.sql
+    ├── static
+    │   ├── css
+    │   │   ├── jquery-ui.min.css
+    │   │   ├── login.css
+    │   │   ├── planeui.min.css
+    │   │   └── user_manager.css
+    │   ├── fonts
+    │   │   ├── FontAwesome.otf
+    │   │   ├── OpenSans-Light.ttf
+    │   │   ├── OpenSans-Regular-webfont.eot
+    │   │   ├── OpenSans-Regular-webfont.svg
+    │   │   ├── OpenSans-Regular-webfont.ttf
+    │   │   ├── OpenSans-Regular-webfont.woff
+    │   │   ├── fontawesome-webfont.eot
+    │   │   ├── fontawesome-webfont.svg
+    │   │   ├── fontawesome-webfont.ttf
+    │   │   ├── fontawesome-webfont.woff
+    │   │   ├── fontawesome-webfont.woff2
+    │   │   ├── iconfont.eot
+    │   │   ├── iconfont.svg
+    │   │   ├── iconfont.ttf
+    │   │   ├── iconfont.woff
+    │   │   ├── planeui-logo.eot
+    │   │   ├── planeui-logo.svg
+    │   │   ├── planeui-logo.ttf
+    │   │   └── planeui-logo.woff
+    │   ├── img
+    │   │   ├── .DS_Store
+    │   │   ├── CM.png
+    │   │   ├── boy.jpg
+    │   │   ├── girl.jpg
+    │   │   ├── header.jpg
+    │   │   ├── header2.jpg
+    │   │   ├── loginbg.jpg
+    │   │   └── �\201\223�\205�.jpg
+    │   ├── js
+    │   │   ├── jquery-2.1.1.min.js
+    │   │   ├── planeui.js
+    │   │   └── reload.min.js
+    │   └── upload
+    │       ├── .DS_Store
+    │       ├── test.xlsx
+    │       ├── 模�\235�.xlsx
+    │       └── 模�\235�2.xlsx
+    ├── tests
+    │   └── default_test.go
+    ├── views
+    │   ├── answer
+    │   │   ├── event_message.html
+    │   │   └── user_problem.html
+    │   ├── index
+    │   │   ├── change_pwd.html
+    │   │   └── user_index.html
+    │   ├── index.html
+    │   └── manage
+    │       ├── event_insert.html
+    │       ├── event_manage.html
+    │       ├── participant_manage.html
+    │       ├── problem_manage.html
+    │       ├── problem_upload.html
+    │       └── user_manage.html
+    └── web
+
+42 directories, 168 files
