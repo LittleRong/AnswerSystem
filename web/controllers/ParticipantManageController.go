@@ -15,6 +15,10 @@ type ParticipantManageController struct {
 	beego.Controller
 }
 
+// @Title 获得添加参赛者页面
+// @Description 获得添加参赛者页面
+// @Success 200 {}
+// @router / [get]
 func (this *ParticipantManageController) ParticipantInsertInit() {
 	new_event_id := this.GetSession("new_event_id")
 	if new_event_id == nil { //未设置
@@ -23,7 +27,12 @@ func (this *ParticipantManageController) ParticipantInsertInit() {
 	}
 	this.TplName = "manage/participant_manage.html"
 }
-
+// @Title 获取参赛者信息列表
+// @Description 获取参赛者信息列表
+// @Success 200 {}
+// @Param   offset   query   string  true       "页码"
+// @Param   limit query   string  true       "一页展示数量"
+// @router /all [get]
 func (this *ParticipantManageController) ParticipantGetUser() {
 	offset, _ := this.GetInt32("offset")
 	limit, _ := this.GetInt32("limit")
@@ -36,7 +45,7 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 	userId := userSession.(int64)
 
 	//调用服务
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := userProto.GetUserListReq{Offset: offset, Limit: limit, ManageId: userId}
 	rsp, err := userManage.GetUserListByOffstAndLimit(ctx, &req)
 	if err != nil {
@@ -52,6 +61,11 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 	return
 }
 
+// @Title 批量新增参赛者
+// @Description 批量新增参赛者
+// @Param	team_data	formData	string	false	"新增参赛者信息"
+// @Success 200 {string} result
+// @router /batch [post]
 func (this *ParticipantManageController) EventParticipantInsert() {
 	new_event_id := this.GetSession("new_event_id")
 	if new_event_id == nil { //未设置
@@ -85,7 +99,7 @@ func (this *ParticipantManageController) EventParticipantInsert() {
 	}
 
 	//调用服务
-	participantManage,ctx := common.InitParticipantManage(this.CruSession)
+	participantManage, ctx := common.InitParticipantManage(this.CruSession)
 	req := participantProto.EPInsertReq{EventId: int64(event_id), ParticipantMemberList: memberList}
 	rsp, err := participantManage.EventParticipantInsert(ctx, &req)
 	if err != nil {

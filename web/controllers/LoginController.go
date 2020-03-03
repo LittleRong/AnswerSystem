@@ -11,23 +11,32 @@ type LoginController struct {
 	beego.Controller
 }
 
+// @Title 获得登陆首页
+// @Description 获得登陆首页
+// @Success 200 {}
+// @router / [get]
 func (this *LoginController) Index() {
 	this.TplName = "index.html"
 }
 
+// @Title Check user login校验用户登陆信息
+// @Description Check user login by username and password通过username和password校验用户登陆信息
+// @Success 200 {string} result
+// @Param   username   query   string  false       "用户的登陆名username"
+// @Param   password query   string  false       "用户的密码password"
+// @router /check [post]
 func (this *LoginController) Check() {
 	username := this.GetString("username") // login.html中传过来的数据，这个GetInt返回两个值
 	password := this.GetString("password")
 
 	var result map[string]interface{}
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := userProto.LoginReq{Username: username, Pwd: password}
 
 	LoginRsp, err := userManage.Login(ctx, &req)
 	if err != nil {
 		beego.Info("-------err--------", err)
 	}
-	beego.Info("========LoginRsp.Token======", LoginRsp.Token)
 	if LoginRsp.LoginFlag == false { //登录失败
 		result = map[string]interface{}{"result": "faild", "message": "登陆失败,用户名或密码错误"}
 	} else {
@@ -45,11 +54,10 @@ func (this *LoginController) Check() {
 		}
 
 		//存放token
-		if(LoginRsp.Token!=""){
+		if (LoginRsp.Token != "") {
 			this.SetSession("token", LoginRsp.Token)
-			this.Ctx.SetCookie("token","123321")
-
-		}else{
+			beego.Info("========token======", LoginRsp.Token)
+		} else {
 			beego.Error("获取token失败")
 		}
 
@@ -60,10 +68,21 @@ func (this *LoginController) Check() {
 	return
 }
 
+// @Title 获得修改密码页面
+// @Description 获得修改密码页面
+// @Success 200 {}
+// @router /change_pwd_init [get]
 func (this *LoginController) ChangePwdInit() {
 	this.TplName = "index/change_pwd.html"
 }
 
+// @Title Change user's password修改用户密码
+// @Description Change user's password修改用户密码
+// @Success 200 {string} result
+// @Param   user_id   formData   int  false       "用户id"
+// @Param   new_password	formData   string  false       "用户的旧密码"
+// @Param   old_password	formData   string  false       "用户的新密码"
+// @router /password [post]
 func (this *LoginController) ChangePwd() {
 	new_pwd := this.GetString("new_password")
 	old_pwd := this.GetString("old_password")
@@ -73,7 +92,7 @@ func (this *LoginController) ChangePwd() {
 		return
 	}
 	user_id := userSession.(int64)
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := userProto.UpdatePwdReq{UserId: user_id, OldPwd: old_pwd, NewPwd: new_pwd}
 	rsp, err := userManage.UpdateUserPwd(ctx, &req)
 	if err != nil {
@@ -83,13 +102,16 @@ func (this *LoginController) ChangePwd() {
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["result"] = rsp.Message
-	beego.Info("========result======", result)
 	this.Data["json"] = result
 	this.ServeJSON()
 	return
 
 }
 
+// @Title logout登出请求
+// @Description logout登出请求
+// @Success 200 {}
+// @router /logout [get]
 func (this *LoginController) Logout() {
 	this.DestroySession()
 	this.Ctx.Redirect(302, "/index")

@@ -32,6 +32,10 @@ type userAnswer struct {
 	fill   []map[string]string
 }
 
+// @Title 获得用户答题页面
+// @Description 获得用户答题页面
+// @Success 200 {}
+// @router / [get]
 func (this *AnswerController) ShowProblemsPage() {
 	this.TplName = "answer/user_problem.html"
 	event_id, _ := this.GetInt("event_id")
@@ -39,7 +43,13 @@ func (this *AnswerController) ShowProblemsPage() {
 
 }
 
+// @Title 获取用户本次答题的题目
+// @Description 获取用户本次答题的题目
+// @Success 200 {}
+// @Param	event_id	query	string	true	"事件id"
+// @router /user_problems [get]
 func (this *AnswerController) GetUserProblems() {
+	//这里看看对不对！！！！！！
 	eventSession := this.GetSession("event_id")
 	if eventSession == nil { //未登陆
 		this.Ctx.Redirect(304, "/index")
@@ -139,6 +149,14 @@ func (this *AnswerController) GetUserProblems() {
 
 }
 
+// @Title 判断用户答案是否正确及计算分数
+// @Description 判断用户答案是否正确及计算分数
+// @Success 200 {}
+// @Param	single	formData	string	true	"单选题回答"
+// @Param	multi	formData	string	true	"多选题回答"
+// @Param	fill	formData	string	true	"填空题回答"
+// @Param	judge	formData	string	true	"判断题回答"
+// @router /user_answer [post]
 func (this *AnswerController) GetUserAnswers() {
 	eventSession := this.GetSession("event_id")
 	if eventSession == nil { //未登陆
@@ -196,10 +214,10 @@ func (this *AnswerController) GetUserAnswers() {
 	fill_array := f.([]interface{})
 
 	//*****************************4.计算分数,并将用户答案写入participant_haved_answer表***********************
-	single_user_score, single_right_num, singleFront := this.JudgeUserInputAnswer(single_array, correct_answer.SingleAnswerList, paticipant_id, creditRule.SingleScore, viper.GetInt("enum.problemType.singleType"))
-	judge_score, judge_right_num, judgeFront := this.JudgeUserInputAnswer(judge_array, correct_answer.JudgeAnswerList, paticipant_id, creditRule.JudgeScore, viper.GetInt("enum.problemType.judgeType"))
-	fill_score, fill_right_num, fillFront := this.JudgeUserInputAnswer(fill_array, correct_answer.FillAnswerList, paticipant_id, creditRule.FillScore, viper.GetInt("enum.problemType.fillType"))
-	multi_score, multi_right_num, multiFront := this.JudgeUserMultiInputAnswer(multi_array, correct_answer.MultiAnswerList, paticipant_id, creditRule.MultipleScore, viper.GetInt("enum.problemType.multipleType"))
+	single_user_score, single_right_num, singleFront := this.judgeUserInputAnswer(single_array, correct_answer.SingleAnswerList, paticipant_id, creditRule.SingleScore, viper.GetInt("enum.problemType.singleType"))
+	judge_score, judge_right_num, judgeFront := this.judgeUserInputAnswer(judge_array, correct_answer.JudgeAnswerList, paticipant_id, creditRule.JudgeScore, viper.GetInt("enum.problemType.judgeType"))
+	fill_score, fill_right_num, fillFront := this.judgeUserInputAnswer(fill_array, correct_answer.FillAnswerList, paticipant_id, creditRule.FillScore, viper.GetInt("enum.problemType.fillType"))
+	multi_score, multi_right_num, multiFront := this.judgeUserMultiInputAnswer(multi_array, correct_answer.MultiAnswerList, paticipant_id, creditRule.MultipleScore, viper.GetInt("enum.problemType.multipleType"))
 
 	user_score := single_user_score + judge_score + fill_score + multi_score
 	right_num := single_right_num + judge_right_num + fill_right_num + multi_right_num
@@ -317,8 +335,8 @@ func (this *AnswerController) GetUserAnswers() {
 	return
 }
 
-//user_score用户答题总分,single_right_num答对的数目
-func (this *AnswerController)JudgeUserInputAnswer(input_array []interface{}, correct_answer []*participantProto.NolAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string]string) {
+//内部方法，user_score用户答题总分,single_right_num答对的数目
+func (this *AnswerController)judgeUserInputAnswer(input_array []interface{}, correct_answer []*participantProto.NolAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string]string) {
 	var right_num int
 	var user_score float64
 	var frontAnswer map[string]string
@@ -372,8 +390,8 @@ func (this *AnswerController)JudgeUserInputAnswer(input_array []interface{}, cor
 	return user_score, right_num, frontAnswer
 }
 
-//user_score用户答题总分,single_right_num答对的数目
-func (this *AnswerController)JudgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*participantProto.MultiAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string][]float64) {
+//内部方法，user_score用户答题总分,single_right_num答对的数目
+func (this *AnswerController)judgeUserMultiInputAnswer(input_array []interface{}, correct_answer []*participantProto.MultiAnswer, paticipant_id int64, score float64, problem_type int) (float64, int, map[string][]float64) {
 	var right_num int
 	var user_score float64
 	var frontAnswer map[string][]float64

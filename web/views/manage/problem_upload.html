@@ -70,8 +70,8 @@
     <meta name="msapplication-tap-highlight" content="no"/>
 
     <title>发起事件</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/user_manager.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/user_manager.css"/>
 </head>
 <body>
 <!-- 代码写在这下面 -->
@@ -84,7 +84,7 @@
                     <div class="pui-menubar pui-menubar-square pui-menubar-header-style pui-bg-none pui-unbordered">
                         <div class="pui-menubar-aside">
                             <h2 class="pui-margin-none pui-text-normal page-title" title="线上答题系统">
-                                <img src="../static/img/CM.png" class="icon-CM"/>
+                                <img src="/static/img/CM.png" class="icon-CM"/>
                                 线上答题系统
                             </h2>
                         </div>
@@ -159,8 +159,8 @@
 </body>
 
 <!-- jQuery -->
-<script src="../static/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../static/js/planeui.js"></script>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/planeui.js"></script>
 
 <script type="text/javascript">
 
@@ -172,7 +172,7 @@
         }
         $.ajax({
             type: 'POST',
-            url: "http://localhost:8081/manage/problem_file_insert",
+            url: "http://localhost:8081/v1/problems/upload",
             data: new FormData($('#upload_file_form')[0]),
             processData: false,
             contentType: false,

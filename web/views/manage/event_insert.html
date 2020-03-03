@@ -378,7 +378,7 @@
                     message: message
                 };
                 $.ajax({
-                    url: "http://localhost:8081/manage/event_insert",
+                    url: "http://localhost:8081/v1/newevent",
                     dataType: "json",
                     type: 'POST',
                     data: post_data,
@@ -386,7 +386,7 @@
                     success: function (data) {
                         if (data['result'] == "success") {
                             alert(data['result']);
-                            self.location = '/manage/problem_upload_init';
+                            self.location = '/v1/problems/upload';
                         } else {
                             alert("创建事件失败！");
                             //登录失败操作......

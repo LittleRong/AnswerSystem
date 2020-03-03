@@ -6,14 +6,14 @@
     <title>答题系统</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- bootstrap -->
-    <link rel="stylesheet" href="../static/css/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
+    <link rel="stylesheet" href="/static/css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
 </head>
 <body>
 <div class="pui-layout">
     <header>
         <div style="position: relative;">
-            <img src="../static/img/header2.jpg" style="width: 100%;height: auto">
+            <img src="/static/img/header2.jpg" style="width: 100%;height: auto">
         </div>
     </header>
 </div>
@@ -33,17 +33,17 @@
         <input type="password" minlength="6" maxlength="20" id="new_password_again" name="new_password_again"/>
     </div>
     <div class="pui-row pui-form-group pui-form-group-underline-dashed">
-        <button id="change_pwd__btn" class="pui-btn pui-btn-small pui-btn-primary ">确认修改</button>
+        <button id="change_pwd_btn" class="pui-btn pui-btn-small pui-btn-primary ">确认修改</button>
         <a class="pui-btn pui-btn-small pui-btn-default " onclick="javascript:history.back(-1);">返回</a>
     </div>
 </form>
 </body>
 
-<script src="../static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#change_pwd__btn").click(function () {
+        $("#change_pwd_btn").click(function () {
             $(this).attr("disabled", "true"); //设置变灰按钮，防止表单重复提交
             var old_password = $("#old_password").val();
             var new_password = $("#new_password").val();
@@ -57,7 +57,7 @@
             } else {
                 var post_data = {old_password: old_password, new_password: new_password};
                 $.ajax({
-                    url: "http://localhost:8081/index/change_pwd",
+                    url: "http://localhost:8081/v1/index/password",
                     dataType: "json",
                     type: 'POST',
                     data: post_data,
@@ -65,7 +65,7 @@
                     success: function (data) {
                         if (data['result'] == 'success') {
                             alert("密码修改成功")
-                            window.location.href = "/index/user_index";
+                            window.location.href = "/v1/index";
                         } else if (data['result'] == 'old password error') {
                             alert("旧密码输入错误")
                         }

@@ -18,7 +18,7 @@ func (this *ProblemManage) GetProblemListByOffstAndLimit(ctx context.Context, re
 	//类型转换
 	var problemMessage []*proto.ProblemMesssage
 	for _, v := range problemList {
-		u := proto.ProblemMesssage{ProblemId: int64(v.Problem_id), ProblemContent: v.Problem_content, ProblemOption: v.Problem_option, ProblemAnswer: v.Problem_answer, ProblemClass: v.Problem_class, ProblemType: int32(v.Problem_type)}
+		u := proto.ProblemMesssage{ProblemId: int64(v.Problem_id), ProblemContent: v.Problem_content, ProblemOption: v.Problem_option, ProblemAnswer: v.Problem_answer, ProblemType: v.Problem_type, ProblemClass: v.Problem_class}
 		problemMessage = append(problemMessage, &u)
 	}
 	rsp.ProblemList = problemMessage

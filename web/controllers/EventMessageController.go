@@ -13,19 +13,29 @@ type EventMessageController struct {
 	beego.Controller
 }
 
+// @Title 获得事件详情页面
+// @Description 获得事件详情页面
+// @Success 200 {}
+// @router /detail [get]
 func (this *EventMessageController) EventMessageInit() {
 	this.TplName = "answer/event_message.html"
 }
 
+// @Title 获得事件详情
+// @Description 获得事件详情
+// @Success 200 {}
+// @Param   event_id   query   int  true       "事件id"
+// @router /detail/:event_id [get]
 func (this *EventMessageController) GetEventMessage() {
 	event_id, _ := this.GetInt("event_id")
+
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
 		this.Ctx.Redirect(304, "/index")
 		return
 	}
 	user_id := userSession.(int64)
-	pManage,ctx := common.InitParticipantManage(this.CruSession)
+	pManage, ctx := common.InitParticipantManage(this.CruSession)
 	pReq := participantProto.PUserEventIdReq{EventId: int64(event_id), UserId: user_id}
 	participant, pErr := pManage.GetParticipantByUserAndEvent(ctx, &pReq)
 	if pErr != nil {
@@ -34,7 +44,7 @@ func (this *EventMessageController) GetEventMessage() {
 	team_id := participant.TeamId
 
 	//*****************************1.获取事件信息event_message*************************************************
-	eventManage,ctx := common.InitEventManage(this.CruSession)
+	eventManage, ctx := common.InitEventManage(this.CruSession)
 	req := eventProto.EventIdReq{EventId: int64(event_id)}
 	var err error
 	event_message, err := eventManage.GetDetailEventByEventId(ctx, &req)
@@ -43,7 +53,7 @@ func (this *EventMessageController) GetEventMessage() {
 	}
 
 	//*****************************2.获取积分信息credit_message************************************************
-	creditManage,ctx := common.InitCreditManage(this.CruSession)
+	creditManage, ctx := common.InitCreditManage(this.CruSession)
 	userCreditReq := creditProto.UserEventIdReq{EventId: int64(event_id), UserId: int64(user_id)}
 	personCredit, personErr := creditManage.GetPersonCredit(ctx, &userCreditReq)
 	if personErr != nil {

@@ -71,8 +71,8 @@
 
     <title>事件管理主页</title>
 
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/user_manager.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/user_manager.css"/>
 </head>
 <body>
 <!-- 代码写在这下面 -->
@@ -85,7 +85,7 @@
                     <div class="pui-menubar pui-menubar-square pui-menubar-header-style pui-bg-none pui-unbordered">
                         <div class="pui-menubar-aside">
                             <h2 class="pui-margin-none pui-text-normal page-title" title="线上答题系统">
-                                <img src="../static/img/CM.png" class="icon-CM"/>
+                                <img src="/static/img/CM.png" class="icon-CM"/>
                                 线上答题系统
                             </h2>
                         </div>
@@ -149,7 +149,7 @@
         <div class="pui-card pui-card-shadow pui-card-radius" id="event_message_body">
 
         </div>
-        <a href="/manage/event_insert_init">
+        <a href="/v1/events/newevent">
             <input type="button" class="pui-btn pui-btn-primary pui-btn-large" value="发起新事件">
         </a>
     </div>
@@ -157,13 +157,13 @@
 </div>
 </div>
 </div>
-<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../static/js/planeui.js"></script>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/planeui.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var post_data = {limit: 10, offset: 1};
         $.ajax({
-            url: "http://localhost:8081/manage/event_manage",
+            url: "http://localhost:8081/v1/events/all",
             dataType: "json",
             type: 'GET',
             data: post_data,

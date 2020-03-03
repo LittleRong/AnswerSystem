@@ -23,10 +23,10 @@
     <meta name="msapplication-TileImage" content="favicon.png"/>
 
     <title>线上答题系统</title>
-    <link rel="icon" type="image/png" href="../static/img/CM.png"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/user_manager.css"/>
-    <link rel="stylesheet" href="../static/css/jquery-ui.min.css"/>
+    <link rel="icon" type="image/png" href="/static/img/CM.png"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/user_manager.css"/>
+    <link rel="stylesheet" href="/static/css/jquery-ui.min.css"/>
 </head>
 <body>
 <a name="top"></a>
@@ -38,7 +38,7 @@
             <div class="pui-menubar pui-menubar-square pui-menubar-header-style pui-bg-none pui-unbordered">
                 <div class="pui-menubar-aside">
                     <h2 class="pui-margin-none pui-text-normal page-title" title="线上答题系统">
-                        <img src="../static/img/CM.png" class="icon-CM"/>
+                        <img src="/static/img/CM.png" class="icon-CM"/>
                         线上答题系统</h2>
                 </div>
                 <div class="pui-menubar-offside">
@@ -47,7 +47,7 @@
                             <a href="#top">管理员</a>
                         </li>
                         <li>
-                            <a href="/index/change_pwd_init" id="pwchange">密码修改</a>
+                            <a href="/v1/index/change_pwd_init" id="pwchange">密码修改</a>
                         </li>
                         <li>
                             <a href="/logout">退出</a>
@@ -65,17 +65,17 @@
             <div class="pui-grid-md-2">
                 <div class="pui-btn-group-vertical pui-btn-gradient pui-btn-shadow ">
                     <div class="pui-btn-group ">
-                        <a href="/manage/user_manage_init">
+                        <a href="/v1/users">
                             <button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow pui-btn-primary-active">
                                 <i class="fa fa-user fa-large"></i> 用户管理
                             </button>
                         </a>
-                        <a href="/manage/problem_manage_init">
+                        <a href="/v1/problems">
                             <button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i
                                         class="fa fa-list-alt fa-large"></i> 题目管理
                             </button>
                         </a>
-                        <a href="/manage/event_manage_init">
+                        <a href="/v1/events">
                             <button class="pui-btn-style  pui-btn pui-btn-primary pui-btn-large pui-text-shadow "><i
                                         class="fa fa-file-o fa-large"></i> 事件管理
                             </button>
@@ -198,8 +198,8 @@
     </div>
 </div>
 </body>
-<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../static/js/planeui.js"></script>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/planeui.js"></script>
 <script>
     //修改用户
     function changeuser() {
@@ -222,9 +222,9 @@
                 user_gender: user_gender
             };
             $.ajax({
-                url: "http://localhost:8081/manage/change_user",
+                url: "http://localhost:8081/v1/users",
                 dataType: "json",
-                type: 'POST',
+                type: 'PUT',
                 data: post_data,
                 async: false,
                 success: function (data) {
@@ -265,7 +265,7 @@
                 user_gender: user_gender
             };
             $.ajax({
-                url: "http://localhost:8081/manage/add_user",
+                url: "http://localhost:8081/v1/users",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,
@@ -275,7 +275,7 @@
                         alert("添加成功");
                         window.location.reload();
                     } else {
-                        alert(data['result']);
+                        alert("添加失败" + data['result']);
                     }
                 },
                 error: function (data, status, error) {
@@ -295,7 +295,7 @@
     $(document).ready(function () {
         var limit = 10;
         var offset = 1;
-        var url = "http://localhost:8081/manage/user_manage?offset=" + offset + "&limit=" + limit;
+        var url = "http://localhost:8081/v1/users/all?offset=" + offset + "&limit=" + limit;
         loadInit(url, offset);
         //删除用户
         $(".delete_btn").click(function () {
@@ -305,12 +305,12 @@
             }
             var delete_id = $(this).parent().parent().find('td').eq(0).html();
             var post_data = {delete_id: delete_id};
-
             $.ajax({
-                url: "http://localhost:8081/manage/delete_user",
+                url: "http://localhost:8081/v1/users",
                 dataType: "json",
-                type: 'POST',
-                data: post_data,
+                contentType: 'application/json;charset=UTF-8',//设置请求参数类型为json字符串
+                type: 'delete',
+                data: JSON.stringify(post_data),
                 async: false,
                 success: function (data) {
                     if (data['result'] == "success") {

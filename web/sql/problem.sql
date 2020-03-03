@@ -1,7 +1,7 @@
-DROP DATABASE if exists `question`;
-CREATE DATABASE `question`
+DROP DATABASE if exists `AnswerSystem`;
+CREATE DATABASE `AnswerSystem`
     default character set utf8 default collate utf8_general_ci;
-use `question`;
+use `AnswerSystem`;
 
 DROP TABLE if exists `user`;
 CREATE TABLE user(
@@ -83,7 +83,7 @@ DROP TABLE if exists `problem`;
 CREATE TABLE problem(
     `problem_id` INT PRIMARY KEY AUTO_INCREMENT COMMENT '题目的id',
     `problem_class` VARCHAR(20) NOT NULL COMMENT '题目的分类,如业务型,技术型等',
-    `problem_type` INT NOT NULL COMMENT '题目的类型：0--填空题,1--单选题,2--多选题,3--判断题',
+    `problem_type` INT NOT NULL COMMENT '题目的类型：0--不知类型,1--单选题,2--多选题,3--判断题,4--填空题',
     `problem_content` VARCHAR(200) NOT NULL COMMENT '题目的内容',
     `problem_answer` VARCHAR(100) NOT NULL COMMENT '题目的答案',
     `problem_option` VARCHAR(500) NOT NULL COMMENT '题目的选项'

@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 
     <title>开始答题</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
 </head>
 <body onload="leftTimer()">
 <div id="load"
@@ -18,7 +18,7 @@
 <div class="pui-layout">
     <header>
         <div style="position: relative;">
-            <img src="../static/img/header2.jpg" style="width: 100%;height: auto;min-height: 50px">
+            <img src="/static/img/header2.jpg" style="width: 100%;height: auto;min-height: 50px">
             <div class="form-group pui-btn-gradient pui-btn-shadow" style="position: absolute;bottom: 10px;right: 20px">
                 <input type="button" class="pui-btn pui-btn-small pui-btn-default " value="">
                 <a type="button" class="pui-btn pui-btn-small pui-btn-primary "
@@ -86,7 +86,7 @@
     </div>
 </div>
 
-<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
 <script type="text/javascript">
 
     function leftTimer(year, month, day, hour, minute, second) {
@@ -131,7 +131,7 @@
         var event = 1;
         var post_data = {event_id: event};
         $.ajax({
-            url: "http://localhost:8081/answer/get_user_problem",
+            url: "http://localhost:8081/v1/answer/user_problems",
             dataType: "json",
             type: "GET",
             data: post_data,
@@ -139,7 +139,7 @@
             success: function (data) {
                 if(data.hasOwnProperty("result")){
                     alert(data['result'])
-                    window.location.href = "../index/user_index_init";
+                    window.location.href = "/index/user_index_init";
                     return false;
                 }
 
@@ -148,7 +148,7 @@
                 var answer_time = data['answer_time'];
                 if (answer_time == '-1' || answer_time <= 0) {
                     alert("您的答题时间已经用完了哦！");
-                    window.location.href = "../index/user_index_init";
+                    window.location.href = "/index/user_index_init";
                     return false;
                 } else {
                     $("#time").val(answer_time)
@@ -388,7 +388,7 @@
             if (confirm("确认交卷吗？")) {
                 $.ajax({
                     type: "POST",
-                    url: "http://localhost:8081/answer/get_user_answer",
+                    url: "http://localhost:8081/v1/answer/user_answer",
                     async: true, //同步
                     dataType: "json",
                     data: user_answer,

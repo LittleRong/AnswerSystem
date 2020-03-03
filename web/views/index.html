@@ -10,8 +10,8 @@
     <meta name="keywords" content="Plane UI"/>
     <title>Login</title>
 
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/login.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css"/>
 
 
     <style>
@@ -54,8 +54,8 @@
 </div>
 
 
-<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../static/js/planeui.js"></script>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/planeui.js"></script>
 </body>
 
 <script type="text/javascript">
@@ -71,18 +71,18 @@
             } else {
                 var post_data = {username: username, password: password};
                 $.ajax({
-                    url: "http://localhost:8081/check",
+                    url: "http://localhost:8081/v1/index/check",
                     dataType: "json",
                     type: 'POST',
                     data: post_data,
                     async: false,
                     success: function (json_data) {
                         if (json_data['result'] == "admin") {
-                            window.location.href = "manage/user_manage_init";
+                            window.location.href = "/v1/users";
                         } else if (json_data['result'] == "user") {
-                            window.location.href = "index/user_index_init";
+                            window.location.href = "/v1/user_index";
                         } else if (json_data['result'] == "logged") {
-                            window.location.href = "index/user_index";
+                            window.location.href = "/v1/user_index/user_event";
                         } else {
                             alert(json_data['message']);
                             //登录失败操作......

@@ -1,0 +1,535 @@
+swagger: "2.0"
+info:
+  title: mobile API
+  description: mobile has every tool to get any job done, so codename for the new
+    mobile APIs.
+  version: 1.0.0
+  contact:
+    email: astaxie@gmail.com
+basePath: /v1
+paths:
+  /answer/:
+    get:
+      tags:
+      - answer
+      description: 获得用户答题页面
+      operationId: AnswerController.获得用户答题页面
+      responses:
+        "200":
+          description: '{}'
+  /answer/user_answer:
+    post:
+      tags:
+      - answer
+      description: 判断用户答案是否正确及计算分数
+      operationId: AnswerController.判断用户答案是否正确及计算分数
+      parameters:
+      - in: formData
+        name: single
+        description: 单选题回答
+        required: true
+        type: string
+      - in: formData
+        name: multi
+        description: 多选题回答
+        required: true
+        type: string
+      - in: formData
+        name: fill
+        description: 填空题回答
+        required: true
+        type: string
+      - in: formData
+        name: judge
+        description: 判断题回答
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{}'
+  /answer/user_problems:
+    get:
+      tags:
+      - answer
+      description: 获取用户本次答题的题目
+      operationId: AnswerController.获取用户本次答题的题目
+      parameters:
+      - in: query
+        name: event_id
+        description: 事件id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{}'
+  /events/:
+    get:
+      tags:
+      - events
+      description: 获得事件管理页面
+      operationId: EventManageController.获得事件管理页面
+      responses:
+        "200":
+          description: '{}'
+  /events/all:
+    get:
+      tags:
+      - events
+      description: 获取事件列表
+      operationId: EventManageController.获取事件列表
+      parameters:
+      - in: query
+        name: offset
+        description: 页码
+        required: true
+        type: string
+      - in: query
+        name: limit
+        description: 一页展示数量
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{}'
+  /events/detail:
+    get:
+      tags:
+      - events
+      description: 获得事件详情页面
+      operationId: EventMessageController.获得事件详情页面
+      responses:
+        "200":
+          description: '{}'
+  /events/detail/{event_id}:
+    get:
+      tags:
+      - events
+      description: 获得事件详情
+      operationId: EventMessageController.获得事件详情
+      parameters:
+      - in: query
+        name: event_id
+        description: 事件id
+        required: true
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: '{}'
+  /events/newevent:
+    get:
+      tags:
+      - events
+      description: 获得新增事件页面
+      operationId: EventManageController.获得新增事件页面
+      responses:
+        "200":
+          description: '{}'
+    post:
+      tags:
+      - events
+      description: 新增事件
+      operationId: EventManageController.新增事件
+      parameters:
+      - in: formData
+        name: etitle
+        description: 事件名称
+        required: true
+        type: string
+      - in: formData
+        name: message
+        description: 事件描述
+        required: true
+        type: string
+      - in: formData
+        name: ekind
+        description: 事件种类，如务知识类竞赛、党建知识类
+        required: true
+        type: string
+      - in: formData
+        name: pro_random
+        description: 是否控制题目随机顺序
+        required: true
+        type: boolean
+      - in: formData
+        name: opt_random
+        description: 是否控制选项随机顺序
+        required: true
+        type: boolean
+      - in: formData
+        name: answer_time
+        description: 答题时长
+        required: true
+        type: string
+      - in: formData
+        name: participant_num
+        description: 参赛人数
+        required: true
+        type: integer
+        format: int64
+      - in: formData
+        name: single
+        description: 单选题每天答题数量
+        required: true
+        type: integer
+        format: int32
+      - in: formData
+        name: multiple
+        description: 多选题每天答题数量
+        required: true
+        type: integer
+        format: int32
+      - in: formData
+        name: fill
+        description: 填空题题每天答题数量
+        required: true
+        type: integer
+        format: int32
+      - in: formData
+        name: judge
+        description: 判断题每天答题数量
+        required: true
+        type: integer
+        format: int32
+      - in: formData
+        name: start_time
+        description: 事件开始日期
+        required: true
+        type: string
+      - in: formData
+        name: end_time
+        description: 事件结束日期
+        required: true
+        type: string
+      - in: formData
+        name: answer_day
+        description: 可以答题的日志
+        required: true
+        type: string
+      - in: formData
+        name: single_score
+        description: 单选题答对分值
+        required: true
+        type: number
+      - in: formData
+        name: multiple_score
+        description: 多选题答对分值
+        required: true
+        type: number
+      - in: formData
+        name: fill_score
+        description: 填空题答对分值
+        required: true
+        type: number
+      - in: formData
+        name: judge_score
+        description: 判断题答对分值
+        required: true
+        type: number
+      - in: formData
+        name: person_score
+        description: 当日本人全对额外加分
+        required: true
+        type: number
+      - in: formData
+        name: team_score
+        description: 当日团队全对额外加分
+        required: true
+        type: number
+      - in: formData
+        name: person_score_up
+        description: 团队总积分上限
+        required: true
+        type: number
+      - in: formData
+        name: team_score_up
+        description: 个人总积分上限
+        required: true
+        type: number
+      responses:
+        "200":
+          description: '{}'
+  /index/:
+    get:
+      tags:
+      - index
+      description: 获得登陆首页
+      operationId: LoginController.获得登陆首页
+      responses:
+        "200":
+          description: '{}'
+  /index/change_pwd_init:
+    get:
+      tags:
+      - index
+      description: 获得修改密码页面
+      operationId: LoginController.获得修改密码页面
+      responses:
+        "200":
+          description: '{}'
+  /index/check:
+    post:
+      tags:
+      - index
+      description: Check user login by username and password通过username和password校验用户登陆信息
+      operationId: LoginController.Check user login校验用户登陆信息
+      parameters:
+      - in: query
+        name: username
+        description: 用户的登陆名username
+        type: string
+      - in: query
+        name: password
+        description: 用户的密码password
+        type: string
+      responses:
+        "200":
+          description: '{string} result'
+  /index/logout:
+    get:
+      tags:
+      - index
+      description: logout登出请求
+      operationId: LoginController.logout登出请求
+      responses:
+        "200":
+          description: '{}'
+  /index/password:
+    post:
+      tags:
+      - index
+      description: Change user's password修改用户密码
+      operationId: LoginController.Change user's password修改用户密码
+      parameters:
+      - in: formData
+        name: user_id
+        description: 用户id
+        type: integer
+        format: int64
+      - in: formData
+        name: new_password
+        description: 用户的旧密码
+        type: string
+      - in: formData
+        name: old_password
+        description: 用户的新密码
+        type: string
+      responses:
+        "200":
+          description: '{string} result'
+  /participants/:
+    get:
+      tags:
+      - participants
+      description: 获得添加参赛者页面
+      operationId: ParticipantManageController.获得添加参赛者页面
+      responses:
+        "200":
+          description: '{}'
+  /participants/all:
+    get:
+      tags:
+      - participants
+      description: 获取参赛者信息列表
+      operationId: ParticipantManageController.获取参赛者信息列表
+      parameters:
+      - in: query
+        name: offset
+        description: 页码
+        required: true
+        type: string
+      - in: query
+        name: limit
+        description: 一页展示数量
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{}'
+  /participants/batch:
+    post:
+      tags:
+      - participants
+      description: 批量新增参赛者
+      operationId: ParticipantManageController.批量新增参赛者
+      parameters:
+      - in: formData
+        name: team_data
+        description: 新增参赛者信息
+        type: string
+      responses:
+        "200":
+          description: '{string} result'
+  /problems/:
+    get:
+      tags:
+      - problems
+      description: 获得题目管理页面
+      operationId: ProblemManageController.获得题目管理页面
+      responses:
+        "200":
+          description: '{}'
+  /problems/all:
+    get:
+      tags:
+      - problems
+      description: 获取题目列表
+      operationId: ProblemManageController.获取题目列表
+      parameters:
+      - in: query
+        name: offset
+        description: 页码
+        required: true
+        type: string
+      - in: query
+        name: limit
+        description: 一页展示数量
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{}'
+  /problems/upload:
+    get:
+      tags:
+      - problems
+      description: 获得题目上传页面
+      operationId: ProblemManageController.获得题目上传页面
+      responses:
+        "200":
+          description: '{}'
+    post:
+      tags:
+      - problems
+      description: 题目通过excel批量上传
+      operationId: ProblemManageController.题目通过excel批量上传
+      parameters:
+      - in: formData
+        name: uploadname
+        description: 上传文件
+        required: true
+        type: file
+      responses:
+        "200":
+          description: '{}'
+  /user_index/:
+    get:
+      tags:
+      - user_index
+      description: 获得用户信息首页
+      operationId: UserIndexController.获得用户信息首页
+      responses:
+        "200":
+          description: '{}'
+  /user_index/user_event:
+    get:
+      tags:
+      - user_index
+      description: 获得用户信息
+      operationId: UserIndexController.获得用户信息
+      responses:
+        "200":
+          description: '{}'
+  /users/:
+    get:
+      tags:
+      - users
+      description: 获得用户管理页面
+      operationId: UserManageController.获得用户管理页面
+      responses:
+        "200":
+          description: '{}'
+    put:
+      tags:
+      - users
+      description: 修改用户信息
+      operationId: UserManageController.修改用户信息
+      parameters:
+      - in: formData
+        name: user_name
+        description: 用户名
+        type: string
+      - in: formData
+        name: login_name
+        description: 用户登陆名
+        type: string
+      - in: formData
+        name: user_phone_number
+        description: 用户手机号码
+        type: string
+      - in: formData
+        name: user_job_number
+        description: 用户工号
+        type: string
+      - in: formData
+        name: user_gender
+        description: 用户性别
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: '{string} result'
+    post:
+      tags:
+      - users
+      description: 新增用户
+      operationId: UserManageController.新增用户
+      parameters:
+      - in: formData
+        name: user_name
+        description: 用户名
+        type: string
+      - in: formData
+        name: login_name
+        description: 用户登陆名
+        type: string
+      - in: formData
+        name: user_phone_number
+        description: 用户手机号码
+        type: string
+      - in: formData
+        name: user_job_number
+        description: 用户工号
+        type: string
+      - in: formData
+        name: user_gender
+        description: 用户性别
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: '{string} result'
+    delete:
+      tags:
+      - users
+      description: 删除用户
+      operationId: UserManageController.删除用户
+      parameters:
+      - in: body
+        name: user_name
+        description: 用户id
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: '{string} result'
+  /users/all:
+    get:
+      tags:
+      - users
+      description: 获取用户列表
+      operationId: UserManageController.获取用户列表
+      parameters:
+      - in: query
+        name: offset
+        description: 页码
+        required: true
+        type: string
+      - in: query
+        name: limit
+        description: 一页展示数量
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{}'

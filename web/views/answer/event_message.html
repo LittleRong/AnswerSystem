@@ -14,7 +14,7 @@
 <body>
 <div class="pui-layout">
     <header>
-        <img src="../static/img/header2.jpg" style="width:100%;height: auto">
+        <img src="/static/img/header2.jpg" style="width:100%;height: auto">
     </header>
 </div>
 <article style="width: 98%;margin: 0 auto">
@@ -42,7 +42,7 @@
 
 </article>
 
-<script type="text/javascript" src="../static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
 <script type="text/javascript">
 
     function getUrlParam(name) {
@@ -60,7 +60,7 @@
         var event_id = getUrlParam("event_id");
         var post_data = {event_id: event_id};
         $.ajax({
-            url: "http://localhost:8081/answer/get_event_message",
+            url: "http://localhost:8081/event/detail",
             dataType: "json",
             type: "GET",
             data: post_data,

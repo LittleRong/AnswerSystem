@@ -13,10 +13,20 @@ type EventManageController struct {
 	beego.Controller
 }
 
+// @Title 获得事件管理页面
+// @Description 获得事件管理页面
+// @Success 200 {}
+// @router / [get]
 func (this *EventManageController) EventManageInit() {
 	this.TplName = "manage/event_manage.html"
 }
 
+// @Title 获取事件列表
+// @Description 获取事件列表
+// @Success 200 {}
+// @Param   offset   query   string  true       "页码"
+// @Param   limit query   string  true       "一页展示数量"
+// @router /all [get]
 func (this *EventManageController) EventManage() {
 	offset, _ := this.GetInt32("offset")
 	limit, _ := this.GetInt32("limit")
@@ -29,7 +39,7 @@ func (this *EventManageController) EventManage() {
 	userId := userSession.(int64)
 
 	//call the userManage method
-	eventManage,ctx := common.InitEventManage(this.CruSession)
+	eventManage, ctx := common.InitEventManage(this.CruSession)
 	req := proto.GetEventListReq{Offset: offset, Limit: limit, ManageId: userId}
 	rsp, err := eventManage.GetEventListByManageIdAndOffst(ctx, &req)
 	if err != nil {
@@ -45,10 +55,40 @@ func (this *EventManageController) EventManage() {
 
 }
 
+// @Title 获得新增事件页面
+// @Description 获得新增事件页面
+// @Success 200 {}
+// @router /newevent [get]
 func (this *EventManageController) EventInsertInit() {
 	this.TplName = "manage/event_insert.html"
 }
 
+// @Title 新增事件
+// @Description 新增事件
+// @Success 200 {}
+// @Param   etitle   formData   string  true	"事件名称"
+// @Param   message	formData   string  true	"事件描述"
+// @Param   ekind   formData   string  true	"事件种类，如务知识类竞赛、党建知识类"
+// @Param   pro_random	formData   bool  true	"是否控制题目随机顺序"
+// @Param   opt_random   formData   bool  true	"是否控制选项随机顺序"
+// @Param   answer_time	formData   string  true	"答题时长"
+// @Param   participant_num   formData   int  true	"参赛人数"
+// @Param   single	formData   int32  true	"单选题每天答题数量"
+// @Param   multiple	formData   int32  true	"多选题每天答题数量"
+// @Param   fill	formData   int32  true	"填空题题每天答题数量"
+// @Param   judge	formData   int32  true	"判断题每天答题数量"
+// @Param   start_time	formData   string  true	"事件开始日期"
+// @Param   end_time	formData   string  true	"事件结束日期"
+// @Param   answer_day	formData   string  true	"可以答题的日志"
+// @Param   single_score	formData   number  true	"单选题答对分值"
+// @Param   multiple_score	formData   number  true	"多选题答对分值"
+// @Param   fill_score	formData   number  true	"填空题答对分值"
+// @Param   judge_score	formData   number  true	"判断题答对分值"
+// @Param   person_score	formData   number  true	"当日本人全对额外加分"
+// @Param   team_score	formData   number  true	"当日团队全对额外加分"
+// @Param   person_score_up	formData   number  true	"团队总积分上限"
+// @Param   team_score_up	formData   number  true	"个人总积分上限"
+// @router /newevent [post]
 func (this *EventManageController) EventInsert() {
 	userSession := this.GetSession("user_id")
 	if userSession == nil { //未登陆
@@ -57,6 +97,8 @@ func (this *EventManageController) EventInsert() {
 		return
 	}
 	manage_id := userSession.(int64)
+
+	//获取传入参数
 	etitle := this.GetString("etitle")
 	message := this.GetString("message")
 	ekind := this.GetString("ekind")
@@ -94,7 +136,7 @@ func (this *EventManageController) EventInsert() {
 	credit_rule, _ := json.Marshal(crule)
 
 	//call the userManage method
-	eventManage,ctx := common.InitEventManage(this.CruSession)
+	eventManage, ctx := common.InitEventManage(this.CruSession)
 	req := proto.AddEventReq{ManageId: int64(manage_id),
 		EventTitle:       etitle,
 		EventDescription: message,

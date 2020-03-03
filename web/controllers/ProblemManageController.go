@@ -19,10 +19,20 @@ type ProblemManageController struct {
 	beego.Controller
 }
 
+// @Title 获得题目管理页面
+// @Description 获得题目管理页面
+// @Success 200 {}
+// @router / [get]
 func (this *ProblemManageController) ProblemManageInit() {
 	this.TplName = "manage/problem_manage.html"
 }
 
+// @Title 获取题目列表
+// @Description 获取题目列表
+// @Success 200 {}
+// @Param   offset   query   string  true       "页码"
+// @Param   limit query   string  true       "一页展示数量"
+// @router /all [get]
 func (this *ProblemManageController) ProblemManage() {
 	offset, _ := this.GetInt32("offset")
 	limit, _ := this.GetInt32("limit")
@@ -35,13 +45,13 @@ func (this *ProblemManageController) ProblemManage() {
 	userId := userSession.(int64)
 
 	//call the userManage method
-	problemManage,ctx := common.InitProblemManage(this.CruSession)
+	problemManage, ctx := common.InitProblemManage(this.CruSession)
 	req := proto.GetProblemListReq{Offset: offset, Limit: limit, ManageId: userId}
 	rsp, err := problemManage.GetProblemListByOffstAndLimit(ctx, &req)
 	if err != nil {
 		beego.Info("======ProblemManage=====", rsp.ProblemList, "-------err--------", err)
 	}
-
+	beego.Info("======ProblemManage=====", rsp.ProblemList)
 	var result map[string]interface{}
 	result = make(map[string]interface{})
 	result["problem_data"] = rsp.ProblemList
@@ -97,6 +107,10 @@ func (this *ProblemManageController) DeleteProblem() {
 	//return
 }
 
+// @Title 获得题目上传页面
+// @Description 获得题目上传页面
+// @Success 200 {}
+// @router /upload [get]
 func (this *ProblemManageController) ProblemUploadInit() {
 	new_event_id := this.GetSession("new_event_id")
 	if new_event_id == nil { //未设置
@@ -106,6 +120,12 @@ func (this *ProblemManageController) ProblemUploadInit() {
 	this.TplName = "manage/problem_upload.html"
 }
 
+
+// @Title 题目通过excel批量上传
+// @Description 题目通过excel批量上传
+// @Success 200 {}
+// @Param   uploadname   formData   file  true       "上传文件"
+// @router /upload [post]
 func (this *ProblemManageController) ProblemFileInsert() {
 	new_event_id := this.GetSession("new_event_id")
 	if new_event_id == nil { //未设置
@@ -132,11 +152,11 @@ func (this *ProblemManageController) ProblemFileInsert() {
 	}
 
 	//获取最大problem_id,这里还有问题
-	problemManage,ctx := common.InitProblemManage(this.CruSession)
+	problemManage, ctx := common.InitProblemManage(this.CruSession)
 	req := proto.GetEndProblemIdReq{}
 	rsp, err := problemManage.GetEndProblemId(ctx, &req)
 	if err != nil {
-		beego.Info( "-------err--------", err)
+		beego.Info("-------err--------", err)
 	}
 	max_problem_id := rsp.EndId
 	var first_problem_id int64
@@ -163,13 +183,13 @@ func (this *ProblemManageController) ProblemFileInsert() {
 					var option map[string]string
 					option = make(map[string]string)
 					tmp := max_problem_id*20 + int64(i)
-					option["q_id"] = strconv.FormatInt(tmp,10)
+					option["q_id"] = strconv.FormatInt(tmp, 10)
 					option["content"] = row.Cells[i].String()
 					abcd := string(95 - 4 + i)
 					answer := strings.ToLower(row.Cells[3].String())
 					if (answer == abcd) {
 						tmp := max_problem_id*20 + int64(i)
-						problem_answer_map["q_id"] = strconv.FormatInt(tmp,10)
+						problem_answer_map["q_id"] = strconv.FormatInt(tmp, 10)
 						problem_answer_map["content"] = row.Cells[i].String()
 					}
 					problem_option_array = append(problem_option_array, option)
@@ -187,7 +207,7 @@ func (this *ProblemManageController) ProblemFileInsert() {
 					var option map[string]string
 					option = make(map[string]string)
 					tmp := max_problem_id*20 + int64(i)
-					option["q_id"] = strconv.FormatInt(tmp,10)
+					option["q_id"] = strconv.FormatInt(tmp, 10)
 					option["content"] = row.Cells[i].String()
 					abcd := string(95 - 4 + i)
 					answer := strings.ToLower(row.Cells[3].String())
@@ -195,7 +215,7 @@ func (this *ProblemManageController) ProblemFileInsert() {
 						var problem_answer_map map[string]string
 						problem_answer_map = make(map[string]string)
 						tmp := max_problem_id*20 + int64(i)
-						problem_answer_map["q_id"] = strconv.FormatInt(tmp,10)
+						problem_answer_map["q_id"] = strconv.FormatInt(tmp, 10)
 						problem_answer_map["content"] = row.Cells[i].String()
 						problem_answer_array = append(problem_answer_array, problem_answer_map)
 					}
@@ -221,16 +241,16 @@ func (this *ProblemManageController) ProblemFileInsert() {
 			req := proto.ProblemMesssage{ProblemContent: problem_content, ProblemType: int32(problem_type), ProblemClass: problem_class, ProblemAnswer: problem_answer, ProblemOption: problem_option}
 			rsp, err := problemManage.AddProblem(ctx, &req)
 			if err != nil {
-				beego.Info( "-------err--------", err)
+				beego.Info("-------err--------", err)
 			}
 
 			max_problem_id = rsp.ProblemId
 			//插入event_problem表
-			eventManage,ctx := common.InitEventManage(this.CruSession)
-			eventReq := eventProto.AddEventProblemReq{EventId: int64(event_id),ProblemId:max_problem_id}
-			ep,err := eventManage.AddEventProblem(ctx, &eventReq)
+			eventManage, ctx := common.InitEventManage(this.CruSession)
+			eventReq := eventProto.AddEventProblemReq{EventId: int64(event_id), ProblemId: max_problem_id}
+			ep, err := eventManage.AddEventProblem(ctx, &eventReq)
 			if err != nil {
-				beego.Info("-------err--------", err,ep)
+				beego.Info("-------err--------", err, ep)
 			}
 
 			if (i == 1) {
@@ -240,13 +260,13 @@ func (this *ProblemManageController) ProblemFileInsert() {
 		}
 
 		//接着进行查询
-		req := proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.singleType")}
+		req := proto.GetNewProblemByTypeReq{FirstProblemId: first_problem_id, ProblemType: viper.GetInt32("enum.problemType.singleType")}
 		single_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
-		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.multipleType")}
+		req = proto.GetNewProblemByTypeReq{FirstProblemId: first_problem_id, ProblemType: viper.GetInt32("enum.problemType.multipleType")}
 		multi_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
-		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.judgeType")}
+		req = proto.GetNewProblemByTypeReq{FirstProblemId: first_problem_id, ProblemType: viper.GetInt32("enum.problemType.judgeType")}
 		judge_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
-		req = proto.GetNewProblemByTypeReq{FirstProblemId:first_problem_id,ProblemType:viper.GetInt32("enum.problemType.fillType")}
+		req = proto.GetNewProblemByTypeReq{FirstProblemId: first_problem_id, ProblemType: viper.GetInt32("enum.problemType.fillType")}
 		fill_arr, _ := problemManage.GetNewProblemByType(ctx, &req)
 		beego.Info("************single_arr**************", single_arr)
 		beego.Info("************multi_arr**************", multi_arr)

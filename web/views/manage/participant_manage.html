@@ -151,7 +151,7 @@
     $(document).ready(function () {
         var limit = 10;
         var offset = 1;
-        var url = "http://localhost:8081/manage/participant_get_user?offset=" + offset + "&limit=" + limit;
+        var url = "http://localhost:8081/v1/participants/all?offset=" + offset + "&limit=" + limit;
         var post_data = {};
         $.ajax({
             url: url,
@@ -253,7 +253,7 @@
             $(this).attr("disabled", "true"); //设置变灰按钮，防止表单重复提交
             post_data = {team_data: JSON.stringify(mydata)};
             $.ajax({
-                url: "http://localhost:8081/manage/event_participant_insert",
+                url: "http://localhost:8081/v1/participants/batch",
                 dataType: "json",
                 type: 'POST',
                 data: post_data,

@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	proto "service/protoc/userManage"
+	"strconv"
 	"web/common"
 )
 
@@ -10,10 +12,20 @@ type UserManageController struct {
 	beego.Controller
 }
 
+// @Title 获得用户管理页面
+// @Description 获得用户管理页面
+// @Success 200 {}
+// @router / [get]
 func (this *UserManageController) UserManageInit() {
 	this.TplName = "manage/user_manage.html"
 }
 
+// @Title 获取用户列表
+// @Description 获取用户列表
+// @Success 200 {}
+// @Param   offset   query   string  true       "页码"
+// @Param   limit query   string  true       "一页展示数量"
+// @router /all [get]
 func (this *UserManageController) UserManage() {
 	offset, _ := this.GetInt32("offset")
 	limit, _ := this.GetInt32("limit")
@@ -26,7 +38,7 @@ func (this *UserManageController) UserManage() {
 	userId := userSession.(int64)
 
 	//调用服务
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	//call the userManage method
 	req := proto.GetUserListReq{Offset: offset, Limit: limit, ManageId: int64(userId)}
 	rsp, err := userManage.GetUserListByOffstAndLimit(ctx, &req)
@@ -42,6 +54,15 @@ func (this *UserManageController) UserManage() {
 	return
 }
 
+// @Title 修改用户信息
+// @Description 修改用户信息
+// @Param	user_name	formData	string	false	"用户名"
+// @Param	login_name	formData	string	false	"用户登陆名"
+// @Param	user_phone_number	formData	string	false	"用户手机号码"
+// @Param	user_job_number	formData	string	false	"用户工号"
+// @Param	user_gender	formData	int	false	"用户性别"
+// @Success 200 {string} result
+// @router / [put]
 func (this *UserManageController) ChangeUser() {
 	changeId, _ := this.GetInt64("change_id")
 	userName := this.GetString("user_name")
@@ -51,11 +72,12 @@ func (this *UserManageController) ChangeUser() {
 	userGender, _ := this.GetInt32("user_gender")
 
 	//call the userManage method
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	this.StartSession()
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := proto.ChangeUserReq{ChangeId: changeId, Name: userName, LoginName: loginName, PhoneNumber: userPhoneNumber, JobNumber: userJobNumber, Gender: userGender}
 	rsp, err := userManage.UpdateUserById(ctx, &req)
 	if err != nil {
-		beego.Info("======ChangeUser=====", rsp.UserId, "-------err--------", err)
+		beego.Info("-------err--------", err)
 	}
 
 	var result map[string]interface{}
@@ -66,6 +88,15 @@ func (this *UserManageController) ChangeUser() {
 	return
 }
 
+// @Title 新增用户
+// @Description 新增用户
+// @Param	user_name	formData	string	false	"用户名"
+// @Param	login_name	formData	string	false	"用户登陆名"
+// @Param	user_phone_number	formData	string	false	"用户手机号码"
+// @Param	user_job_number	formData	string	false	"用户工号"
+// @Param	user_gender	formData	int	false	"用户性别"
+// @Success 200 {string} result
+// @router / [post]
 func (this *UserManageController) AddUser() {
 	userName := this.GetString("user_name")
 	loginName := this.GetString("login_name")
@@ -74,7 +105,8 @@ func (this *UserManageController) AddUser() {
 	userGender, _ := this.GetInt32("user_gender")
 
 	//call the userManage method
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	this.StartSession()
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := proto.AddUserReq{Name: userName, LoginName: loginName, PhoneNumber: userPhoneNumber, JobNumber: userJobNumber, Gender: userGender}
 	rsp, err := userManage.AddUser(ctx, &req)
 	if err != nil {
@@ -90,11 +122,32 @@ func (this *UserManageController) AddUser() {
 
 }
 
+// @Title 删除用户
+// @Description 删除用户
+// @Param	user_name	body	int64	false	"用户id"
+// @Success 200 {string} result
+// @router / [delete]
 func (this *UserManageController) DeleteUserById() {
-	deleteId, _ := this.GetInt64("delete_id")
+	type deleteInput struct {
+		Delete_id string `json:"delete_id"`
+	}
+	inparam := deleteInput{}
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &inparam)
+	if (err != nil) {
+		beego.Error(err)
+		return
+	}
+
+	deleteId, err := strconv.ParseInt(inparam.Delete_id, 10, 64)
+
+	if (deleteId == 0) {
+		beego.Info("-------deleteId error-------- deleteId=", deleteId)
+		return
+	}
 
 	//call the userManage method
-	userManage,ctx := common.InitUserManage(this.CruSession)
+	this.StartSession()
+	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := proto.DeleteUserReq{DeleteId: deleteId}
 	rsp, err := userManage.DeleteUserById(ctx, &req)
 	if err != nil {
