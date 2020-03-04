@@ -9,10 +9,10 @@ message GetProblemNoAnswerReq {
     int64 eventId = 2;
     int64 teamId = 3;
     int64 paticipantId = 4;
-    ProblemNum problemNum = 5;
+    UnionProblemNum problemNum = 5;
 }
 
-message ProblemNum {
+message UnionProblemNum {
     int32 single = 1;
     int32 multiple = 2;
     int32 fill = 3;

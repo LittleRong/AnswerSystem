@@ -26,7 +26,7 @@ func (this *UserManageController) UserManageInit() {
 // @Param   offset   query   string  true       "页码"
 // @Param   limit query   string  true       "一页展示数量"
 // @router /all [get]
-func (this *UserManageController) UserManage() {
+func (this *UserManageController) GetUser() {
 	offset, _ := this.GetInt32("offset")
 	limit, _ := this.GetInt32("limit")
 	//获取用户信息
@@ -61,7 +61,9 @@ func (this *UserManageController) UserManage() {
 // @Param	user_phone_number	formData	string	false	"用户手机号码"
 // @Param	user_job_number	formData	string	false	"用户工号"
 // @Param	user_gender	formData	int	false	"用户性别"
-// @Success 200 {string} result
+// @Success 200 {string} success
+// @Failure 400 user doesn't exit
+// @Failure 500 server's wrong
 // @router / [put]
 func (this *UserManageController) ChangeUser() {
 	changeId, _ := this.GetInt64("change_id")
@@ -125,7 +127,9 @@ func (this *UserManageController) AddUser() {
 // @Title 删除用户
 // @Description 删除用户
 // @Param	user_name	body	int64	false	"用户id"
-// @Success 200 {string} result
+// @Success 200 {string} success
+// @Failure 400 no enough input
+// @Failure 500 server's wrong
 // @router / [delete]
 func (this *UserManageController) DeleteUserById() {
 	type deleteInput struct {

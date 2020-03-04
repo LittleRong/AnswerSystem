@@ -701,7 +701,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string} result"
+                        "description": "{string} success"
+                    },
+                    "400": {
+                        "description": "user doesn't exit"
+                    },
+                    "500": {
+                        "description": "server's wrong"
                     }
                 }
             },
@@ -767,7 +773,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string} result"
+                        "description": "{string} success"
+                    },
+                    "400": {
+                        "description": "no enough input"
+                    },
+                    "500": {
+                        "description": "server's wrong"
                     }
                 }
             }

@@ -81,7 +81,7 @@ func (this *AnswerController) GetUserProblems() {
 	}
 
 	uniontManage,ctx := common.InitUniontManage(this.CruSession)
-	problemNumsReq := unionProto.ProblemNum{Single: problemNum.Single, Multiple: problemNum.Multiple, Fill: problemNum.Fill, Judge: problemNum.Judge}
+	problemNumsReq := unionProto.UnionProblemNum{Single: problemNum.Single, Multiple: problemNum.Multiple, Fill: problemNum.Fill, Judge: problemNum.Judge}
 	unionReq := unionProto.GetProblemNoAnswerReq{EventId: int64(event_id), UserId: int64(user_id), TeamId: int64(team_id), PaticipantId: paticipant_id, ProblemNum: &problemNumsReq}
 	unionRsp, unionErr := uniontManage.GetProblemNoAnswer(ctx, &unionReq)
 	if unionErr != nil {

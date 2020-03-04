@@ -252,7 +252,7 @@ func init() {
 
     beego.GlobalControllerRouter["web/controllers:UserManageController"] = append(beego.GlobalControllerRouter["web/controllers:UserManageController"],
         beego.ControllerComments{
-            Method: "UserManage",
+            Method: "GetUser",
             Router: `/all`,
             AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
