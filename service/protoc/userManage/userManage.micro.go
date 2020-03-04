@@ -8,12 +8,12 @@ It is generated from these files:
 	userManage.proto
 
 It has these top-level messages:
+	UserMesssage
 	UpdatePwdReq
 	UpdatePwdRsp
 	LoginReq
 	LoginRsp
 	GetUserListReq
-	UserMesssage
 	UserListRsp
 	ChangeUserReq
 	ChangeUserRsp
@@ -54,12 +54,19 @@ var _ server.Option
 // Client API for UserManage service
 
 type UserManageService interface {
+	// 根据数量返回用户信息列表
 	GetUserListByOffstAndLimit(ctx context.Context, in *GetUserListReq, opts ...client.CallOption) (*UserListRsp, error)
+	// 根据用户id更新用户信息
 	UpdateUserById(ctx context.Context, in *ChangeUserReq, opts ...client.CallOption) (*ChangeUserRsp, error)
+	// 新增用户
 	AddUser(ctx context.Context, in *AddUserReq, opts ...client.CallOption) (*AddUserRsp, error)
+	// 根据用户id删除用户
 	DeleteUserById(ctx context.Context, in *DeleteUserReq, opts ...client.CallOption) (*DeleteUserRsp, error)
+	// 根据用户id返回用户信息
 	GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...client.CallOption) (*UserMesssage, error)
+	// 登陆验证
 	Login(ctx context.Context, in *LoginReq, opts ...client.CallOption) (*LoginRsp, error)
+	// 修改密码
 	UpdateUserPwd(ctx context.Context, in *UpdatePwdReq, opts ...client.CallOption) (*UpdatePwdRsp, error)
 }
 
@@ -154,12 +161,19 @@ func (c *userManageService) UpdateUserPwd(ctx context.Context, in *UpdatePwdReq,
 // Server API for UserManage service
 
 type UserManageHandler interface {
+	// 根据数量返回用户信息列表
 	GetUserListByOffstAndLimit(context.Context, *GetUserListReq, *UserListRsp) error
+	// 根据用户id更新用户信息
 	UpdateUserById(context.Context, *ChangeUserReq, *ChangeUserRsp) error
+	// 新增用户
 	AddUser(context.Context, *AddUserReq, *AddUserRsp) error
+	// 根据用户id删除用户
 	DeleteUserById(context.Context, *DeleteUserReq, *DeleteUserRsp) error
+	// 根据用户id返回用户信息
 	GetUserById(context.Context, *GetUserByIdReq, *UserMesssage) error
+	// 登陆验证
 	Login(context.Context, *LoginReq, *LoginRsp) error
+	// 修改密码
 	UpdateUserPwd(context.Context, *UpdatePwdReq, *UpdatePwdRsp) error
 }
 

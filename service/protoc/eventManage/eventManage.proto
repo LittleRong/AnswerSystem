@@ -1,12 +1,22 @@
 syntax = "proto3";
 
+/**
+*事件模块，对外提供事件的查询管理接口
+*/
 service EventManage {
+    //根据数量返回事件信息列表
     rpc GetEventListByManageIdAndOffst(GetEventListReq) returns (EventListRsp) {}
+    //新增事件
     rpc AddNewEvent(AddEventReq) returns (AddEventRsp) {}
+    //根据事件id返回事件概述信息
     rpc GetEventByEventId(EventIdReq) returns (EventShowMesssage) {}
+    //根据事件id返回事件详细信息
     rpc GetDetailEventByEventId(EventIdReq) returns (EventDetailMesssage) {}
+    //提供指定事件的积分规则
     rpc GetCreditRuleByEventId(EventIdReq) returns (CreditRule) {}
+    //提供指定事件的题目数量
     rpc GetProblemNumByEventId(EventIdReq) returns (ProblemNum) {}
+    //增加事件管理的题目
     rpc AddEventProblem(AddEventProblemReq) returns (AddEventProblemRsp) {}
 }
 

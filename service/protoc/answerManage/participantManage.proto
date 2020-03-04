@@ -1,15 +1,28 @@
 syntax = "proto3";
 
+/**
+*答题模块，提供参赛者管理
+*/
 service ParticipantManage {
+    //增加事件的参与者
     rpc EventParticipantInsert(EPInsertReq) returns (EPInsertRsp) {}
+    //根据用户id获取其参赛者信息列表
     rpc GetParticipantListByUserId(GetPListByUserIdReq) returns (PEMessageList) {}
+    //根据用户id、事件id获取其参赛者信息
     rpc GetParticipantByUserAndEvent(PUserEventIdReq) returns (ParticipantMessage) {}
+    //获取参赛者题目的正确答案
     rpc GetCorrectAnswerByParticipantId(ParticipantIdReq) returns (WaitAnswerRsp) {}
+    //获取当前剩余答题时间
     rpc GetAnswerTimeByParticipantId(ParticipantIdReq) returns (AnswerTimeReq) {}
+    //获取团队成员积分
     rpc GetMemberCreditByTeamId(PTeamEventIdReq) returns (ParticipantMessageList) {}
+    //更新用户的回答
     rpc UpdateUserAnswer(UpdateUserAnswerReq) returns (UpdateUserAnswerRsp) {}
+    //更新参赛者剩余答题时间
     rpc UpdateParticipantWaitedAnswer(UpdateWaitedAnswerReq) returns (UpdateWaitedAnswerResp) {}
+    //判断参赛者是否已完成答题
     rpc JudgeIfHaveAnswer(JudgeReq) returns (JudgeRsp) {}
+    //增加参赛者要答的题目
     rpc AddProblemHavedAnswer(AddProblemHavedAnswerReq) returns (AddProblemHavedAnswerRsp) {}
 }
 

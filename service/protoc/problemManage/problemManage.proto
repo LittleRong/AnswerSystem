@@ -1,9 +1,16 @@
 syntax = "proto3";
 
+/**
+*题目模块，对外提供题目的查询管理接口
+*/
 service ProblemManage {
+    //根据数量返回题目列表
     rpc GetProblemListByOffstAndLimit(GetProblemListReq) returns (ProblemListRsp) {}
+    //新增题目
     rpc AddProblem(ProblemMesssage) returns (AddProblemRsp) {}
+    //根据题目类型获取题目
     rpc GetNewProblemByType(GetNewProblemByTypeReq) returns (ProblemListRsp) {}
+    //获取最大题目ID
     rpc GetEndProblemId(GetEndProblemIdReq) returns (GetEndProblemIdRsp) {}
 }
 

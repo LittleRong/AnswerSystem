@@ -1,12 +1,21 @@
 syntax = "proto3";
-
+/**
+*答题模块，提供积分管理
+*/
 service CreditManage {
+    //提供团队积分
     rpc GetTeamCredit(TeamEventIdReq) returns (CreditRsp) {}
+    //提供个人积分
     rpc GetPersonCredit(UserEventIdReq) returns (CreditRsp) {}
+    //提供团队积分详细记录
     rpc GetCreditLogByTeamId(TeamIdReq) returns (CreditLogListRsp) {}
+    //增加分数变更记录
     rpc AddCreditLog(CreditLog) returns (AddCreditLogRsp) {}
+    //判断用户是否全部答对
     rpc WhetherMemberAllRight(AllRightReq) returns (AllRightRsp) {}
+    //更新团队积分
     rpc UpdateTeamCredit(UpdateTeamCreditReq) returns (CreditRsp) {}
+    //更新个人积分
     rpc UpdateParticipantCredit(UpdatePCreditReq) returns (CreditRsp) {}
 }
 

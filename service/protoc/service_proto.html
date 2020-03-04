@@ -932,7 +932,7 @@
 
       
         <h3 id=".CreditManage">CreditManage</h3>
-        <p></p>
+        <p>答题模块，提供积分管理</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -943,49 +943,49 @@
                 <td>GetTeamCredit</td>
                 <td><a href="#TeamEventIdReq">.TeamEventIdReq</a></td>
                 <td><a href="#CreditRsp">.CreditRsp</a></td>
-                <td><p></p></td>
+                <td><p>提供团队积分</p></td>
               </tr>
             
               <tr>
                 <td>GetPersonCredit</td>
                 <td><a href="#UserEventIdReq">.UserEventIdReq</a></td>
                 <td><a href="#CreditRsp">.CreditRsp</a></td>
-                <td><p></p></td>
+                <td><p>提供个人积分</p></td>
               </tr>
             
               <tr>
                 <td>GetCreditLogByTeamId</td>
                 <td><a href="#TeamIdReq">.TeamIdReq</a></td>
                 <td><a href="#CreditLogListRsp">.CreditLogListRsp</a></td>
-                <td><p></p></td>
+                <td><p>提供团队积分详细记录</p></td>
               </tr>
             
               <tr>
                 <td>AddCreditLog</td>
                 <td><a href="#CreditLog">.CreditLog</a></td>
                 <td><a href="#AddCreditLogRsp">.AddCreditLogRsp</a></td>
-                <td><p></p></td>
+                <td><p>增加分数变更记录</p></td>
               </tr>
             
               <tr>
                 <td>WhetherMemberAllRight</td>
                 <td><a href="#AllRightReq">.AllRightReq</a></td>
                 <td><a href="#AllRightRsp">.AllRightRsp</a></td>
-                <td><p></p></td>
+                <td><p>判断用户是否全部答对</p></td>
               </tr>
             
               <tr>
                 <td>UpdateTeamCredit</td>
                 <td><a href="#UpdateTeamCreditReq">.UpdateTeamCreditReq</a></td>
                 <td><a href="#CreditRsp">.CreditRsp</a></td>
-                <td><p></p></td>
+                <td><p>更新团队积分</p></td>
               </tr>
             
               <tr>
                 <td>UpdateParticipantCredit</td>
                 <td><a href="#UpdatePCreditReq">.UpdatePCreditReq</a></td>
                 <td><a href="#CreditRsp">.CreditRsp</a></td>
-                <td><p></p></td>
+                <td><p>更新个人积分</p></td>
               </tr>
             
           </tbody>
@@ -1720,7 +1720,7 @@
 
       
         <h3 id=".ParticipantManage">ParticipantManage</h3>
-        <p></p>
+        <p>答题模块，提供参赛者管理</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -1731,70 +1731,70 @@
                 <td>EventParticipantInsert</td>
                 <td><a href="#EPInsertReq">.EPInsertReq</a></td>
                 <td><a href="#EPInsertRsp">.EPInsertRsp</a></td>
-                <td><p></p></td>
+                <td><p>增加事件的参与者</p></td>
               </tr>
             
               <tr>
                 <td>GetParticipantListByUserId</td>
                 <td><a href="#GetPListByUserIdReq">.GetPListByUserIdReq</a></td>
                 <td><a href="#PEMessageList">.PEMessageList</a></td>
-                <td><p></p></td>
+                <td><p>根据用户id获取其参赛者信息列表</p></td>
               </tr>
             
               <tr>
                 <td>GetParticipantByUserAndEvent</td>
                 <td><a href="#PUserEventIdReq">.PUserEventIdReq</a></td>
                 <td><a href="#ParticipantMessage">.ParticipantMessage</a></td>
-                <td><p></p></td>
+                <td><p>根据用户id、事件id获取其参赛者信息</p></td>
               </tr>
             
               <tr>
                 <td>GetCorrectAnswerByParticipantId</td>
                 <td><a href="#ParticipantIdReq">.ParticipantIdReq</a></td>
                 <td><a href="#WaitAnswerRsp">.WaitAnswerRsp</a></td>
-                <td><p></p></td>
+                <td><p>获取参赛者题目的正确答案</p></td>
               </tr>
             
               <tr>
                 <td>GetAnswerTimeByParticipantId</td>
                 <td><a href="#ParticipantIdReq">.ParticipantIdReq</a></td>
                 <td><a href="#AnswerTimeReq">.AnswerTimeReq</a></td>
-                <td><p></p></td>
+                <td><p>获取当前剩余答题时间</p></td>
               </tr>
             
               <tr>
                 <td>GetMemberCreditByTeamId</td>
                 <td><a href="#PTeamEventIdReq">.PTeamEventIdReq</a></td>
                 <td><a href="#ParticipantMessageList">.ParticipantMessageList</a></td>
-                <td><p></p></td>
+                <td><p>获取团队成员积分</p></td>
               </tr>
             
               <tr>
                 <td>UpdateUserAnswer</td>
                 <td><a href="#UpdateUserAnswerReq">.UpdateUserAnswerReq</a></td>
                 <td><a href="#UpdateUserAnswerRsp">.UpdateUserAnswerRsp</a></td>
-                <td><p></p></td>
+                <td><p>更新用户的回答</p></td>
               </tr>
             
               <tr>
                 <td>UpdateParticipantWaitedAnswer</td>
                 <td><a href="#UpdateWaitedAnswerReq">.UpdateWaitedAnswerReq</a></td>
                 <td><a href="#UpdateWaitedAnswerResp">.UpdateWaitedAnswerResp</a></td>
-                <td><p></p></td>
+                <td><p>更新参赛者剩余答题时间</p></td>
               </tr>
             
               <tr>
                 <td>JudgeIfHaveAnswer</td>
                 <td><a href="#JudgeReq">.JudgeReq</a></td>
                 <td><a href="#JudgeRsp">.JudgeRsp</a></td>
-                <td><p></p></td>
+                <td><p>判断参赛者是否已完成答题</p></td>
               </tr>
             
               <tr>
                 <td>AddProblemHavedAnswer</td>
                 <td><a href="#AddProblemHavedAnswerReq">.AddProblemHavedAnswerReq</a></td>
                 <td><a href="#AddProblemHavedAnswerRsp">.AddProblemHavedAnswerRsp</a></td>
-                <td><p></p></td>
+                <td><p>增加参赛者要答的题目</p></td>
               </tr>
             
           </tbody>
@@ -2541,7 +2541,7 @@
 
       
         <h3 id=".EventManage">EventManage</h3>
-        <p></p>
+        <p>事件模块，对外提供事件的查询管理接口</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -2552,49 +2552,49 @@
                 <td>GetEventListByManageIdAndOffst</td>
                 <td><a href="#GetEventListReq">.GetEventListReq</a></td>
                 <td><a href="#EventListRsp">.EventListRsp</a></td>
-                <td><p></p></td>
+                <td><p>根据数量返回事件信息列表</p></td>
               </tr>
             
               <tr>
                 <td>AddNewEvent</td>
                 <td><a href="#AddEventReq">.AddEventReq</a></td>
                 <td><a href="#AddEventRsp">.AddEventRsp</a></td>
-                <td><p></p></td>
+                <td><p>新增事件</p></td>
               </tr>
             
               <tr>
                 <td>GetEventByEventId</td>
                 <td><a href="#EventIdReq">.EventIdReq</a></td>
                 <td><a href="#EventShowMesssage">.EventShowMesssage</a></td>
-                <td><p></p></td>
+                <td><p>根据事件id返回事件概述信息</p></td>
               </tr>
             
               <tr>
                 <td>GetDetailEventByEventId</td>
                 <td><a href="#EventIdReq">.EventIdReq</a></td>
                 <td><a href="#EventDetailMesssage">.EventDetailMesssage</a></td>
-                <td><p></p></td>
+                <td><p>根据事件id返回事件详细信息</p></td>
               </tr>
             
               <tr>
                 <td>GetCreditRuleByEventId</td>
                 <td><a href="#EventIdReq">.EventIdReq</a></td>
                 <td><a href="#CreditRule">.CreditRule</a></td>
-                <td><p></p></td>
+                <td><p>提供指定事件的积分规则</p></td>
               </tr>
             
               <tr>
                 <td>GetProblemNumByEventId</td>
                 <td><a href="#EventIdReq">.EventIdReq</a></td>
                 <td><a href="#ProblemNum">.ProblemNum</a></td>
-                <td><p></p></td>
+                <td><p>提供指定事件的题目数量</p></td>
               </tr>
             
               <tr>
                 <td>AddEventProblem</td>
                 <td><a href="#AddEventProblemReq">.AddEventProblemReq</a></td>
                 <td><a href="#AddEventProblemRsp">.AddEventProblemRsp</a></td>
-                <td><p></p></td>
+                <td><p>增加事件管理的题目</p></td>
               </tr>
             
           </tbody>
@@ -2830,7 +2830,7 @@
 
       
         <h3 id=".ProblemManage">ProblemManage</h3>
-        <p></p>
+        <p>题目模块，对外提供题目的查询管理接口</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -2841,28 +2841,28 @@
                 <td>GetProblemListByOffstAndLimit</td>
                 <td><a href="#GetProblemListReq">.GetProblemListReq</a></td>
                 <td><a href="#ProblemListRsp">.ProblemListRsp</a></td>
-                <td><p></p></td>
+                <td><p>根据数量返回题目列表</p></td>
               </tr>
             
               <tr>
                 <td>AddProblem</td>
                 <td><a href="#ProblemMesssage">.ProblemMesssage</a></td>
                 <td><a href="#AddProblemRsp">.AddProblemRsp</a></td>
-                <td><p></p></td>
+                <td><p>新增题目</p></td>
               </tr>
             
               <tr>
                 <td>GetNewProblemByType</td>
                 <td><a href="#GetNewProblemByTypeReq">.GetNewProblemByTypeReq</a></td>
                 <td><a href="#ProblemListRsp">.ProblemListRsp</a></td>
-                <td><p></p></td>
+                <td><p>根据题目类型获取题目</p></td>
               </tr>
             
               <tr>
                 <td>GetEndProblemId</td>
                 <td><a href="#GetEndProblemIdReq">.GetEndProblemIdReq</a></td>
                 <td><a href="#GetEndProblemIdRsp">.GetEndProblemIdRsp</a></td>
-                <td><p></p></td>
+                <td><p>获取最大题目ID</p></td>
               </tr>
             
           </tbody>
@@ -3078,7 +3078,7 @@
 
       
         <h3 id=".UnionManage">UnionManage</h3>
-        <p></p>
+        <p>联合查询模块，提供跨模块的查询</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -3089,7 +3089,7 @@
                 <td>GetProblemNoAnswer</td>
                 <td><a href="#GetProblemNoAnswerReq">.GetProblemNoAnswerReq</a></td>
                 <td><a href="#GetProblemNoAnswerRsp">.GetProblemNoAnswerRsp</a></td>
-                <td><p></p></td>
+                <td><p>生成用户每日答题题目</p></td>
               </tr>
             
           </tbody>
@@ -3346,7 +3346,7 @@
                   <td>userId</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>用户id </p></td>
                 </tr>
               
             </tbody>
@@ -3570,63 +3570,63 @@
                   <td>id</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>用户id </p></td>
                 </tr>
               
                 <tr>
                   <td>login_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>登录名 </p></td>
                 </tr>
               
                 <tr>
                   <td>pwd</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>密码 </p></td>
                 </tr>
               
                 <tr>
                   <td>name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>用户名 </p></td>
                 </tr>
               
                 <tr>
                   <td>phone_number</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>手机号码 </p></td>
                 </tr>
               
                 <tr>
                   <td>job_number</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>工号 </p></td>
                 </tr>
               
                 <tr>
                   <td>permission</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>权限 </p></td>
                 </tr>
               
                 <tr>
                   <td>gender</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>性别 </p></td>
                 </tr>
               
                 <tr>
                   <td>deleted</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>是否删除 </p></td>
                 </tr>
               
             </tbody>
@@ -3643,7 +3643,7 @@
 
       
         <h3 id=".UserManage">UserManage</h3>
-        <p></p>
+        <p>用户模块，对外提供用户的查询管理接口</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -3654,49 +3654,49 @@
                 <td>GetUserListByOffstAndLimit</td>
                 <td><a href="#GetUserListReq">.GetUserListReq</a></td>
                 <td><a href="#UserListRsp">.UserListRsp</a></td>
-                <td><p></p></td>
+                <td><p>根据数量返回用户信息列表</p></td>
               </tr>
             
               <tr>
                 <td>UpdateUserById</td>
                 <td><a href="#ChangeUserReq">.ChangeUserReq</a></td>
                 <td><a href="#ChangeUserRsp">.ChangeUserRsp</a></td>
-                <td><p></p></td>
+                <td><p>根据用户id更新用户信息</p></td>
               </tr>
             
               <tr>
                 <td>AddUser</td>
                 <td><a href="#AddUserReq">.AddUserReq</a></td>
                 <td><a href="#AddUserRsp">.AddUserRsp</a></td>
-                <td><p></p></td>
+                <td><p>新增用户</p></td>
               </tr>
             
               <tr>
                 <td>DeleteUserById</td>
                 <td><a href="#DeleteUserReq">.DeleteUserReq</a></td>
                 <td><a href="#DeleteUserRsp">.DeleteUserRsp</a></td>
-                <td><p></p></td>
+                <td><p>根据用户id删除用户</p></td>
               </tr>
             
               <tr>
                 <td>GetUserById</td>
                 <td><a href="#GetUserByIdReq">.GetUserByIdReq</a></td>
                 <td><a href="#UserMesssage">.UserMesssage</a></td>
-                <td><p></p></td>
+                <td><p>根据用户id返回用户信息</p></td>
               </tr>
             
               <tr>
                 <td>Login</td>
                 <td><a href="#LoginReq">.LoginReq</a></td>
                 <td><a href="#LoginRsp">.LoginRsp</a></td>
-                <td><p></p></td>
+                <td><p>登陆验证</p></td>
               </tr>
             
               <tr>
                 <td>UpdateUserPwd</td>
                 <td><a href="#UpdatePwdReq">.UpdatePwdReq</a></td>
                 <td><a href="#UpdatePwdRsp">.UpdatePwdRsp</a></td>
-                <td><p></p></td>
+                <td><p>修改密码</p></td>
               </tr>
             
           </tbody>

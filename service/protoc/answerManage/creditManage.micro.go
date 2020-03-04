@@ -20,7 +20,7 @@ It has these top-level messages:
 	CreditLogListRsp
 	AddCreditLogRsp
 */
-package answerManage
+package creditManage
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
@@ -51,12 +51,19 @@ var _ server.Option
 // Client API for CreditManage service
 
 type CreditManageService interface {
+	// 提供团队积分
 	GetTeamCredit(ctx context.Context, in *TeamEventIdReq, opts ...client.CallOption) (*CreditRsp, error)
+	// 提供个人积分
 	GetPersonCredit(ctx context.Context, in *UserEventIdReq, opts ...client.CallOption) (*CreditRsp, error)
+	// 提供团队积分详细记录
 	GetCreditLogByTeamId(ctx context.Context, in *TeamIdReq, opts ...client.CallOption) (*CreditLogListRsp, error)
+	// 增加分数变更记录
 	AddCreditLog(ctx context.Context, in *CreditLog, opts ...client.CallOption) (*AddCreditLogRsp, error)
+	// 判断用户是否全部答对
 	WhetherMemberAllRight(ctx context.Context, in *AllRightReq, opts ...client.CallOption) (*AllRightRsp, error)
+	// 更新团队积分
 	UpdateTeamCredit(ctx context.Context, in *UpdateTeamCreditReq, opts ...client.CallOption) (*CreditRsp, error)
+	// 更新个人积分
 	UpdateParticipantCredit(ctx context.Context, in *UpdatePCreditReq, opts ...client.CallOption) (*CreditRsp, error)
 }
 
@@ -151,12 +158,19 @@ func (c *creditManageService) UpdateParticipantCredit(ctx context.Context, in *U
 // Server API for CreditManage service
 
 type CreditManageHandler interface {
+	// 提供团队积分
 	GetTeamCredit(context.Context, *TeamEventIdReq, *CreditRsp) error
+	// 提供个人积分
 	GetPersonCredit(context.Context, *UserEventIdReq, *CreditRsp) error
+	// 提供团队积分详细记录
 	GetCreditLogByTeamId(context.Context, *TeamIdReq, *CreditLogListRsp) error
+	// 增加分数变更记录
 	AddCreditLog(context.Context, *CreditLog, *AddCreditLogRsp) error
+	// 判断用户是否全部答对
 	WhetherMemberAllRight(context.Context, *AllRightReq, *AllRightRsp) error
+	// 更新团队积分
 	UpdateTeamCredit(context.Context, *UpdateTeamCreditReq, *CreditRsp) error
+	// 更新个人积分
 	UpdateParticipantCredit(context.Context, *UpdatePCreditReq, *CreditRsp) error
 }
 

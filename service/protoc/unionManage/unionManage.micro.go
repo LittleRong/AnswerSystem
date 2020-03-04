@@ -44,6 +44,7 @@ var _ server.Option
 // Client API for UnionManage service
 
 type UnionManageService interface {
+	// 生成用户每日答题题目
 	GetProblemNoAnswer(ctx context.Context, in *GetProblemNoAnswerReq, opts ...client.CallOption) (*GetProblemNoAnswerRsp, error)
 }
 
@@ -78,6 +79,7 @@ func (c *unionManageService) GetProblemNoAnswer(ctx context.Context, in *GetProb
 // Server API for UnionManage service
 
 type UnionManageHandler interface {
+	// 生成用户每日答题题目
 	GetProblemNoAnswer(context.Context, *GetProblemNoAnswerReq, *GetProblemNoAnswerRsp) error
 }
 
