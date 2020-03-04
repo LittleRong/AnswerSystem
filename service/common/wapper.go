@@ -14,8 +14,8 @@ import (
 // 实现server.HandlerWrapper接口
 func logWrapper(fn server.HandlerFunc) server.HandlerFunc {
 	return func(ctx context.Context, req server.Request, rsp interface{}) error {
-		logs.Debug("server request", time.Now().Format("2006/1/2 15:04:05"),req.Endpoint())
-		logs.Debug("server header", req.Header())
+		logs.Debug("server request", time.Now().Format("2006/1/2 15:04:05"), req.Endpoint())
+		logs.Debug("server header", req.Header(), " server service", req.Service())
 		return fn(ctx, req, rsp)
 	}
 }
@@ -23,22 +23,23 @@ func logWrapper(fn server.HandlerFunc) server.HandlerFunc {
 func authWrapper(fn server.HandlerFunc) server.HandlerFunc {
 	return func(ctx context.Context, req server.Request, rsp interface{}) error {
 		logs.Debug("[authWrapper]", req.Endpoint())
+		logs.Debug("[authWrapper------]")
 		//登陆不需要验证
-		if(req.Endpoint()=="UserManage.Login"){
+		if (req.Endpoint() == "UserManage.Login" || req.Endpoint() == "ParticipantManage.JudgeIfHaveAnswer" || req.Endpoint() == "ParticipantManage.AddProblemHavedAnswer" || req.Endpoint() == "ParticipantManage.UpdateParticipantWaitedAnswer") {
 			return fn(ctx, req, rsp)
 		}
 		header := req.Header()
-		if(header==nil){
+		if (header == nil) {
 			//没有则返回错误
-			logs.Error("[JWT auth]","get header wrong")
+			logs.Error("[JWT auth]", "get header wrong")
 			return errors.New("get header wrong")
 		}
 
 		tokenString := header["Authorization"]
 		secret := viper.GetString("jwt.secret")
 
-		if(tokenString==""){
-			logs.Error("[JWT auth]","no auth meta-data Authorization found in request")
+		if (tokenString == "") {
+			logs.Error("[JWT auth]", "no auth meta-data Authorization found in request")
 			return errors.New("no auth meta-data Authorization found in request")
 		}
 
@@ -47,16 +48,16 @@ func authWrapper(fn server.HandlerFunc) server.HandlerFunc {
 
 		//失败
 		if err != nil {
-			logs.Error("[JWT auth]",err)
+			logs.Error("[JWT auth]", err)
 			return err
-		//token校验成功
+			//token校验成功
 		} else if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			//ctx.ID = uint64(claims["id"].(float64))
 			//ctx.Username = claims["username"].(string)
-			logs.Info("ID=", int64(claims["id"].(float64))," username=",claims["username"].(string))
+			logs.Info("ID=", int64(claims["id"].(float64)), " username=", claims["username"].(string))
 			return fn(ctx, req, rsp)
 		} else {
-			logs.Error("[JWT auth]",err)
+			logs.Error("[JWT auth]", err)
 			return err
 		}
 

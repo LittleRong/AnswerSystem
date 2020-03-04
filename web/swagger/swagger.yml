@@ -14,6 +14,12 @@ paths:
       - answer
       description: 获得用户答题页面
       operationId: AnswerController.获得用户答题页面
+      parameters:
+      - in: query
+        name: event_id
+        description: 事件id
+        required: true
+        type: string
       responses:
         "200":
           description: '{}'

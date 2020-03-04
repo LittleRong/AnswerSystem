@@ -48,8 +48,9 @@ func (this *ParticipantManageController) ParticipantGetUser() {
 	userManage, ctx := common.InitUserManage(this.CruSession)
 	req := userProto.GetUserListReq{Offset: offset, Limit: limit, ManageId: userId}
 	rsp, err := userManage.GetUserListByOffstAndLimit(ctx, &req)
+	beego.Info("======ParticipantGetUser=====", rsp.UserList)
 	if err != nil {
-		beego.Info("======ParticipantGetUser=====", rsp.UserList, "-------err--------", err)
+		beego.Info("-------err--------", err)
 	}
 
 	var result map[string]interface{}
@@ -74,6 +75,7 @@ func (this *ParticipantManageController) EventParticipantInsert() {
 	}
 	event_id := new_event_id.(int)
 	team_input := this.Ctx.Request.PostForm.Get("team_data")
+	beego.Info("-----------EventParticipantInsert-----------",team_input)
 	var f interface{}
 	_ = json.Unmarshal([]byte(team_input), &f)
 	team_array := f.([]interface{})

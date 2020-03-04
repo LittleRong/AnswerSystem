@@ -15,7 +15,7 @@ type ParticipantManage struct{}
 func (this *ParticipantManage) EventParticipantInsert(ctx context.Context, req *proto.EPInsertReq, rsp *proto.EPInsertRsp) error {
 	team_array := req.ParticipantMemberList
 	eventId := req.EventId
-
+	logs.Info("EventParticipantInsert",team_array)
 	for _, value := range team_array {
 		//插入新team
 		teamId := model.AddTeam("", eventId)

@@ -35,6 +35,7 @@ type userAnswer struct {
 // @Title 获得用户答题页面
 // @Description 获得用户答题页面
 // @Success 200 {}
+// @Param	event_id	query	string	true	"事件id"
 // @router / [get]
 func (this *AnswerController) ShowProblemsPage() {
 	this.TplName = "answer/user_problem.html"
@@ -145,6 +146,7 @@ func (this *AnswerController) GetUserProblems() {
 	result["event_id"] = event_id
 	this.Data["json"] = result
 	this.ServeJSON()
+	beego.Info("生成题目",result)
 	return
 
 }

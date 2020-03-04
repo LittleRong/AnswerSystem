@@ -172,7 +172,7 @@
                 } else {
                     $.each(data['user_data'], function (i, item) {
                         show_str += "<div id='xcsz'>"
-                            + "<div><input type='checkbox' name='checkbox1' id='checkbox1' value=" + item.Id + " >" + item.name + "</div>"
+                            + "<div><input type='checkbox' name='checkbox1' id='checkbox1' value=" + item.id + " >" + item.name + "</div>"
                             + "</div>";
                     });
                     $('#user_message').html(show_str);
@@ -261,7 +261,7 @@
                 success: function (data) {
                     if (data['result'] == "success") {
                         alert("录入成功!");
-                        self.location = '/manage/event_manage_init';
+                        self.location = '/v1/events';
                         //登录成功操作......
                     } else {
                         alert("录入失败！");

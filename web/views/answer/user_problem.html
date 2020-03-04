@@ -22,7 +22,7 @@
             <div class="form-group pui-btn-gradient pui-btn-shadow" style="position: absolute;bottom: 10px;right: 20px">
                 <input type="button" class="pui-btn pui-btn-small pui-btn-default " value="">
                 <a type="button" class="pui-btn pui-btn-small pui-btn-primary "
-                   href="/logout">退出</a>
+                   href="/v1/index/logout">退出</a>
             </div>
         </div>
     </header>
@@ -128,8 +128,9 @@
 <script type="text/javascript">
     //获取用户的题目
     $(document).ready(function () {
-        var event = 1;
-        var post_data = {event_id: event};
+        // var event = 1;
+        // var post_data = {event_id: event};
+        var post_data = {};
         $.ajax({
             url: "http://localhost:8081/v1/answer/user_problems",
             dataType: "json",
@@ -139,7 +140,7 @@
             success: function (data) {
                 if(data.hasOwnProperty("result")){
                     alert(data['result'])
-                    window.location.href = "/index/user_index_init";
+                    window.location.href = "/v1/user_index";
                     return false;
                 }
 
@@ -158,80 +159,88 @@
                 var show_str = "";
                 var panel_id = "single_panel"
                 show_str += "<div id='" + panel_id + "' class='tixing_panel pui-layout'>"
-                $.each(data['data']["single"], function (i, item) {
-                    var option_str = "";
-                    var option_array = eval("(" + item.option + ")");
-                    for (var key in option_array) {
-                        var oname = "single_" + item.problemId;
-                        var oid = option_array[key].q_id;
-                        var ovalue = key;
-                        var ocontent = "    " + key + "、" + option_array[key].content;
-                        option_str += "<input type='radio' name='" + oname + "' id='" + oid + "' value='" + ovalue + "' >" + ocontent + "<br>";
-                    }
+                if(data['data']["single"]!=null){
+                    $.each(data['data']["single"], function (i, item) {
+                        var option_str = "";
+                        var option_array = eval("(" + item.option + ")");
+                        for (var key in option_array) {
+                            var oname = "single_" + item.problemId;
+                            var oid = option_array[key].q_id;
+                            var ovalue = key;
+                            var ocontent = "    " + key + "、" + option_array[key].content;
+                            option_str += "<input type='radio' name='" + oname + "' id='" + oid + "' value='" + ovalue + "' >" + ocontent + "<br>";
+                        }
 
-                    show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
-                        + "<div class='pui-card-box'>"
-                        + "<h5>" + i + "、" + item.problem + "</h5>"
-                        + option_str
-                        + "</div>"
-                        + "</div>";
-                });
+                        show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
+                            + "<div class='pui-card-box'>"
+                            + "<h5>" + i + "、" + item.problem + "</h5>"
+                            + option_str
+                            + "</div>"
+                            + "</div>";
+                    });
+                }
                 show_str += "</div>";
 
                 //多选题
                 panel_id = "multi_panel"
                 show_str += "<div id='" + panel_id + "' class='tixing_panel pui-layout'>"
-                $.each(data['data']["multiple"], function (i, item) {
-                    var option_str = "";
-                    var option_array = eval("(" + item.option + ")");
-                    for (var key in option_array) {
-                        var oname = "multi_" + item.problemId;
-                        var oid = option_array[key].q_id;
-                        var ovalue = key;
-                        var ocontent = "    " + key + "、" + option_array[key].content;
-                        option_str += "<input type='checkbox' name='" + oname + "' id='" + oid + "' value='" + ovalue + "' >" + ocontent + "<br>";
-                    }
+                if(data['data']["multiple"]!=null){
+                    $.each(data['data']["multiple"], function (i, item) {
+                        var option_str = "";
+                        var option_array = eval("(" + item.option + ")");
+                        for (var key in option_array) {
+                            var oname = "multi_" + item.problemId;
+                            var oid = option_array[key].q_id;
+                            var ovalue = key;
+                            var ocontent = "    " + key + "、" + option_array[key].content;
+                            option_str += "<input type='checkbox' name='" + oname + "' id='" + oid + "' value='" + ovalue + "' >" + ocontent + "<br>";
+                        }
 
-                    show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
-                        + "<div class='pui-card-box'>"
-                        + "<h5>" + i + "、" + item.problem + "</h5>"
-                        + option_str
-                        + "</div>"
-                        + "</div>";
-                });
+                        show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
+                            + "<div class='pui-card-box'>"
+                            + "<h5>" + i + "、" + item.problem + "</h5>"
+                            + option_str
+                            + "</div>"
+                            + "</div>";
+                    });
+                }
                 show_str += "</div>";
 
                 //判断题
                 panel_id = "judge_panel"
                 show_str += "<div id='" + panel_id + "' class='tixing_panel pui-layout'>"
-                $.each(data['data']["judge"], function (i, item) {
-                    var oname = "judge_" + item.problemId;
-                    var option_str = "<input type='radio' name='" + oname + "' value='true'>    是<br>" +
-                        "<input type='radio' name='" + oname + "' value='false'>    否";
+                if(data['data']["judge"]!=null){
+                    $.each(data['data']["judge"], function (i, item) {
+                        var oname = "judge_" + item.problemId;
+                        var option_str = "<input type='radio' name='" + oname + "' value='true'>    是<br>" +
+                            "<input type='radio' name='" + oname + "' value='false'>    否";
 
-                    show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
-                        + "<div class='pui-card-box'>"
-                        + "<h5>" + i + "、" + item.problem + "</h5>"
-                        + option_str
-                        + "</div>"
-                        + "</div>";
-                });
+                        show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
+                            + "<div class='pui-card-box'>"
+                            + "<h5>" + i + "、" + item.problem + "</h5>"
+                            + option_str
+                            + "</div>"
+                            + "</div>";
+                    });
+                }
                 show_str += "</div>";
 
                 //填空题
                 panel_id = "fill_panel"
                 show_str += "<div id='" + panel_id + "' class='tixing_panel pui-layout'>"
-                $.each(data['data']["fill"], function (i, item) {
-                    var oname = "fill_" + item.problemId;
-                    var option_str = "<input type='text' name='" + oname + "'><br>";
+                if(data['data']["fill"]!=null){
+                    $.each(data['data']["fill"], function (i, item) {
+                        var oname = "fill_" + item.problemId;
+                        var option_str = "<input type='text' name='" + oname + "'><br>";
 
-                    show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
-                        + "<div class='pui-card-box'>"
-                        + "<h5>" + i + "、" + item.problem + "</h5>"
-                        + option_str
-                        + "</div>"
-                        + "</div>";
-                });
+                        show_str += "<div class='timu_item pui-card pui-card-shadow pui-card-radius' id='" + item.problemId + "'>"
+                            + "<div class='pui-card-box'>"
+                            + "<h5>" + i + "、" + item.problem + "</h5>"
+                            + option_str
+                            + "</div>"
+                            + "</div>";
+                    });
+                }
                 show_str += "</div>";
 
                 $('#problem_body').html(show_str);

@@ -70,8 +70,8 @@
     <meta name="msapplication-tap-highlight" content="no"/>
 
     <title>发起事件</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/planeui.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/user_manager.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/planeui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/user_manager.css"/>
 </head>
 <body>
 <!-- 代码写在这下面 -->
@@ -84,7 +84,7 @@
                     <div class="pui-menubar pui-menubar-square pui-menubar-header-style pui-bg-none pui-unbordered">
                         <div class="pui-menubar-aside">
                             <h2 class="pui-margin-none pui-text-normal page-title" title="线上答题系统">
-                                <img src="../static/img/CM.png" class="icon-CM"/>
+                                <img src="/static/img/CM.png" class="icon-CM"/>
                                 线上答题系统
                             </h2>
                         </div>
@@ -134,25 +134,25 @@
             <div style="margin-bottom: 15px;">
                 <label>答题日期：</label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="1"> 星期一
+                    <input type="checkbox" id="cbox" name="cbox" value="1" checked> 星期一
                 </label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="2"> 星期二
+                    <input type="checkbox" id="cbox" name="cbox" value="2" checked> 星期二
                 </label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="3"> 星期三
+                    <input type="checkbox" id="cbox" name="cbox" value="3" checked> 星期三
                 </label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="4"> 星期四
+                    <input type="checkbox" id="cbox" name="cbox" value="4" checked> 星期四
                 </label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="5"> 星期五
+                    <input type="checkbox" id="cbox" name="cbox" value="5" checked> 星期五
                 </label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="6"> 星期六
+                    <input type="checkbox" id="cbox" name="cbox" value="6" checked> 星期六
                 </label>
                 <label>
-                    <input type="checkbox" id="cbox" name="cbox" value="0"> 星期日
+                    <input type="checkbox" id="cbox" name="cbox" value="0" checked> 星期日
                 </label>
             </div>
             <div style="margin-bottom: 15px;">
@@ -264,8 +264,8 @@
 
 
 <!-- jQuery -->
-<script type="text/javascript" src="../static/js/planeui.js"></script>
-<script src="../static/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/planeui.js"></script>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
 
 <script type="text/javascript">
 
@@ -378,7 +378,7 @@
                     message: message
                 };
                 $.ajax({
-                    url: "http://localhost:8081/v1/newevent",
+                    url: "http://localhost:8081/v1/events/newevent",
                     dataType: "json",
                     type: 'POST',
                     data: post_data,

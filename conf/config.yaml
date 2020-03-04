@@ -47,7 +47,7 @@ jwt:
 #枚举值
 enum:
   problemType:
-    fillType: 0
+    fillType: 4
     singleType: 1
     multipleType: 2
     judgeType: 3

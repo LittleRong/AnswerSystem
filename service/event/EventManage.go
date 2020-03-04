@@ -44,8 +44,8 @@ func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.Event
 	if err := json.Unmarshal([]byte(event_time), &event_time_map); err != nil {
 		return err
 	}
-	rsp.StartTime = event_time_map["start_time"].(string)
-	rsp.EndTime = event_time_map["end_time"].(string)
+	rsp.StartTime = event_time_map["startTime"].(string)
+	rsp.EndTime = event_time_map["endTime"].(string)
 
 	event_num := event.Event_num
 	var event_num_map map[string]interface{}
@@ -53,10 +53,10 @@ func (this *EventManage) GetEventByEventId(ctx context.Context, req *proto.Event
 	if err := json.Unmarshal([]byte(event_num), &event_num_map); err != nil {
 		return err
 	}
-	rsp.Single = event_num_map["single"].(string)
-	rsp.Fill = event_num_map["fill"].(string)
-	rsp.Judge = event_num_map["judge"].(string)
-	rsp.Multiple = event_num_map["multiple"].(string)
+	rsp.Single = strconv.FormatFloat(event_num_map["single"].(float64), 'E', -1, 64)
+	rsp.Fill = strconv.FormatFloat(event_num_map["fill"].(float64), 'E', -1, 64)
+	rsp.Judge = strconv.FormatFloat(event_num_map["judge"].(float64), 'E', -1, 64)
+	rsp.Multiple = strconv.FormatFloat(event_num_map["multiple"].(float64), 'E', -1, 64)
 	rsp.AnswerTime, _ = strconv.ParseFloat(event.Answer_time, 64)
 
 	return nil
@@ -93,15 +93,20 @@ func (this *EventManage) GetProblemNumByEventId(ctx context.Context, req *proto.
 	if err := json.Unmarshal([]byte(event_num), &event_num_map); err != nil {
 		return err
 	}
-	var val int32
-	StrToInt(event_num_map["single"].(string), &val)
-	rsp.Single = val
-	StrToInt(event_num_map["fill"].(string), &val)
-	rsp.Fill = val
-	StrToInt(event_num_map["judge"].(string), &val)
-	rsp.Judge = val
-	StrToInt(event_num_map["multiple"].(string), &val)
-	rsp.Multiple = val
+	//var val int32
+	//StrToInt(event_num_map["single"].(string), &val)
+	//rsp.Single = val
+	//StrToInt(event_num_map["fill"].(string), &val)
+	//rsp.Fill = val
+	//StrToInt(event_num_map["judge"].(string), &val)
+	//rsp.Judge = val
+	//StrToInt(event_num_map["multiple"].(string), &val)
+	//rsp.Multiple = val
+
+	rsp.Single = int32(event_num_map["single"].(float64))
+	rsp.Fill = int32(event_num_map["fill"].(float64))
+	rsp.Judge = int32(event_num_map["judge"].(float64))
+	rsp.Multiple = int32(event_num_map["multiple"].(float64))
 
 	return nil
 }

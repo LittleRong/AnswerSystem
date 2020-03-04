@@ -16,7 +16,7 @@
         <div style="position: relative;">
             <img src="/static/img/header2.jpg" style="width: 100%;height: auto;min-height: 50px">
             <div class="form-group pui-btn-gradient pui-btn-shadow" style="position: absolute;bottom: 10px;right: 20px">
-                <a type="button" class="pui-btn pui-btn-small pui-btn-primary " href="/logout">退出</a>
+                <a type="button" class="pui-btn pui-btn-small pui-btn-primary " href="/v1/index/logout">退出</a>
             </div>
         </div>
     </header>
@@ -85,8 +85,8 @@
                 var show_str = "";
 
                 $.each(data['event_message'], function (i, item) {
-                    var url = '"/answer/user_problem?event_id=' + item.eventId + '"';
-                    var eventUrl = '"/answer/event_message_init?event_id=' + item.eventId + '"';
+                    var url = '"/v1/answer?event_id=' + item.eventId + '"';
+                    var eventUrl = '"/v1/events/detail?event_id=' + item.eventId + '"';
                     show_str += "<div class='clear pui-card pui-card-shadow pui-card-radius'>"
                         + "<div class='pui-card-box'>"
                         + "<h1>" + item.eventTitle + "</h1>"

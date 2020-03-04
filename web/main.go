@@ -13,9 +13,9 @@ import (
 
 var FilterUser = func(ctx *context.Context) {
 	_, ok := ctx.Input.Session("user_id").(int64)
-	beego.Info("00000RequestURI0000000", ctx.Request.RequestURI, " ", ctx.Input, "  body=", string(ctx.Input.RequestBody))
+	//beego.Info("00000RequestURI0000000", ctx.Request.RequestURI, " ", ctx.Input, "  body=", string(ctx.Input.RequestBody))
 	if (ctx.Request.RequestURI != "/v1/index/check" && ctx.Request.RequestURI != "/v1/index") && !ok {
-		ctx.Redirect(302, "v1/index")
+		ctx.Redirect(302, "/v1/index")
 	}
 }
 
